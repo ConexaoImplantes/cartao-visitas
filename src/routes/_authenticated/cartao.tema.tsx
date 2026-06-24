@@ -254,15 +254,47 @@ export function ThemePage() {
                 onChange={(p) => patch("institucional", { ...theme.institucional, ...p })}
               />
 
-              {(["nomeEmpresa", "endereco", "site"] as const).map((k) => (
-                <div key={k} className="space-y-1.5">
-                  <Label className="capitalize">{k}</Label>
-                  <Input
-                    value={theme.institucional[k]}
-                    onChange={(e) => patch("institucional", { ...theme.institucional, [k]: e.target.value })}
-                  />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label>Nome da empresa</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[color:var(--text-muted)]">Exibir</span>
+                    <Switch
+                      checked={theme.institucional.nomeEmpresaEnabled}
+                      onCheckedChange={(v) => patch("institucional", { ...theme.institucional, nomeEmpresaEnabled: v })}
+                    />
+                  </div>
                 </div>
-              ))}
+                <Input
+                  value={theme.institucional.nomeEmpresa}
+                  onChange={(e) => patch("institucional", { ...theme.institucional, nomeEmpresa: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label>Endereço</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[color:var(--text-muted)]">Exibir</span>
+                    <Switch
+                      checked={theme.institucional.enderecoEnabled}
+                      onCheckedChange={(v) => patch("institucional", { ...theme.institucional, enderecoEnabled: v })}
+                    />
+                  </div>
+                </div>
+                <Input
+                  value={theme.institucional.endereco}
+                  onChange={(e) => patch("institucional", { ...theme.institucional, endereco: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Site</Label>
+                <Input
+                  value={theme.institucional.site}
+                  onChange={(e) => patch("institucional", { ...theme.institucional, site: e.target.value })}
+                />
+              </div>
 
               <div className="rounded-lg border border-[color:var(--border-strong)] p-3">
                 <Label className="text-base">Redes sociais</Label>
