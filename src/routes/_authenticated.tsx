@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthLayout() {
   const { loading, session, user, isSuperAdmin } = useAuth();
+  const { can } = usePermissions();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
