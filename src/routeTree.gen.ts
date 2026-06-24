@@ -9,38 +9,110 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CartaoIdRouteImport } from './routes/cartao.$id'
+import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
+import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartaoIdRoute = CartaoIdRouteImport.update({
+  id: '/cartao/$id',
+  path: '/cartao/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
+  id: '/cartao/tema',
+  path: '/cartao/tema',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCartaoDashboardRoute =
+  AuthenticatedCartaoDashboardRouteImport.update({
+    id: '/cartao/dashboard',
+    path: '/cartao/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/cartao/$id': typeof CartaoIdRoute
+  '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/cartao/$id': typeof CartaoIdRoute
+  '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/cartao/$id': typeof CartaoIdRoute
+  '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/cartao/$id'
+    | '/cartao/dashboard'
+    | '/cartao/tema'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/login' | '/cartao/$id' | '/cartao/dashboard' | '/cartao/tema'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/cartao/$id'
+    | '/_authenticated/cartao/dashboard'
+    | '/_authenticated/cartao/tema'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  CartaoIdRoute: typeof CartaoIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +120,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cartao/$id': {
+      id: '/cartao/$id'
+      path: '/cartao/$id'
+      fullPath: '/cartao/$id'
+      preLoaderRoute: typeof CartaoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/cartao/tema': {
+      id: '/_authenticated/cartao/tema'
+      path: '/cartao/tema'
+      fullPath: '/cartao/tema'
+      preLoaderRoute: typeof AuthenticatedCartaoTemaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cartao/dashboard': {
+      id: '/_authenticated/cartao/dashboard'
+      path: '/cartao/dashboard'
+      fullPath: '/cartao/dashboard'
+      preLoaderRoute: typeof AuthenticatedCartaoDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
+  AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,
+  AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  CartaoIdRoute: CartaoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
