@@ -10,12 +10,33 @@ export async function compressImage(file: File, size = 480, quality = 0.82): Pro
   canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas não suportado");
-  // Square cover crop
   const min = Math.min(img.width, img.height);
   const sx = (img.width - min) / 2;
   const sy = (img.height - min) / 2;
   ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
   return canvas.toDataURL("image/jpeg", quality);
+}
+
+/**
+ * Resize keeping aspect ratio. Max dimension defaults to 512px.
+ * PNG output preserves transparency (good for logos).
+ */
+export async function compressImageContain(
+  file: File,
+  maxDim = 512,
+): Promise<string> {
+  const dataUrl = await readAsDataURL(file);
+  const img = await loadImage(dataUrl);
+  const ratio = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * ratio);
+  const h = Math.round(img.height * ratio);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas não suportado");
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL("image/png");
 }
 
 function readAsDataURL(file: File): Promise<string> {

@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "@fontsource-variable/outfit";
 @import "@fontsource-variable/inter";
 @import "@fontsource/playfair-display/400.css";
 @import "@fontsource/playfair-display/700.css";
@@ -48,7 +49,7 @@
   /* Overlay */
   --overlay: rgba(0, 0, 0, 0.5);
 
-  /* shadcn mapping (HSL-like via direct hex) */
+  /* shadcn mapping */
   --background: var(--bg);
   --foreground: var(--text-main);
   --card: var(--card-bg);
@@ -140,14 +141,27 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Outfit Variable", "Outfit", "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-display: "Outfit Variable", "Outfit", "Playfair Display", Georgia, serif;
 }
 
 @layer base {
   * { border-color: var(--color-border); }
   html, body { background-color: var(--bg); color: var(--text-main); }
   body { font-family: var(--font-sans); }
+
+  /* Golden 4px scrollbars across the app */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+  }
+  *::-webkit-scrollbar { width: 4px; height: 4px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background-image: var(--gradient-accent);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover { background-color: var(--accent-hover); }
 }
 
 @utility gradient-accent {

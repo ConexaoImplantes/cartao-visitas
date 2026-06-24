@@ -2,7 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { DEFAULT_THEME, type Collaborator, type ThemeConfig } from "@/lib/types";
+import { normalizeTheme, type Collaborator, type ThemeConfig } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
 
 export const Route = createFileRoute("/cartao/$id")({
@@ -33,7 +33,7 @@ function PublicCardPage() {
         supabase.from("theme_config").select("config").eq("id", "global").maybeSingle(),
       ]);
       if (!alive) return;
-      const theme = (tData?.config as unknown as ThemeConfig) ?? DEFAULT_THEME;
+      const theme: ThemeConfig = normalizeTheme(tData?.config);
       if (!cData) {
         // Could be missing OR inactive (anon RLS hides inactive). Treat as missing/inactive.
         // Try again as a generic select to distinguish — anon won't return inactive.
