@@ -69,6 +69,12 @@ export interface ThemeConfig {
     linkedinEnabled: boolean;
     facebookEnabled: boolean;
     youtubeEnabled: boolean;
+    socialColors: {
+      instagram: string;
+      linkedin: string;
+      facebook: string;
+      youtube: string;
+    };
   };
 }
 
