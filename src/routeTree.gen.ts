@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CartaoIdRouteImport } from './routes/cartao.$id'
+import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 
@@ -35,6 +36,12 @@ const CartaoIdRoute = CartaoIdRouteImport.update({
   path: '/cartao/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCartaoUsuariosRoute =
+  AuthenticatedCartaoUsuariosRouteImport.update({
+    id: '/cartao/usuarios',
+    path: '/cartao/usuarios',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
   id: '/cartao/tema',
   path: '/cartao/tema',
@@ -53,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/cartao/$id': typeof CartaoIdRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -60,6 +68,7 @@ export interface FileRoutesByTo {
   '/cartao/$id': typeof CartaoIdRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,6 +78,7 @@ export interface FileRoutesById {
   '/cartao/$id': typeof CartaoIdRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/_authenticated/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -78,8 +88,15 @@ export interface FileRouteTypes {
     | '/cartao/$id'
     | '/cartao/dashboard'
     | '/cartao/tema'
+    | '/cartao/usuarios'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/cartao/$id' | '/cartao/dashboard' | '/cartao/tema'
+  to:
+    | '/'
+    | '/login'
+    | '/cartao/$id'
+    | '/cartao/dashboard'
+    | '/cartao/tema'
+    | '/cartao/usuarios'
   id:
     | '__root__'
     | '/'
@@ -88,6 +105,7 @@ export interface FileRouteTypes {
     | '/cartao/$id'
     | '/_authenticated/cartao/dashboard'
     | '/_authenticated/cartao/tema'
+    | '/_authenticated/cartao/usuarios'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -127,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartaoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/cartao/usuarios': {
+      id: '/_authenticated/cartao/usuarios'
+      path: '/cartao/usuarios'
+      fullPath: '/cartao/usuarios'
+      preLoaderRoute: typeof AuthenticatedCartaoUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/cartao/tema': {
       id: '/_authenticated/cartao/tema'
       path: '/cartao/tema'
@@ -147,11 +172,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
   AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
+  AuthenticatedCartaoUsuariosRoute: typeof AuthenticatedCartaoUsuariosRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,
   AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
+  AuthenticatedCartaoUsuariosRoute: AuthenticatedCartaoUsuariosRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

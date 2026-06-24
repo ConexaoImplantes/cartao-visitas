@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut, LayoutDashboard, Palette } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,9 @@ function AuthLayout() {
   const nav = [
     { to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/cartao/tema", label: "Tema", icon: Palette },
+    ...(isSuperAdmin
+      ? ([{ to: "/cartao/usuarios", label: "Usuários", icon: Users }] as const)
+      : ([] as const)),
   ] as const;
 
   return (

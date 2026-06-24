@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Save, Upload, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ import {
 } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
 import { compressImageContain } from "@/lib/image-utils";
+import { usePermissions } from "@/hooks/use-permissions";
 
 export const Route = createFileRoute("/_authenticated/cartao/tema")({
   component: ThemePage,
@@ -48,9 +49,17 @@ const BG_MODES: { value: BackgroundMode; label: string }[] = [
 const SOCIAL_KEYS = ["instagram", "linkedin", "facebook", "youtube"] as const;
 
 export function ThemePage() {
+  const { can, loading: permLoading } = usePermissions();
+  const navigate = useNavigate();
   const [theme, setTheme] = useState<ThemeConfig>(DEFAULT_THEME);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!permLoading && !can("tema.view")) {
+      navigate({ to: "/cartao/dashboard", replace: true });
+    }
+  }, [permLoading, can, navigate]);
 
   useEffect(() => {
     supabase
@@ -98,7 +107,7 @@ export function ThemePage() {
           <h1 className="font-display text-3xl font-bold text-[color:var(--text-main)]">Personalização Global</h1>
           <p className="mt-1 text-sm text-[color:var(--text-muted)]">Ajuste cores, fontes e ícones — válido para todos os Link Trees.</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="shrink-0 gradient-accent text-[color:var(--text-inverted)] hover:opacity-90">
+        <Button onClick={handleSave} disabled={saving || !can("tema.edit")} className="shrink-0 gradient-accent text-[color:var(--text-inverted)] hover:opacity-90">
           {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
           Salvar
         </Button>
