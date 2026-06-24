@@ -69,6 +69,12 @@ export interface ThemeConfig {
     linkedinEnabled: boolean;
     facebookEnabled: boolean;
     youtubeEnabled: boolean;
+    socialColors: {
+      instagram: string;
+      linkedin: string;
+      facebook: string;
+      youtube: string;
+    };
   };
 }
 
@@ -123,6 +129,12 @@ export const DEFAULT_THEME: ThemeConfig = {
     linkedinEnabled: true,
     facebookEnabled: true,
     youtubeEnabled: true,
+    socialColors: {
+      instagram: "#E1306C",
+      linkedin: "#0A66C2",
+      facebook: "#1877F2",
+      youtube: "#FF0000",
+    },
   },
 };
 
@@ -149,7 +161,14 @@ export function normalizeTheme(input: unknown): ThemeConfig {
       contato: { ...DEFAULT_THEME.typography.contato, ...(t.typography?.contato ?? {}) },
       institucional: { ...DEFAULT_THEME.typography.institucional, ...(t.typography?.institucional ?? {}) },
     },
-    institucional: { ...DEFAULT_THEME.institucional, ...(t.institucional ?? {}) },
+    institucional: {
+      ...DEFAULT_THEME.institucional,
+      ...(t.institucional ?? {}),
+      socialColors: {
+        ...DEFAULT_THEME.institucional.socialColors,
+        ...((t.institucional as any)?.socialColors ?? {}),
+      },
+    },
   };
 }
 

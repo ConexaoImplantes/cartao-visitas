@@ -266,28 +266,38 @@ export function ThemePage() {
 
               <div className="rounded-lg border border-[color:var(--border-strong)] p-3">
                 <Label className="text-base">Redes sociais</Label>
-                <p className="mb-3 text-xs text-[color:var(--text-muted)]">Ative e configure a URL de cada rede.</p>
-                <div className="space-y-3">
+                <p className="mb-3 text-xs text-[color:var(--text-muted)]">Ative, defina URL e a cor do ícone.</p>
+                <div className="space-y-4">
                   {SOCIAL_KEYS.map((k) => {
                     const enabledKey = `${k}Enabled` as const;
                     return (
-                      <div key={k} className="grid grid-cols-[auto_1fr] items-center gap-3">
-                        <Switch
-                          checked={theme.institucional[enabledKey]}
-                          onCheckedChange={(v) =>
-                            patch("institucional", { ...theme.institucional, [enabledKey]: v })
+                      <div key={k} className="space-y-2 rounded-md border border-[color:var(--border-strong)]/60 p-3">
+                        <div className="grid grid-cols-[auto_1fr] items-center gap-3">
+                          <Switch
+                            checked={theme.institucional[enabledKey]}
+                            onCheckedChange={(v) =>
+                              patch("institucional", { ...theme.institucional, [enabledKey]: v })
+                            }
+                          />
+                          <span className="text-sm font-medium capitalize text-[color:var(--text-main)]">{k}</span>
+                        </div>
+                        <Input
+                          value={theme.institucional[k]}
+                          onChange={(e) =>
+                            patch("institucional", { ...theme.institucional, [k]: e.target.value })
+                          }
+                          placeholder={`https://${k}.com/...`}
+                        />
+                        <ColorRow
+                          label="Cor do ícone"
+                          value={theme.institucional.socialColors[k]}
+                          onChange={(v) =>
+                            patch("institucional", {
+                              ...theme.institucional,
+                              socialColors: { ...theme.institucional.socialColors, [k]: v },
+                            })
                           }
                         />
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-2">
-                          <span className="text-sm capitalize text-[color:var(--text-muted)]">{k}</span>
-                          <Input
-                            value={theme.institucional[k]}
-                            onChange={(e) =>
-                              patch("institucional", { ...theme.institucional, [k]: e.target.value })
-                            }
-                            placeholder={`https://${k}.com/...`}
-                          />
-                        </div>
                       </div>
                     );
                   })}
