@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Plus, ExternalLink, Pencil, QrCode, Eye, Trash2, Loader2, Download } from "lucide-react";
 
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
@@ -28,12 +28,20 @@ export const Route = createFileRoute("/_authenticated/cartao/dashboard")({
 });
 
 function DashboardPage() {
-  const { isSuperAdmin } = useAuth();
+  const { can, loading: permLoading } = usePermissions();
+  const navigate = useNavigate();
   const [rows, setRows] = useState<Collaborator[] | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
   const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!permLoading && !can("dashboard.view")) {
+      toast.error("Você não tem permissão para acessar o Dashboard");
+      navigate({ to: "/cartao/tema", replace: true });
+    }
+  }, [permLoading, can, navigate]);
 
   async function openQrView(c: Collaborator) {
     setQrView({ c, dataUrl: null });
