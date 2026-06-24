@@ -56,7 +56,9 @@ export interface ThemeConfig {
   };
   institucional: {
     nomeEmpresa: string;
+    nomeEmpresaEnabled: boolean;
     endereco: string;
+    enderecoEnabled: boolean;
     site: string;
     logoUrl: string;
     logoWidth: number;
@@ -117,7 +119,9 @@ export const DEFAULT_THEME: ThemeConfig = {
   },
   institucional: {
     nomeEmpresa: "Conexão Implantes",
+    nomeEmpresaEnabled: true,
     endereco: "Av. Principal, 1000 - São Paulo, SP",
+    enderecoEnabled: true,
     site: "https://www.conexao.com.br",
     logoUrl: "",
     logoWidth: 120,
