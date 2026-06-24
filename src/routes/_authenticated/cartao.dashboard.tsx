@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2 } from "lucide-react";
+import { Plus, ExternalLink, Pencil, QrCode, Eye, Trash2, Loader2, Download } from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -14,11 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
-import { downloadQrPng, buildCardUrl } from "@/lib/qr";
+import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+
 
 export const Route = createFileRoute("/_authenticated/cartao/dashboard")({
   component: DashboardPage,
@@ -30,6 +33,19 @@ function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
+  const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
+
+  async function openQrView(c: Collaborator) {
+    setQrView({ c, dataUrl: null });
+    try {
+      const dataUrl = await generateQrDataUrl(c.id);
+      setQrView({ c, dataUrl });
+    } catch {
+      toast.error("Falha ao gerar QR Code");
+      setQrView(null);
+    }
+  }
+
 
   async function load() {
     const { data, error } = await supabase
