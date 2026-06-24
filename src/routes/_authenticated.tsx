@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tan
 import { useEffect } from "react";
 import { LogOut, LayoutDashboard, Palette, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo-conexao.png";
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthLayout() {
   const { loading, session, user, isSuperAdmin } = useAuth();
+  const { can } = usePermissions();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -34,8 +36,12 @@ function AuthLayout() {
   }
 
   const nav = [
-    { to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/cartao/tema", label: "Tema", icon: Palette },
+    ...(can("dashboard.view")
+      ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
+      : ([] as const)),
+    ...(can("tema.view")
+      ? ([{ to: "/cartao/tema", label: "Tema", icon: Palette }] as const)
+      : ([] as const)),
     ...(isSuperAdmin
       ? ([{ to: "/cartao/usuarios", label: "Usuários", icon: Users }] as const)
       : ([] as const)),
