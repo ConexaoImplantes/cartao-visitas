@@ -1,14 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, Save } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Loader2, Save, Upload, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { DEFAULT_THEME, FONT_OPTIONS, type ThemeConfig, type Collaborator } from "@/lib/types";
+import {
+  DEFAULT_THEME,
+  FONT_OPTIONS,
+  BLOB_POSITIONS,
+  normalizeTheme,
+  type ThemeConfig,
+  type Collaborator,
+  type BackgroundMode,
+  type BlobItem,
+  type BlobPosition,
+} from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
+import { compressImageContain } from "@/lib/image-utils";
 
 export const Route = createFileRoute("/_authenticated/cartao/tema")({
   component: ThemePage,
@@ -19,13 +31,21 @@ const SAMPLE: Collaborator = {
   nome: "Ana Carolina Silva",
   cargo: "Consultora Comercial",
   email: "ana.silva@conexao.com.br",
-  whatsapp: "+55 11 99999-0000",
-  telefone_fixo: "+55 11 3000-0000",
+  whatsapp: "+5511999990000",
+  telefone_fixo: "1130000000",
   foto_url: null,
   status: "ativo",
   created_at: "",
   updated_at: "",
 };
+
+const BG_MODES: { value: BackgroundMode; label: string }[] = [
+  { value: "solid", label: "Sólido" },
+  { value: "gradient2", label: "Gradiente 2 cores" },
+  { value: "gradient3", label: "Gradiente 3 cores" },
+];
+
+const SOCIAL_KEYS = ["instagram", "linkedin", "facebook", "youtube"] as const;
 
 export function ThemePage() {
   const [theme, setTheme] = useState<ThemeConfig>(DEFAULT_THEME);
@@ -40,7 +60,7 @@ export function ThemePage() {
       .maybeSingle()
       .then(({ data, error }) => {
         if (error) toast.error("Erro ao carregar tema");
-        if (data?.config) setTheme(data.config as unknown as ThemeConfig);
+        setTheme(normalizeTheme(data?.config));
         setLoading(false);
       });
   }, []);
@@ -63,7 +83,12 @@ export function ThemePage() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]"><Loader2 className="mr-2 size-4 animate-spin" />Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]">
+        <Loader2 className="mr-2 size-4 animate-spin" />
+        Carregando...
+      </div>
+    );
   }
 
   return (
@@ -90,44 +115,109 @@ export function ThemePage() {
               <TabsTrigger value="institucional">Instituição</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="background" className="space-y-4 pt-5">
-              <div className="flex gap-2">
-                {(["solid", "gradient"] as const).map((m) => (
+            {/* ============================= BACKGROUND ============================= */}
+            <TabsContent value="background" className="space-y-5 pt-5">
+              <div className="flex flex-wrap gap-2">
+                {BG_MODES.map((m) => (
                   <button
-                    key={m}
-                    onClick={() => patch("background", { ...theme.background, mode: m })}
+                    key={m.value}
+                    onClick={() => patch("background", { ...theme.background, mode: m.value })}
                     className={`rounded-md border px-3 py-2 text-sm transition ${
-                      theme.background.mode === m
+                      theme.background.mode === m.value
                         ? "border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--text-main)]"
                         : "border-[color:var(--border-strong)] text-[color:var(--text-muted)]"
                     }`}
                   >
-                    {m === "solid" ? "Sólido" : "Gradiente"}
+                    {m.label}
                   </button>
                 ))}
               </div>
-              {theme.background.mode === "solid" ? (
-                <ColorRow label="Cor de fundo" value={theme.background.solid}
-                  onChange={(v) => patch("background", { ...theme.background, solid: v })} />
-              ) : (
+
+              {theme.background.mode === "solid" && (
+                <ColorRow
+                  label="Cor de fundo"
+                  value={theme.background.solid}
+                  onChange={(v) => patch("background", { ...theme.background, solid: v })}
+                />
+              )}
+
+              {theme.background.mode === "gradient2" && (
                 <>
-                  <ColorRow label="Gradiente — início" value={theme.background.gradientFrom}
+                  <ColorRow label="Cor 1" value={theme.background.gradientFrom}
                     onChange={(v) => patch("background", { ...theme.background, gradientFrom: v })} />
-                  <ColorRow label="Gradiente — fim" value={theme.background.gradientTo}
+                  <ColorRow label="Cor 2" value={theme.background.gradientTo}
                     onChange={(v) => patch("background", { ...theme.background, gradientTo: v })} />
-                  <div className="space-y-1.5">
-                    <Label>Ângulo: {theme.background.gradientAngle}°</Label>
-                    <input
-                      type="range" min={0} max={360}
-                      value={theme.background.gradientAngle}
-                      onChange={(e) => patch("background", { ...theme.background, gradientAngle: Number(e.target.value) })}
-                      className="w-full"
-                    />
-                  </div>
+                  <RangeRow label="Ângulo" value={theme.background.gradientAngle}
+                    onChange={(v) => patch("background", { ...theme.background, gradientAngle: v })} />
                 </>
               )}
+
+              {theme.background.mode === "gradient3" && (
+                <>
+                  <ColorRow label="Cor 1" value={theme.background.gradient3From}
+                    onChange={(v) => patch("background", { ...theme.background, gradient3From: v })} />
+                  <ColorRow label="Cor central" value={theme.background.gradient3Mid}
+                    onChange={(v) => patch("background", { ...theme.background, gradient3Mid: v })} />
+                  <ColorRow label="Cor 3" value={theme.background.gradient3To}
+                    onChange={(v) => patch("background", { ...theme.background, gradient3To: v })} />
+                  <RangeRow label="Ângulo" value={theme.background.gradient3Angle}
+                    onChange={(v) => patch("background", { ...theme.background, gradient3Angle: v })} />
+                </>
+              )}
+
+              {/* Blobs */}
+              <div className="rounded-lg border border-[color:var(--border-strong)] p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-base">Blobs decorativos</Label>
+                    <p className="text-xs text-[color:var(--text-muted)]">Manchas suaves coloridas sobre o fundo.</p>
+                  </div>
+                  <Switch
+                    checked={theme.background.blobsEnabled}
+                    onCheckedChange={(v) => patch("background", { ...theme.background, blobsEnabled: v })}
+                  />
+                </div>
+
+                {theme.background.blobsEnabled && (
+                  <div className="mt-4 space-y-3">
+                    {theme.background.blobs.map((b, i) => (
+                      <BlobRow
+                        key={i}
+                        blob={b}
+                        onChange={(nb) => {
+                          const blobs = theme.background.blobs.slice();
+                          blobs[i] = nb;
+                          patch("background", { ...theme.background, blobs });
+                        }}
+                        onRemove={() => {
+                          const blobs = theme.background.blobs.filter((_, j) => j !== i);
+                          patch("background", { ...theme.background, blobs });
+                        }}
+                      />
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const next: BlobItem = {
+                          enabled: true,
+                          color: "#c9a655",
+                          position: "mc",
+                          size: 280,
+                          opacity: 0.3,
+                        };
+                        patch("background", { ...theme.background, blobs: [...theme.background.blobs, next] });
+                      }}
+                    >
+                      <Plus className="size-4" /> Adicionar blob
+                    </Button>
+                  </div>
+                )}
+              </div>
             </TabsContent>
 
+            {/* ============================= ICONS ============================= */}
             <TabsContent value="icons" className="space-y-4 pt-5">
               <ColorRow label="Cor do ícone" value={theme.icons.pathColor}
                 onChange={(v) => patch("icons", { ...theme.icons, pathColor: v })} />
@@ -135,9 +225,10 @@ export function ThemePage() {
                 onChange={(v) => patch("icons", { ...theme.icons, bgColor: v })} />
             </TabsContent>
 
+            {/* ============================= TYPOGRAPHY ============================= */}
             <TabsContent value="typography" className="space-y-4 pt-5">
               {(["nome", "cargo", "contato", "institucional"] as const).map((k) => (
-                <div key={k} className="grid grid-cols-1 gap-3 rounded-lg border border-[color:var(--border-strong)] p-3 sm:grid-cols-[1fr_1fr_auto]">
+                <div key={k} className="grid grid-cols-1 gap-3 rounded-lg border border-[color:var(--border-strong)] p-3 sm:grid-cols-[1fr_1fr]">
                   <div className="space-y-1.5">
                     <Label className="capitalize">{k}</Label>
                     <select
@@ -148,14 +239,22 @@ export function ThemePage() {
                       {FONT_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
                     </select>
                   </div>
-                  <ColorRow inline label="Cor" value={theme.typography[k].color}
+                  <ColorRow label="Cor" value={theme.typography[k].color}
                     onChange={(v) => patch("typography", { ...theme.typography, [k]: { ...theme.typography[k], color: v } })} />
                 </div>
               ))}
             </TabsContent>
 
-            <TabsContent value="institucional" className="space-y-3 pt-5">
-              {(["nomeEmpresa", "endereco", "site", "instagram", "linkedin", "facebook", "youtube"] as const).map((k) => (
+            {/* ============================= INSTITUCIONAL ============================= */}
+            <TabsContent value="institucional" className="space-y-4 pt-5">
+              <LogoUploader
+                url={theme.institucional.logoUrl}
+                width={theme.institucional.logoWidth}
+                height={theme.institucional.logoHeight}
+                onChange={(p) => patch("institucional", { ...theme.institucional, ...p })}
+              />
+
+              {(["nomeEmpresa", "endereco", "site"] as const).map((k) => (
                 <div key={k} className="space-y-1.5">
                   <Label className="capitalize">{k}</Label>
                   <Input
@@ -164,6 +263,36 @@ export function ThemePage() {
                   />
                 </div>
               ))}
+
+              <div className="rounded-lg border border-[color:var(--border-strong)] p-3">
+                <Label className="text-base">Redes sociais</Label>
+                <p className="mb-3 text-xs text-[color:var(--text-muted)]">Ative e configure a URL de cada rede.</p>
+                <div className="space-y-3">
+                  {SOCIAL_KEYS.map((k) => {
+                    const enabledKey = `${k}Enabled` as const;
+                    return (
+                      <div key={k} className="grid grid-cols-[auto_1fr] items-center gap-3">
+                        <Switch
+                          checked={theme.institucional[enabledKey]}
+                          onCheckedChange={(v) =>
+                            patch("institucional", { ...theme.institucional, [enabledKey]: v })
+                          }
+                        />
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-2">
+                          <span className="text-sm capitalize text-[color:var(--text-muted)]">{k}</span>
+                          <Input
+                            value={theme.institucional[k]}
+                            onChange={(e) =>
+                              patch("institucional", { ...theme.institucional, [k]: e.target.value })
+                            }
+                            placeholder={`https://${k}.com/...`}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
@@ -182,19 +311,11 @@ export function ThemePage() {
   );
 }
 
-function ColorRow({
-  label,
-  value,
-  onChange,
-  inline,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  inline?: boolean;
-}) {
+/* ----------------- Sub-components ----------------- */
+
+function ColorRow({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
-    <div className={inline ? "space-y-1.5" : "space-y-1.5"}>
+    <div className="space-y-1.5">
       <Label>{label}</Label>
       <div className="flex items-center gap-2">
         <input
@@ -204,6 +325,137 @@ function ColorRow({
           className="h-9 w-12 cursor-pointer rounded border border-[color:var(--border-strong)] bg-transparent"
         />
         <Input value={value} onChange={(e) => onChange(e.target.value)} className="font-mono text-xs" />
+      </div>
+    </div>
+  );
+}
+
+function RangeRow({ label, value, onChange, min = 0, max = 360 }: { label: string; value: number; onChange: (v: number) => void; min?: number; max?: number }) {
+  return (
+    <div className="space-y-1.5">
+      <Label>{label}: {value}°</Label>
+      <input type="range" min={min} max={max} value={value}
+        onChange={(e) => onChange(Number(e.target.value))} className="w-full" />
+    </div>
+  );
+}
+
+function BlobRow({ blob, onChange, onRemove }: { blob: BlobItem; onChange: (b: BlobItem) => void; onRemove: () => void }) {
+  return (
+    <div className="rounded-md border border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]/40 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Switch checked={blob.enabled} onCheckedChange={(v) => onChange({ ...blob, enabled: v })} />
+          <input
+            type="color"
+            value={blob.color}
+            onChange={(e) => onChange({ ...blob, color: e.target.value })}
+            className="h-7 w-9 cursor-pointer rounded border border-[color:var(--border-strong)] bg-transparent"
+          />
+          <span className="font-mono text-xs text-[color:var(--text-muted)]">{blob.color}</span>
+        </div>
+        <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+          <Trash2 className="size-4 text-[color:var(--error)]" />
+        </Button>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-1.5">
+        {BLOB_POSITIONS.map((p) => (
+          <button
+            key={p.value}
+            onClick={() => onChange({ ...blob, position: p.value as BlobPosition })}
+            className={`rounded border px-2 py-1.5 text-[11px] transition ${
+              blob.position === p.value
+                ? "border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--text-main)]"
+                : "border-[color:var(--border-strong)] text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Tamanho: {blob.size}px</Label>
+          <input type="range" min={80} max={600} value={blob.size}
+            onChange={(e) => onChange({ ...blob, size: Number(e.target.value) })} className="w-full" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Opacidade: {Math.round(blob.opacity * 100)}%</Label>
+          <input type="range" min={5} max={100} value={Math.round(blob.opacity * 100)}
+            onChange={(e) => onChange({ ...blob, opacity: Number(e.target.value) / 100 })} className="w-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LogoUploader({
+  url, width, height, onChange,
+}: {
+  url: string; width: number; height: number;
+  onChange: (p: { logoUrl?: string; logoWidth?: number; logoHeight?: number }) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 4 * 1024 * 1024) {
+      toast.error("Imagem muito grande (máx 4MB)");
+      return;
+    }
+    setBusy(true);
+    try {
+      const dataUrl = await compressImageContain(f, 512);
+      onChange({ logoUrl: dataUrl });
+    } catch {
+      toast.error("Falha ao processar imagem");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-[color:var(--border-strong)] p-3">
+      <Label className="text-base">Logo do rodapé</Label>
+      <div className="mt-3 flex items-center gap-4">
+        <div
+          className="grid shrink-0 place-items-center rounded border border-dashed border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]/40"
+          style={{ width: Math.max(width, 48), height: Math.max(height, 32) }}
+        >
+          {url ? (
+            <img src={url} alt="Logo" style={{ width, height, objectFit: "contain" }} />
+          ) : (
+            <Upload className="size-5 text-[color:var(--text-muted)]" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={busy}>
+              {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Enviar logo
+            </Button>
+            {url && (
+              <Button type="button" size="sm" variant="ghost" onClick={() => onChange({ logoUrl: "" })}>
+                <Trash2 className="size-4 text-[color:var(--error)]" /> Remover
+              </Button>
+            )}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+          <p className="text-xs text-[color:var(--text-muted)]">PNG/SVG com fundo transparente até 4MB</p>
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Largura: {width}px</Label>
+          <input type="range" min={40} max={320} value={width}
+            onChange={(e) => onChange({ logoWidth: Number(e.target.value) })} className="w-full" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Altura: {height}px</Label>
+          <input type="range" min={16} max={160} value={height}
+            onChange={(e) => onChange({ logoHeight: Number(e.target.value) })} className="w-full" />
+        </div>
       </div>
     </div>
   );
