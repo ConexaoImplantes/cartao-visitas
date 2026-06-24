@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import logoAsset from "@/assets/logo-conexao.png.asset.json";
+import logoUrl from "@/assets/logo-conexao.png";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
@@ -47,7 +47,7 @@ function LoginPage() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-8 shadow-2xl">
           <div className="mb-8 flex justify-center">
-            <img src={logoAsset.url} alt="Conexão Implantes" className="h-14 w-auto" />
+            <img src={logoUrl} alt="Conexão Implantes" className="h-14 w-auto" />
           </div>
           <h1 className="text-center font-display text-2xl font-bold text-[color:var(--text-main)]">
             Link Tree Corporativo

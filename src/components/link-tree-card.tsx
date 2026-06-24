@@ -1,5 +1,5 @@
 import type { Collaborator, ThemeConfig } from "@/lib/types";
-import logoAsset from "@/assets/logo-conexao.png.asset.json";
+import logoUrl from "@/assets/logo-conexao.png";
 import {
   MessageCircle,
   Mail,
@@ -141,7 +141,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         {/* Footer */}
         <footer className="mt-10 flex flex-col items-start gap-4 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <img src={logoAsset.url} alt="Conexão" className="h-8 w-auto shrink-0" />
+            <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
             <div className="min-w-0 text-xs leading-tight" style={{
               fontFamily: theme.typography.institucional.font,
               color: theme.typography.institucional.color,

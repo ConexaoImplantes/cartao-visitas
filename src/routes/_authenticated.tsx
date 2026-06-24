@@ -4,7 +4,7 @@ import { LogOut, LayoutDashboard, Palette } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/logo-conexao.png.asset.json";
+import logoUrl from "@/assets/logo-conexao.png";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -42,7 +42,7 @@ function AuthLayout() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
-          <img src={logoAsset.url} alt="Conexão" className="h-8 w-auto shrink-0" />
+          <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
           <nav className="flex flex-1 items-center gap-1">
             {nav.map((n) => {
               const active = pathname.startsWith(n.to);
