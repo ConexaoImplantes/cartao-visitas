@@ -82,9 +82,20 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
   const telDigits = collaborator.telefone_fixo?.replace(/\D/g, "") ?? "";
   const inst = theme.institucional;
   const logoSrc = inst.logoUrl || defaultLogo;
+  const sc = inst.socialColors;
+
+  const socials: Array<{ key: "instagram" | "linkedin" | "facebook" | "youtube"; Icon: typeof Instagram; href: string; enabled: boolean }> = [
+    { key: "instagram", Icon: Instagram, href: inst.instagram, enabled: inst.instagramEnabled },
+    { key: "linkedin", Icon: Linkedin, href: inst.linkedin, enabled: inst.linkedinEnabled },
+    { key: "facebook", Icon: Facebook, href: inst.facebook, enabled: inst.facebookEnabled },
+    { key: "youtube", Icon: Youtube, href: inst.youtube, enabled: inst.youtubeEnabled },
+  ];
 
   return (
-    <div className="relative flex min-h-screen w-full justify-center overflow-hidden" style={bgStyle(theme)}>
+    <div
+      className="relative flex min-h-[100svh] w-full justify-center overflow-hidden"
+      style={bgStyle(theme)}
+    >
       {/* Blobs layer */}
       {theme.background.blobsEnabled && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -104,11 +115,13 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         </div>
       )}
 
-      <div className="relative z-10 flex w-full max-w-md flex-col px-5 pb-6 pt-10">
+      <div
+        className="relative z-10 flex w-full max-w-[440px] flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(2.25rem,env(safe-area-inset-top))]"
+      >
         {/* Avatar */}
         <div className="flex justify-center">
           <div
-            className="grid size-36 place-items-center overflow-hidden rounded-full border-4"
+            className="grid size-32 place-items-center overflow-hidden rounded-full border-4 sm:size-36"
             style={{ borderColor: theme.icons.bgColor }}
           >
             {collaborator.foto_url ? (
@@ -121,7 +134,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
 
         {/* Identity */}
         <h1
-          className="mt-5 text-center text-2xl font-bold leading-tight"
+          className="mt-5 text-balance text-center text-[1.5rem] font-bold leading-tight"
           style={{ fontFamily: theme.typography.nome.font, color: theme.typography.nome.color }}
         >
           {collaborator.nome}
@@ -134,7 +147,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         </p>
 
         {/* CTAs */}
-        <div className="mt-8 space-y-3">
+        <div className="mt-7 space-y-3">
           {waDigits && (
             <CtaButton
               href={`https://wa.me/${waDigits}`}
@@ -145,12 +158,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
             />
           )}
           {collaborator.email && (
-            <CtaButton
-              href={`mailto:${collaborator.email}`}
-              Icon={Mail}
-              label={collaborator.email}
-              theme={theme}
-            />
+            <CtaButton href={`mailto:${collaborator.email}`} Icon={Mail} label={collaborator.email} theme={theme} />
           )}
           {telDigits && (
             <CtaButton
@@ -166,42 +174,34 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         </div>
 
         {/* Footer */}
-        <footer className="mt-10 flex flex-col items-start gap-4 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <img
-              src={logoSrc}
-              alt={inst.nomeEmpresa}
-              className="shrink-0 object-contain"
-              style={{ width: inst.logoWidth, height: inst.logoHeight }}
-            />
-            <div
-              className="min-w-0 text-xs leading-tight"
-              style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
-            >
-              <div className="font-semibold">{inst.nomeEmpresa}</div>
-              <div className="truncate">{inst.endereco}</div>
-            </div>
+        <footer className="mt-10 flex flex-col items-center gap-5 border-t border-white/10 pt-6">
+          <img
+            src={logoSrc}
+            alt={inst.nomeEmpresa}
+            className="object-contain"
+            style={{ width: inst.logoWidth, height: inst.logoHeight }}
+          />
+          <div
+            className="text-center text-xs leading-tight"
+            style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
+          >
+            <div className="font-semibold">{inst.nomeEmpresa}</div>
+            <div>{inst.endereco}</div>
           </div>
-          <div className="flex shrink-0 gap-3">
-            {inst.instagramEnabled && inst.instagram && (
-              <a href={inst.instagram} target="_blank" rel="noreferrer" aria-label="Instagram">
-                <Instagram size={20} color={theme.typography.institucional.color} />
-              </a>
-            )}
-            {inst.linkedinEnabled && inst.linkedin && (
-              <a href={inst.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                <Linkedin size={20} color={theme.typography.institucional.color} />
-              </a>
-            )}
-            {inst.facebookEnabled && inst.facebook && (
-              <a href={inst.facebook} target="_blank" rel="noreferrer" aria-label="Facebook">
-                <Facebook size={20} color={theme.typography.institucional.color} />
-              </a>
-            )}
-            {inst.youtubeEnabled && inst.youtube && (
-              <a href={inst.youtube} target="_blank" rel="noreferrer" aria-label="YouTube">
-                <Youtube size={20} color={theme.typography.institucional.color} />
-              </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            {socials.map(({ key, Icon, href, enabled }) =>
+              enabled && href ? (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={key}
+                  className="grid size-10 place-items-center rounded-full bg-white/8 transition active:scale-95"
+                >
+                  <Icon size={20} color={sc[key]} />
+                </a>
+              ) : null,
             )}
           </div>
         </footer>
