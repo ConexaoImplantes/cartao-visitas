@@ -36,8 +36,12 @@ function AuthLayout() {
   }
 
   const nav = [
-    { to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/cartao/tema", label: "Tema", icon: Palette },
+    ...(can("dashboard.view")
+      ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
+      : ([] as const)),
+    ...(can("tema.view")
+      ? ([{ to: "/cartao/tema", label: "Tema", icon: Palette }] as const)
+      : ([] as const)),
     ...(isSuperAdmin
       ? ([{ to: "/cartao/usuarios", label: "Usuários", icon: Users }] as const)
       : ([] as const)),
