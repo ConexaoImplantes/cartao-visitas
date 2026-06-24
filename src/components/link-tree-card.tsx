@@ -175,7 +175,13 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
             />
           )}
           {inst.site && (
-            <CtaButton href={inst.site} Icon={Globe} label={inst.site} theme={theme} external />
+            <CtaButton
+              href={/^https?:\/\//i.test(inst.site) ? inst.site : `https://${inst.site}`}
+              Icon={Globe}
+              label={inst.site}
+              theme={theme}
+              external
+            />
           )}
         </div>
 
