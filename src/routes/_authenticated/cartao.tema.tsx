@@ -298,12 +298,28 @@ export function ThemePage() {
                             })
                           }
                         />
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
-            </TabsContent>
+            );
+          })}
+        </div>
+        <div className="mt-4 space-y-1">
+          <Label className="text-xs">Tamanho dos ícones: {theme.institucional.socialIconSize}px</Label>
+          <input
+            type="range"
+            min={12}
+            max={48}
+            value={theme.institucional.socialIconSize}
+            onChange={(e) =>
+              patch("institucional", {
+                ...theme.institucional,
+                socialIconSize: Number(e.target.value),
+              })
+            }
+            className="w-full"
+          />
+        </div>
+      </div>
+    </TabsContent>
           </Tabs>
         </div>
 

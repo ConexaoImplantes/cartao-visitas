@@ -174,7 +174,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         </div>
 
         {/* Footer */}
-        <footer className="mt-10 flex items-start justify-between gap-4 border-t border-white/10 pt-6">
+        <footer className="mt-10 flex items-center justify-between gap-4 border-t border-white/10 pt-6">
           <div className="flex flex-col gap-2">
             <img
               src={logoSrc}
@@ -199,9 +199,10 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={key}
-                  className="grid size-10 place-items-center rounded-full bg-white/8 transition active:scale-95"
+                  className="grid place-items-center rounded-full bg-white/8 transition active:scale-95"
+                  style={{ width: inst.socialIconSize + 20, height: inst.socialIconSize + 20 }}
                 >
-                  <Icon size={20} color={sc[key]} />
+                  <Icon size={inst.socialIconSize} color={sc[key]} />
                 </a>
               ) : null,
             )}

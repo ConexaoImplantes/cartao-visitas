@@ -75,6 +75,7 @@ export interface ThemeConfig {
       facebook: string;
       youtube: string;
     };
+    socialIconSize: number;
   };
 }
 
@@ -135,6 +136,7 @@ export const DEFAULT_THEME: ThemeConfig = {
       facebook: "#1877F2",
       youtube: "#FF0000",
     },
+    socialIconSize: 20,
   },
 };
 
