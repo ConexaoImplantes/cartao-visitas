@@ -129,6 +129,12 @@ export const DEFAULT_THEME: ThemeConfig = {
     linkedinEnabled: true,
     facebookEnabled: true,
     youtubeEnabled: true,
+    socialColors: {
+      instagram: "#E1306C",
+      linkedin: "#0A66C2",
+      facebook: "#1877F2",
+      youtube: "#FF0000",
+    },
   },
 };
 
