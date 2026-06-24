@@ -1,5 +1,5 @@
 import type { Collaborator, ThemeConfig, BlobPosition } from "@/lib/types";
-import { maskPhone } from "@/lib/types";
+import { decodeTelefone, formatPhoneDisplay, phoneDigits, maskNumberOnly } from "@/lib/types";
 import defaultLogo from "@/assets/logo-conexao.png";
 import {
   MessageCircle,
@@ -78,8 +78,14 @@ function CtaButton({
 }
 
 export function LinkTreeCard({ collaborator, theme }: Props) {
-  const waDigits = collaborator.whatsapp.replace(/\D/g, "");
-  const telDigits = collaborator.telefone_fixo?.replace(/\D/g, "") ?? "";
+  const waDigits = phoneDigits(collaborator.whatsapp);
+  const waLabel = formatPhoneDisplay(collaborator.whatsapp);
+  const tel = decodeTelefone(collaborator.telefone_fixo);
+  const telDigits = tel.kind === "fixo" ? phoneDigits(collaborator.telefone_fixo) : tel.ramal;
+  const telLabel =
+    tel.kind === "ramal"
+      ? `Ramal ${maskNumberOnly(tel.ramal) || tel.ramal}`
+      : formatPhoneDisplay(collaborator.telefone_fixo);
   const inst = theme.institucional;
   const logoSrc = inst.logoUrl || defaultLogo;
   const sc = inst.socialColors;
@@ -152,7 +158,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
             <CtaButton
               href={`https://wa.me/${waDigits}`}
               Icon={MessageCircle}
-              label={maskPhone(collaborator.whatsapp)}
+              label={waLabel}
               theme={theme}
               external
             />
@@ -162,9 +168,9 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
           )}
           {telDigits && (
             <CtaButton
-              href={`tel:${telDigits}`}
+              href={tel.kind === "ramal" ? `tel:${tel.ramal}` : `tel:${telDigits}`}
               Icon={Phone}
-              label={maskPhone(collaborator.telefone_fixo ?? "")}
+              label={telLabel}
               theme={theme}
             />
           )}
@@ -172,6 +178,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
             <CtaButton href={inst.site} Icon={Globe} label={inst.site} theme={theme} external />
           )}
         </div>
+
 
         {/* Footer */}
         <footer className="mt-10 flex items-center justify-between gap-4 border-t border-white/10 pt-6">

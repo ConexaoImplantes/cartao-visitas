@@ -9,14 +9,19 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
+import {
+  decodePhone,
+  decodeTelefone,
+  encodePhone,
+  encodeTelefone,
+  type PhoneParts,
+  type TelefoneKind,
+} from "@/lib/types";
 
 const schema = z.object({
   nome: z.string().trim().min(2, "Nome obrigatório").max(120),
   cargo: z.string().trim().min(2, "Cargo obrigatório").max(120),
   email: z.string().trim().email("E-mail inválido").max(255),
-  whatsapp: z.string().trim().min(8, "WhatsApp obrigatório").max(32),
-  telefone_fixo: z.string().trim().max(32).optional().or(z.literal("")),
-  foto_url: z.string().optional().nullable(),
 });
 
 interface Props {
@@ -26,29 +31,32 @@ interface Props {
   onSaved: () => void;
 }
 
+const EMPTY_PHONE: PhoneParts = { ddi: "55", ddd: "", number: "" };
+
 export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }: Props) {
   const editing = !!collaborator;
-  const [form, setForm] = useState({
-    nome: "",
-    cargo: "",
-    email: "",
-    whatsapp: "",
-    telefone_fixo: "",
-    foto_url: "" as string | null,
-  });
+  const [nome, setNome] = useState("");
+  const [cargo, setCargo] = useState("");
+  const [email, setEmail] = useState("");
+  const [foto, setFoto] = useState<string | null>("");
+  const [whats, setWhats] = useState<PhoneParts>(EMPTY_PHONE);
+  const [telKind, setTelKind] = useState<TelefoneKind>("fixo");
+  const [telFixo, setTelFixo] = useState<PhoneParts>(EMPTY_PHONE);
+  const [ramal, setRamal] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setForm({
-        nome: collaborator?.nome ?? "",
-        cargo: collaborator?.cargo ?? "",
-        email: collaborator?.email ?? "",
-        whatsapp: collaborator?.whatsapp ?? "",
-        telefone_fixo: collaborator?.telefone_fixo ?? "",
-        foto_url: collaborator?.foto_url ?? "",
-      });
-    }
+    if (!open) return;
+    setNome(collaborator?.nome ?? "");
+    setCargo(collaborator?.cargo ?? "");
+    setEmail(collaborator?.email ?? "");
+    setFoto(collaborator?.foto_url ?? "");
+    const w = decodePhone(collaborator?.whatsapp);
+    setWhats({ ddi: w.ddi || "55", ddd: w.ddd, number: w.number });
+    const t = decodeTelefone(collaborator?.telefone_fixo ?? "");
+    setTelKind(t.kind);
+    setTelFixo({ ddi: t.phone.ddi || "55", ddd: t.phone.ddd, number: t.phone.number });
+    setRamal(t.ramal);
   }, [open, collaborator]);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -59,8 +67,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       return;
     }
     try {
-      const dataUrl = await compressImage(f, 480, 0.82);
-      setForm((p) => ({ ...p, foto_url: dataUrl }));
+      setFoto(await compressImage(f, 480, 0.82));
     } catch {
       toast.error("Falha ao processar imagem");
     }
@@ -68,16 +75,26 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse(form);
+    const parsed = schema.safeParse({ nome, cargo, email });
     if (!parsed.success) {
       toast.error(parsed.error.errors[0].message);
+      return;
+    }
+    if (!whats.ddd || !whats.number) {
+      toast.error("Informe DDD e número do WhatsApp");
+      return;
+    }
+    if (telKind === "ramal" && !ramal) {
+      toast.error("Informe o ramal");
       return;
     }
     setSaving(true);
     const payload = {
       ...parsed.data,
-      telefone_fixo: parsed.data.telefone_fixo || null,
-      foto_url: parsed.data.foto_url || null,
+      whatsapp: encodePhone(whats),
+      telefone_fixo:
+        encodeTelefone({ kind: telKind, phone: telFixo, ramal }) || null,
+      foto_url: foto || null,
     };
     const { error } = editing
       ? await supabase.from("collaborators").update(payload).eq("id", collaborator!.id)
@@ -94,7 +111,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-[color:var(--surface)]">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto bg-[color:var(--surface)]">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">
             {editing ? "Editar colaborador" : "Novo colaborador"}
@@ -104,8 +121,8 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-center gap-4">
             <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]">
-              {form.foto_url ? (
-                <img src={form.foto_url} alt="Preview" className="size-full object-cover" />
+              {foto ? (
+                <img src={foto} alt="Preview" className="size-full object-cover" />
               ) : (
                 <Upload className="size-6 text-[color:var(--text-muted)]" />
               )}
@@ -124,20 +141,47 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Nome completo">
-              <Input value={form.nome} onChange={(e) => setForm((p) => ({ ...p, nome: e.target.value }))} required />
+              <Input value={nome} onChange={(e) => setNome(e.target.value)} required />
             </Field>
             <Field label="Cargo">
-              <Input value={form.cargo} onChange={(e) => setForm((p) => ({ ...p, cargo: e.target.value }))} required />
+              <Input value={cargo} onChange={(e) => setCargo(e.target.value)} required />
             </Field>
-            <Field label="E-mail institucional">
-              <Input type="email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} required />
-            </Field>
-            <Field label="WhatsApp (com DDD/país)">
-              <Input placeholder="+55 11 99999-9999" value={form.whatsapp} onChange={(e) => setForm((p) => ({ ...p, whatsapp: e.target.value }))} required />
-            </Field>
-            <Field label="Telefone fixo / Ramal">
-              <Input value={form.telefone_fixo} onChange={(e) => setForm((p) => ({ ...p, telefone_fixo: e.target.value }))} />
-            </Field>
+            <div className="sm:col-span-2">
+              <Field label="E-mail institucional">
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </Field>
+            </div>
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-[color:var(--border-strong)] p-3">
+            <Label className="text-sm font-semibold">WhatsApp</Label>
+            <PhoneFields value={whats} onChange={setWhats} />
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-[color:var(--border-strong)] p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label className="text-sm font-semibold">Telefone</Label>
+              <div className="inline-flex rounded-lg bg-[color:var(--surface-hover)] p-1">
+                <KindBtn active={telKind === "fixo"} onClick={() => setTelKind("fixo")}>
+                  Telefone fixo
+                </KindBtn>
+                <KindBtn active={telKind === "ramal"} onClick={() => setTelKind("ramal")}>
+                  Ramal
+                </KindBtn>
+              </div>
+            </div>
+            {telKind === "fixo" ? (
+              <PhoneFields value={telFixo} onChange={setTelFixo} />
+            ) : (
+              <Field label="Número do ramal">
+                <Input
+                  inputMode="numeric"
+                  placeholder="Ex: 1234"
+                  value={ramal}
+                  onChange={(e) => setRamal(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                />
+              </Field>
+            )}
           </div>
 
           <DialogFooter>
@@ -154,10 +198,52 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
   );
 }
 
+function PhoneFields({ value, onChange }: { value: PhoneParts; onChange: (v: PhoneParts) => void }) {
+  const set = (k: keyof PhoneParts, max: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange({ ...value, [k]: e.target.value.replace(/\D/g, "").slice(0, max) });
+  return (
+    <div className="grid grid-cols-[80px_80px_1fr] gap-2">
+      <Field label="DDI">
+        <Input inputMode="numeric" placeholder="55" value={value.ddi} onChange={set("ddi", 4)} />
+      </Field>
+      <Field label="DDD">
+        <Input inputMode="numeric" placeholder="11" value={value.ddd} onChange={set("ddd", 3)} />
+      </Field>
+      <Field label="Número">
+        <Input inputMode="numeric" placeholder="999999999" value={value.number} onChange={set("number", 9)} />
+      </Field>
+    </div>
+  );
+}
+
+function KindBtn({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+        active
+          ? "bg-[color:var(--accent)] text-[color:var(--text-inverted)]"
+          : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <Label className="text-xs">{label}</Label>
       {children}
     </div>
   );
