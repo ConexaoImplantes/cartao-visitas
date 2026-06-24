@@ -174,21 +174,23 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
         </div>
 
         {/* Footer */}
-        <footer className="mt-10 flex flex-col items-center gap-5 border-t border-white/10 pt-6">
-          <img
-            src={logoSrc}
-            alt={inst.nomeEmpresa}
-            className="object-contain"
-            style={{ width: inst.logoWidth, height: inst.logoHeight }}
-          />
-          <div
-            className="text-center text-xs leading-tight"
-            style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
-          >
-            <div className="font-semibold">{inst.nomeEmpresa}</div>
-            <div>{inst.endereco}</div>
+        <footer className="mt-10 flex items-start justify-between gap-4 border-t border-white/10 pt-6">
+          <div className="flex flex-col gap-2">
+            <img
+              src={logoSrc}
+              alt={inst.nomeEmpresa}
+              className="object-contain"
+              style={{ width: inst.logoWidth, height: inst.logoHeight }}
+            />
+            <div
+              className="text-xs leading-tight"
+              style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
+            >
+              <div className="font-semibold">{inst.nomeEmpresa}</div>
+              <div>{inst.endereco}</div>
+            </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-end gap-3">
             {socials.map(({ key, Icon, href, enabled }) =>
               enabled && href ? (
                 <a
