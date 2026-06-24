@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2 } from "lucide-react";
+import { Plus, ExternalLink, Pencil, QrCode, Eye, Trash2, Loader2, Download } from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -14,11 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
-import { downloadQrPng, buildCardUrl } from "@/lib/qr";
+import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+
 
 export const Route = createFileRoute("/_authenticated/cartao/dashboard")({
   component: DashboardPage,
@@ -30,6 +33,19 @@ function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
+  const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
+
+  async function openQrView(c: Collaborator) {
+    setQrView({ c, dataUrl: null });
+    try {
+      const dataUrl = await generateQrDataUrl(c.id);
+      setQrView({ c, dataUrl });
+    } catch {
+      toast.error("Falha ao gerar QR Code");
+      setQrView(null);
+    }
+  }
+
 
   async function load() {
     const { data, error } = await supabase
@@ -147,7 +163,7 @@ function DashboardPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-1">
-                        <IconBtn title="Visualizar" asChild>
+                        <IconBtn title="Visualizar Link Tree" asChild>
                           <a href={buildCardUrl(c.id)} target="_blank" rel="noreferrer">
                             <ExternalLink className="size-4" />
                           </a>
@@ -155,9 +171,13 @@ function DashboardPage() {
                         <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
                           <Pencil className="size-4" />
                         </IconBtn>
-                        <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.id, c.nome)}>
+                        <IconBtn title="Visualizar QR Code" onClick={() => openQrView(c)}>
                           <QrCode className="size-4" />
                         </IconBtn>
+                        <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.id, c.nome)}>
+                          <Download className="size-4" />
+                        </IconBtn>
+
                         {isSuperAdmin && (
                           <IconBtn title="Excluir" danger onClick={() => setToDelete(c)}>
                             <Trash2 className="size-4" />
@@ -196,7 +216,35 @@ function DashboardPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!qrView} onOpenChange={(o) => !o && setQrView(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>QR Code — {qrView?.c.nome}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-2">
+            {qrView?.dataUrl ? (
+              <img src={qrView.dataUrl} alt={`QR Code ${qrView.c.nome}`} className="size-64 rounded-lg bg-white p-3" />
+            ) : (
+              <div className="flex size-64 items-center justify-center rounded-lg bg-[color:var(--surface-hover)]">
+                <Loader2 className="size-6 animate-spin text-[color:var(--text-muted)]" />
+              </div>
+            )}
+            <p className="break-all text-center text-xs text-[color:var(--text-muted)]">
+              {qrView && buildCardUrl(qrView.c.id)}
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => qrView && downloadQrPng(qrView.c.id, qrView.c.nome)}
+              disabled={!qrView?.dataUrl}
+            >
+              <Download className="size-4" /> Baixar PNG
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
 

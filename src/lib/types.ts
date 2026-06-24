@@ -229,11 +229,10 @@ export function decodePhone(raw: string | null | undefined): PhoneParts {
   return { ddi: "", ddd: "", number: d };
 }
 export function formatPhoneDisplay(raw: string | null | undefined): string {
-  const { ddi, ddd, number } = decodePhone(raw);
-  if (!ddi && !ddd && !number) return "";
+  const { ddd, number } = decodePhone(raw);
+  if (!ddd && !number) return "";
   const n = maskNumberOnly(number) || number;
   const parts: string[] = [];
-  if (ddi) parts.push(`+${ddi}`);
   if (ddd) parts.push(`(${ddd})`);
   if (n) parts.push(n);
   return parts.join(" ");
