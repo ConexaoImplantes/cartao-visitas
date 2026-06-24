@@ -189,13 +189,15 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               className="object-contain"
               style={{ width: inst.logoWidth, height: inst.logoHeight }}
             />
-            <div
-              className="text-xs leading-tight"
-              style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
-            >
-              <div className="font-semibold">{inst.nomeEmpresa}</div>
-              <div>{inst.endereco}</div>
-            </div>
+            {(inst.nomeEmpresaEnabled || inst.enderecoEnabled) && (
+              <div
+                className="text-xs leading-tight"
+                style={{ fontFamily: theme.typography.institucional.font, color: theme.typography.institucional.color }}
+              >
+                {inst.nomeEmpresaEnabled && <div className="font-semibold">{inst.nomeEmpresa}</div>}
+                {inst.enderecoEnabled && <div>{inst.endereco}</div>}
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap justify-end gap-3">
             {socials.map(({ key, Icon, href, enabled }) =>

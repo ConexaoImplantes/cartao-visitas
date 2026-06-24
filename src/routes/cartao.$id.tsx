@@ -45,6 +45,11 @@ function PublicCardPage() {
         return;
       }
       setState({ kind: "ready", c: cData as Collaborator, theme });
+      const empresa = theme.institucional.nomeEmpresa?.trim();
+      const consultor = (cData as Collaborator).nome?.trim();
+      if (typeof document !== "undefined") {
+        document.title = [empresa, consultor].filter(Boolean).join(" | ") || "Link Tree";
+      }
     })();
     return () => {
       alive = false;
