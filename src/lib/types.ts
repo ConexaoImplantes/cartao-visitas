@@ -161,7 +161,14 @@ export function normalizeTheme(input: unknown): ThemeConfig {
       contato: { ...DEFAULT_THEME.typography.contato, ...(t.typography?.contato ?? {}) },
       institucional: { ...DEFAULT_THEME.typography.institucional, ...(t.typography?.institucional ?? {}) },
     },
-    institucional: { ...DEFAULT_THEME.institucional, ...(t.institucional ?? {}) },
+    institucional: {
+      ...DEFAULT_THEME.institucional,
+      ...(t.institucional ?? {}),
+      socialColors: {
+        ...DEFAULT_THEME.institucional.socialColors,
+        ...((t.institucional as any)?.socialColors ?? {}),
+      },
+    },
   };
 }
 
