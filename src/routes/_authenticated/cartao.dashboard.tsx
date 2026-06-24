@@ -104,14 +104,16 @@ function DashboardPage() {
             Gerencie os cartões digitais e QR Codes dos colaboradores.
           </p>
         </div>
-        <Button
-          onClick={() => { setEditing(null); setModalOpen(true); }}
-          className="shrink-0 gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
-        >
-          <Plus className="size-4" />
-          <span className="hidden sm:inline">Novo Colaborador</span>
-          <span className="sm:hidden">Novo</span>
-        </Button>
+        {can("dashboard.create") && (
+          <Button
+            onClick={() => { setEditing(null); setModalOpen(true); }}
+            className="shrink-0 gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
+          >
+            <Plus className="size-4" />
+            <span className="hidden sm:inline">Novo Colaborador</span>
+            <span className="sm:hidden">Novo</span>
+          </Button>
+        )}
       </header>
 
       <div className="overflow-hidden rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)]">
@@ -157,7 +159,11 @@ function DashboardPage() {
                     <td className="hidden p-4 text-[color:var(--text-muted)] lg:table-cell">{c.email}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        <Switch checked={c.status === "ativo"} onCheckedChange={() => toggleStatus(c)} />
+                        <Switch
+                          checked={c.status === "ativo"}
+                          onCheckedChange={() => toggleStatus(c)}
+                          disabled={!can("dashboard.toggle_status")}
+                        />
                         <span
                           className="rounded-full px-2 py-0.5 text-xs font-medium"
                           style={{
@@ -171,22 +177,29 @@ function DashboardPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-1">
-                        <IconBtn title="Visualizar Link Tree" asChild>
-                          <a href={buildCardUrl(c.id)} target="_blank" rel="noreferrer">
-                            <ExternalLink className="size-4" />
-                          </a>
-                        </IconBtn>
-                        <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
-                          <Pencil className="size-4" />
-                        </IconBtn>
-                        <IconBtn title="Visualizar QR Code" onClick={() => openQrView(c)}>
-                          <QrCode className="size-4" />
-                        </IconBtn>
-                        <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.id, c.nome)}>
-                          <Download className="size-4" />
-                        </IconBtn>
-
-                        {isSuperAdmin && (
+                        {can("dashboard.view_link") && (
+                          <IconBtn title="Visualizar Link Tree" asChild>
+                            <a href={buildCardUrl(c.id)} target="_blank" rel="noreferrer">
+                              <ExternalLink className="size-4" />
+                            </a>
+                          </IconBtn>
+                        )}
+                        {can("dashboard.edit") && (
+                          <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
+                            <Pencil className="size-4" />
+                          </IconBtn>
+                        )}
+                        {can("dashboard.view_qr") && (
+                          <IconBtn title="Visualizar QR Code" onClick={() => openQrView(c)}>
+                            <QrCode className="size-4" />
+                          </IconBtn>
+                        )}
+                        {can("dashboard.download_qr") && (
+                          <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.id, c.nome)}>
+                            <Download className="size-4" />
+                          </IconBtn>
+                        )}
+                        {can("dashboard.delete") && (
                           <IconBtn title="Excluir" danger onClick={() => setToDelete(c)}>
                             <Trash2 className="size-4" />
                           </IconBtn>
