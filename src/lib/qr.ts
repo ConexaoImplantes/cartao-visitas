@@ -5,14 +5,17 @@ export function buildCardUrl(id: string): string {
   return `${window.location.origin}/cartao/${id}`;
 }
 
-export async function downloadQrPng(id: string, name: string) {
-  const url = buildCardUrl(id);
-  const dataUrl = await QRCode.toDataURL(url, {
+export async function generateQrDataUrl(id: string): Promise<string> {
+  return QRCode.toDataURL(buildCardUrl(id), {
     width: 1024,
     margin: 2,
     color: { dark: "#0f172a", light: "#ffffff" },
     errorCorrectionLevel: "H",
   });
+}
+
+export async function downloadQrPng(id: string, name: string) {
+  const dataUrl = await generateQrDataUrl(id);
   const a = document.createElement("a");
   a.href = dataUrl;
   a.download = `qrcode-${slug(name)}.png`;
