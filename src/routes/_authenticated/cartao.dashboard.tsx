@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Eye, Trash2, Loader2, Download } from "lucide-react";
+import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2, Download, Share2 } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
+import { ShareDialog } from "@/components/share-dialog";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
 
 
@@ -35,6 +36,7 @@ function DashboardPage() {
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
   const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
+  const [sharing, setSharing] = useState<Collaborator | null>(null);
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
@@ -199,6 +201,11 @@ function DashboardPage() {
                             <Download className="size-4" />
                           </IconBtn>
                         )}
+                        {can("dashboard.share") && (
+                          <IconBtn title="Compartilhar com o colaborador" onClick={() => setSharing(c)}>
+                            <Share2 className="size-4" />
+                          </IconBtn>
+                        )}
                         {can("dashboard.delete") && (
                           <IconBtn title="Excluir" danger onClick={() => setToDelete(c)}>
                             <Trash2 className="size-4" />
@@ -220,6 +227,10 @@ function DashboardPage() {
         collaborator={editing}
         onSaved={load}
       />
+
+      <ShareDialog collaborator={sharing} onOpenChange={(o) => !o && setSharing(null)} />
+
+
 
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
