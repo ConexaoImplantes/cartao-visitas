@@ -48,6 +48,7 @@ function SettingsPage() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmPurge, setConfirmPurge] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [purging, setPurging] = useState(false);
 
   useEffect(() => {
