@@ -94,6 +94,11 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
   const logoSrc = inst.logoUrl || defaultLogo;
   const sc = inst.socialColors;
 
+  const track = (
+    type: "whatsapp" | "email" | "telefone" | "rede_social",
+    target?: string,
+  ) => trackClick(collaborator.id, collaborator.slug, type, target);
+
   const socials: Array<{ key: "instagram" | "linkedin" | "facebook" | "youtube"; Icon: typeof Instagram; href: string; enabled: boolean }> = [
     { key: "instagram", Icon: Instagram, href: inst.instagram, enabled: inst.instagramEnabled },
     { key: "linkedin", Icon: Linkedin, href: inst.linkedin, enabled: inst.linkedinEnabled },
