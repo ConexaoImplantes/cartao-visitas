@@ -35,6 +35,47 @@ export type Database = {
         }
         Relationships: []
       }
+      card_events: {
+        Row: {
+          collaborator_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          referrer: string | null
+          slug: string
+          target: string | null
+          user_agent_kind: string | null
+        }
+        Insert: {
+          collaborator_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          referrer?: string | null
+          slug: string
+          target?: string | null
+          user_agent_kind?: string | null
+        }
+        Update: {
+          collaborator_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          referrer?: string | null
+          slug?: string
+          target?: string | null
+          user_agent_kind?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_events_collaborator_id_fkey"
+            columns: ["collaborator_id"]
+            isOneToOne: false
+            referencedRelation: "collaborators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collaborators: {
         Row: {
           cargo: string
@@ -145,6 +186,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      card_event_stats: {
+        Args: { _since?: string }
+        Returns: {
+          clicks: number
+          collaborator_id: string
+          email: number
+          rede_social: number
+          telefone: number
+          views: number
+          whatsapp: number
+        }[]
+      }
       has_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean
