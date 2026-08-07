@@ -165,10 +165,17 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               label={waLabel}
               theme={theme}
               external
+              onClick={() => track("whatsapp", waDigits)}
             />
           )}
           {collaborator.email && (
-            <CtaButton href={`mailto:${collaborator.email}`} Icon={Mail} label={collaborator.email} theme={theme} />
+            <CtaButton
+              href={`mailto:${collaborator.email}`}
+              Icon={Mail}
+              label={collaborator.email}
+              theme={theme}
+              onClick={() => track("email", collaborator.email)}
+            />
           )}
           {telDigits && (
             <CtaButton
@@ -176,6 +183,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               Icon={Phone}
               label={telLabel}
               theme={theme}
+              onClick={() => track("telefone", telDigits)}
             />
           )}
           {inst.site && (
@@ -185,6 +193,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               label={inst.site}
               theme={theme}
               external
+              onClick={() => track("rede_social", "site")}
             />
           )}
         </div>
