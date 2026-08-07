@@ -127,17 +127,25 @@ export function mapRows(matrix: string[][]): { rows: ImportRow[]; missingHeaders
     else if (seenEmails.has(email)) errors.push("E-mail duplicado na planilha");
     else seenEmails.add(email);
 
-    if (!wDdd || wDdd.length !== 2) errors.push("DDD do WhatsApp inválido");
+    if (!wDdd || wDdd.length !== 2 || Number(wDdd) < 11) errors.push("DDD do WhatsApp inválido");
     if (wNum.length < 8 || wNum.length > 9) errors.push("Número do WhatsApp inválido");
+    if (wDdi.length < 1 || wDdi.length > 3) errors.push("DDI do WhatsApp inválido");
+    if (statusRaw && !["ativo", "inativo"].includes(statusRaw)) errors.push("Status deve ser ativo ou inativo");
+    if (tipoRaw && !["fixo", "ramal"].includes(tipoRaw)) errors.push("telefone_tipo deve ser fixo ou ramal");
     if (fotoUrl && !/^https?:\/\//i.test(fotoUrl)) errors.push("Foto deve ser uma URL http(s)");
 
     let telefone: string | null = null;
     if (tipo === "ramal") {
-      if (tNum) telefone = encodeTelefone({ kind: "ramal", ramal: tNum, phone: { ddi: "", ddd: "", number: "" } });
-    } else if (tNum) {
-      if (!tDdd || tDdd.length !== 2) errors.push("DDD do telefone inválido");
+      if (!tNum) errors.push("Ramal informado sem número");
+      else if (tNum.length > 6) errors.push("Ramal inválido");
+      else telefone = encodeTelefone({ kind: "ramal", ramal: tNum, phone: { ddi: "", ddd: "", number: "" } });
+    } else if (tNum || tDdd) {
+      if (!tDdd || tDdd.length !== 2 || Number(tDdd) < 11) errors.push("DDD do telefone inválido");
+      if (tNum.length < 8 || tNum.length > 9) errors.push("Número do telefone inválido");
+      if (tDdi.length < 1 || tDdi.length > 3) errors.push("DDI do telefone inválido");
       telefone = encodePhone({ ddi: tDdi, ddd: tDdd, number: tNum });
     }
+
 
     return {
       line: i + 2,
