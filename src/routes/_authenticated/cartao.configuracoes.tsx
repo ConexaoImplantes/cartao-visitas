@@ -102,19 +102,42 @@ function SettingsPage() {
   }
 
   async function exportCsv() {
-    const { data, error } = await supabase
-      .from("collaborators")
-      .select("nome,slug,cargo,email,whatsapp,telefone_fixo,status,created_at")
-      .order("nome");
+    const [{ data, error }, stats] = await Promise.all([
+      supabase
+        .from("collaborators")
+        .select("id,nome,slug,cargo,email,whatsapp,telefone_fixo,status,created_at")
+        .order("nome"),
+      fetchCardStats(null),
+    ]);
     if (error || !data) {
       toast.error("Falha ao exportar", { description: error?.message });
       return;
     }
-    const headers = ["nome", "slug", "cargo", "email", "whatsapp", "telefone_fixo", "status", "created_at"];
+    const headers = [
+      "nome",
+      "slug",
+      "cargo",
+      "email",
+      "whatsapp",
+      "telefone_fixo",
+      "status",
+      "created_at",
+      "visitas",
+      "cliques",
+    ];
     const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const csv = [
       headers.join(";"),
-      ...data.map((r) => headers.map((h) => escape((r as Record<string, unknown>)[h])).join(";")),
+      ...data.map((r) => {
+        const row = r as Record<string, unknown>;
+        const s = stats[String(row['id'])];
+        const withStats = {
+          ...row,
+          visitas: Number(s?.views ?? 0),
+          cliques: Number(s?.clicks ?? 0),
+        };
+        return headers.map((h) => escape(withStats[h])).join(";");
+      }),
     ].join("\n");
     const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
