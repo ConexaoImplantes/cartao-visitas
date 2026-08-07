@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut, LayoutDashboard, Palette, Users } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users, UploadCloud } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +38,9 @@ function AuthLayout() {
   const nav = [
     ...(can("dashboard.view")
       ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
+      : ([] as const)),
+    ...(can("dashboard.create")
+      ? ([{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] as const)
       : ([] as const)),
     ...(can("tema.view")
       ? ([{ to: "/cartao/tema", label: "Tema", icon: Palette }] as const)
