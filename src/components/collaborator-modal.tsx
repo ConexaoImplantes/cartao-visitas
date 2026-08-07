@@ -98,9 +98,16 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       toast.error("Informe o ramal");
       return;
     }
+    const finalSlug = slugify(slug || nome);
+    const slugError = validateSlug(finalSlug);
+    if (slugError) {
+      toast.error(slugError);
+      return;
+    }
     setSaving(true);
     const payload = {
       ...parsed.data,
+      slug: finalSlug,
       whatsapp: encodePhone(whats),
       telefone_fixo:
         encodeTelefone({ kind: telKind, phone: telFixo, ramal }) || null,
@@ -111,9 +118,14 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       : await supabase.from("collaborators").insert(payload);
     setSaving(false);
     if (error) {
-      toast.error("Não foi possível salvar", { description: error.message });
+      const duplicate = error.code === "23505" || /duplicate key|unique/i.test(error.message);
+      toast.error(
+        duplicate ? "Este apelido de link já está em uso" : "Não foi possível salvar",
+        { description: duplicate ? `Tente outro no lugar de "${finalSlug}"` : error.message },
+      );
       return;
     }
+
     toast.success(editing ? "Colaborador atualizado" : "Link Tree gerado com sucesso");
     onSaved();
     onOpenChange(false);
