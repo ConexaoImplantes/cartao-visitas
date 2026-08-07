@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeTheme, type Collaborator, type ThemeConfig } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
+import { trackView } from "@/lib/analytics";
 
 export const Route = createFileRoute("/$slug")({
   ssr: false,
@@ -43,6 +44,7 @@ function PublicCardPage() {
         return;
       }
       setState({ kind: "ready", c: cData as Collaborator, theme });
+      void trackView((cData as Collaborator).id, slug);
       const empresa = theme.institucional.nomeEmpresa?.trim();
       const consultor = (cData as Collaborator).nome?.trim();
       if (typeof document !== "undefined") {

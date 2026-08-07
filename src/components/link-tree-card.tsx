@@ -1,5 +1,6 @@
 import type { Collaborator, ThemeConfig, BlobPosition } from "@/lib/types";
 import { decodeTelefone, formatPhoneDisplay, phoneDigits, maskNumberOnly } from "@/lib/types";
+import { trackClick } from "@/lib/analytics";
 import defaultLogo from "@/assets/logo-conexao.png";
 import {
   MessageCircle,
@@ -48,16 +49,19 @@ function CtaButton({
   label,
   theme,
   external,
+  onClick,
 }: {
   href: string;
   Icon: React.ComponentType<{ size?: number; color?: string }>;
   label: string;
   theme: ThemeConfig;
   external?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <a
       href={href}
+      onClick={onClick}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
       className="group flex w-full items-center gap-4 rounded-2xl bg-white/8 px-4 py-3 backdrop-blur transition hover:bg-white/12 active:scale-[0.99]"
@@ -89,6 +93,11 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
   const inst = theme.institucional;
   const logoSrc = inst.logoUrl || defaultLogo;
   const sc = inst.socialColors;
+
+  const track = (
+    type: "whatsapp" | "email" | "telefone" | "rede_social",
+    target?: string,
+  ) => trackClick(collaborator.id, collaborator.slug, type, target);
 
   const socials: Array<{ key: "instagram" | "linkedin" | "facebook" | "youtube"; Icon: typeof Instagram; href: string; enabled: boolean }> = [
     { key: "instagram", Icon: Instagram, href: inst.instagram, enabled: inst.instagramEnabled },
@@ -161,10 +170,17 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               label={waLabel}
               theme={theme}
               external
+              onClick={() => track("whatsapp", waDigits)}
             />
           )}
           {collaborator.email && (
-            <CtaButton href={`mailto:${collaborator.email}`} Icon={Mail} label={collaborator.email} theme={theme} />
+            <CtaButton
+              href={`mailto:${collaborator.email}`}
+              Icon={Mail}
+              label={collaborator.email}
+              theme={theme}
+              onClick={() => track("email", collaborator.email)}
+            />
           )}
           {telDigits && (
             <CtaButton
@@ -172,6 +188,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               Icon={Phone}
               label={telLabel}
               theme={theme}
+              onClick={() => track("telefone", telDigits)}
             />
           )}
           {inst.site && (
@@ -181,6 +198,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
               label={inst.site}
               theme={theme}
               external
+              onClick={() => track("rede_social", "site")}
             />
           )}
         </div>
@@ -214,6 +232,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={key}
+                  onClick={() => track("rede_social", key)}
                   className="grid place-items-center rounded-full bg-white/8 transition active:scale-95"
                   style={{ width: inst.socialIconSize + 20, height: inst.socialIconSize + 20 }}
                 >

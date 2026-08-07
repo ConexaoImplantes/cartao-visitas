@@ -22,6 +22,14 @@ import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+import { fetchCardStats, type CardStats } from "@/lib/analytics";
+
+const PERIODS: Array<{ label: string; days: number | null }> = [
+  { label: "7 dias", days: 7 },
+  { label: "30 dias", days: 30 },
+  { label: "90 dias", days: 90 },
+  { label: "Total", days: null },
+];
 
 
 export const Route = createFileRoute("/_authenticated/cartao/dashboard")({
@@ -37,6 +45,8 @@ function DashboardPage() {
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
   const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
   const [sharing, setSharing] = useState<Collaborator | null>(null);
+  const [period, setPeriod] = useState<number | null>(30);
+  const [stats, setStats] = useState<Record<string, CardStats>>({});
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
@@ -72,6 +82,22 @@ function DashboardPage() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    if (permLoading || !can("dashboard.view")) return;
+    fetchCardStats(period).then(setStats);
+  }, [period, permLoading, can]);
+
+  const totals = Object.values(stats).reduce(
+    (acc, s) => ({
+      views: acc.views + Number(s.views ?? 0),
+      clicks: acc.clicks + Number(s.clicks ?? 0),
+      whatsapp: acc.whatsapp + Number(s.whatsapp ?? 0),
+      email: acc.email + Number(s.email ?? 0),
+      telefone: acc.telefone + Number(s.telefone ?? 0),
+    }),
+    { views: 0, clicks: 0, whatsapp: 0, email: 0, telefone: 0 },
+  );
 
   async function toggleStatus(c: Collaborator) {
     const next = c.status === "ativo" ? "inativo" : "ativo";
@@ -118,6 +144,33 @@ function DashboardPage() {
         )}
       </header>
 
+      <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-4">
+        <div className="flex flex-wrap gap-6">
+          <Metric label="Visitas" value={totals.views} />
+          <Metric label="Cliques" value={totals.clicks} />
+          <Metric label="WhatsApp" value={totals.whatsapp} />
+          <Metric label="E-mail" value={totals.email} />
+          <Metric label="Telefone" value={totals.telefone} />
+        </div>
+        <div className="flex gap-1 rounded-lg bg-[color:var(--surface-hover)] p-1">
+          {PERIODS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => setPeriod(p.days)}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                period === p.days
+                  ? "bg-[color:var(--accent)] text-[color:var(--text-inverted)]"
+                  : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+
+
       <div className="overflow-hidden rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)]">
         {rows === null ? (
           <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]">
@@ -135,6 +188,7 @@ function DashboardPage() {
                   <th className="p-4">Colaborador</th>
                   <th className="hidden p-4 md:table-cell">Cargo</th>
                   <th className="hidden p-4 lg:table-cell">E-mail</th>
+                  <th className="p-4">Métricas</th>
                   <th className="p-4">Status</th>
                   <th className="p-4 text-right">Ações</th>
                 </tr>
@@ -159,6 +213,16 @@ function DashboardPage() {
                     </td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] md:table-cell">{c.cargo}</td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] lg:table-cell">{c.email}</td>
+                    <td className="whitespace-nowrap p-4 text-xs text-[color:var(--text-muted)]">
+                      <span className="font-semibold text-[color:var(--text-main)]">
+                        {Number(stats[c.id]?.views ?? 0)}
+                      </span>{" "}
+                      visitas ·{" "}
+                      <span className="font-semibold text-[color:var(--text-main)]">
+                        {Number(stats[c.id]?.clicks ?? 0)}
+                      </span>{" "}
+                      cliques
+                    </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <Switch
@@ -277,6 +341,15 @@ function DashboardPage() {
       </Dialog>
     </div>
 
+  );
+}
+
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">{label}</div>
+      <div className="font-display text-2xl font-bold text-[color:var(--text-main)]">{value}</div>
+    </div>
   );
 }
 

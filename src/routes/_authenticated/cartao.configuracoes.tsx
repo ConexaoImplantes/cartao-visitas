@@ -27,6 +27,7 @@ import {
   type AppSettings,
 } from "@/lib/settings";
 import { compressImageContain } from "@/lib/image-utils";
+import { fetchCardStats } from "@/lib/analytics";
 
 export const Route = createFileRoute("/_authenticated/cartao/configuracoes")({
   head: () => ({
@@ -47,6 +48,7 @@ function SettingsPage() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmPurge, setConfirmPurge] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [purging, setPurging] = useState(false);
 
   useEffect(() => {
@@ -102,19 +104,42 @@ function SettingsPage() {
   }
 
   async function exportCsv() {
-    const { data, error } = await supabase
-      .from("collaborators")
-      .select("nome,slug,cargo,email,whatsapp,telefone_fixo,status,created_at")
-      .order("nome");
+    const [{ data, error }, stats] = await Promise.all([
+      supabase
+        .from("collaborators")
+        .select("id,nome,slug,cargo,email,whatsapp,telefone_fixo,status,created_at")
+        .order("nome"),
+      fetchCardStats(null),
+    ]);
     if (error || !data) {
       toast.error("Falha ao exportar", { description: error?.message });
       return;
     }
-    const headers = ["nome", "slug", "cargo", "email", "whatsapp", "telefone_fixo", "status", "created_at"];
+    const headers = [
+      "nome",
+      "slug",
+      "cargo",
+      "email",
+      "whatsapp",
+      "telefone_fixo",
+      "status",
+      "created_at",
+      "visitas",
+      "cliques",
+    ];
     const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const csv = [
       headers.join(";"),
-      ...data.map((r) => headers.map((h) => escape((r as Record<string, unknown>)[h])).join(";")),
+      ...data.map((r: Record<string, unknown>) => {
+        const row = r as Record<string, unknown>;
+        const s = stats[String(row['id'])];
+        const withStats: Record<string, unknown> = {
+          ...row,
+          visitas: Number(s?.views ?? 0),
+          cliques: Number(s?.clicks ?? 0),
+        };
+        return headers.map((h) => escape(withStats[h])).join(";");
+      }),
     ].join("\n");
     const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
@@ -148,7 +173,13 @@ function SettingsPage() {
     );
   }
 
-  const previewBase = normalizeBaseUrl(settings.publico.baseUrl) || "(domínio atual)";
+  const previewBaseUrl = normalizeBaseUrl(settings.publico.baseUrl);
+  const previewBase = previewBaseUrl || "(domínio atual)";
+  const rawDomain = settings.publico.baseUrl.trim();
+  const domainInvalid =
+    !!rawDomain && !/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+\/?$/i.test(rawDomain);
+  const currentOrigin = typeof window !== "undefined" ? window.location.origin : "";
+  const domainMismatch = !!previewBaseUrl && !!currentOrigin && previewBaseUrl !== currentOrigin;
 
   return (
     <div className="space-y-6">
@@ -180,6 +211,32 @@ function SettingsPage() {
             Exemplo do link gerado: <strong>{previewBase}/nome-do-consultor</strong>. Deixe vazio para usar o
             domínio de onde o sistema está aberto.
           </p>
+          {domainInvalid && (
+            <p className="mt-1 text-xs text-[color:var(--error)]">
+              Domínio inválido. Use o formato <strong>cartao.suaempresa.com.br</strong>, sem barras ou espaços.
+            </p>
+          )}
+          {!domainInvalid && domainMismatch && (
+            <p className="mt-1 text-xs text-[color:var(--warning)]">
+              Este domínio é diferente de onde o sistema está aberto ({currentOrigin}). Ele só funcionará
+              depois que o subdomínio estiver conectado e validado.
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={domainInvalid}
+              onClick={() => window.open(`${previewBaseUrl}/exemplo`, "_blank", "noopener,noreferrer")}
+            >
+              Testar link
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setShowGuide((v) => !v)}>
+              {showGuide ? "Ocultar" : "Ver"} passo a passo (Locaweb)
+            </Button>
+          </div>
+          {showGuide && <LocawebGuide />}
         </Field>
         <Field label="Apelidos reservados (separados por vírgula)">
           <Input
@@ -322,6 +379,34 @@ function SettingsPage() {
     </div>
   );
 }
+
+function LocawebGuide() {
+  const steps = [
+    "No painel da Locaweb, abra Domínios > seu domínio > Zona DNS (Editar DNS).",
+    "Crie um registro do tipo A com o nome 'cartao' (ou o subdomínio desejado) apontando para 185.158.133.1.",
+    "Crie um registro TXT com o nome '_lovable' e o valor de verificação exibido em Configurações do projeto > Domínios.",
+    "Salve as alterações na Locaweb e volte ao Lovable: Configurações do projeto > Domínios > Conectar domínio, informando cartao.suaempresa.com.br.",
+    "Aguarde a propagação do DNS (normalmente de 15 minutos a algumas horas, podendo chegar a 72h) até o status ficar Ativo com SSL emitido.",
+    "Com o domínio ativo, preencha aqui o campo Domínio base com cartao.suaempresa.com.br e salve — links e QR Codes passam a usar o novo endereço.",
+  ];
+  return (
+    <ol className="mt-3 space-y-2 rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface-hover)] p-4 text-xs text-[color:var(--text-muted)]">
+      {steps.map((s, i) => (
+        <li key={i} className="flex gap-2">
+          <span className="grid size-5 shrink-0 place-items-center rounded-full bg-[color:var(--accent)] text-[10px] font-bold text-[color:var(--text-inverted)]">
+            {i + 1}
+          </span>
+          <span>{s}</span>
+        </li>
+      ))}
+      <li className="pt-1 text-[color:var(--text-main)]">
+        Dica: QR Codes já impressos com o domínio antigo continuam funcionando enquanto o endereço anterior
+        estiver ativo — gere novos QR Codes após a troca.
+      </li>
+    </ol>
+  );
+}
+
 
 function Section({
   icon: Icon,
