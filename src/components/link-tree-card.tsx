@@ -1,5 +1,6 @@
 import type { Collaborator, ThemeConfig, BlobPosition } from "@/lib/types";
 import { decodeTelefone, formatPhoneDisplay, phoneDigits, maskNumberOnly } from "@/lib/types";
+import { trackClick } from "@/lib/analytics";
 import defaultLogo from "@/assets/logo-conexao.png";
 import {
   MessageCircle,
