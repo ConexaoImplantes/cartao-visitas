@@ -204,6 +204,32 @@ function SettingsPage() {
             Exemplo do link gerado: <strong>{previewBase}/nome-do-consultor</strong>. Deixe vazio para usar o
             domínio de onde o sistema está aberto.
           </p>
+          {domainInvalid && (
+            <p className="mt-1 text-xs text-[color:var(--error)]">
+              Domínio inválido. Use o formato <strong>cartao.suaempresa.com.br</strong>, sem barras ou espaços.
+            </p>
+          )}
+          {!domainInvalid && domainMismatch && (
+            <p className="mt-1 text-xs text-[color:var(--warning)]">
+              Este domínio é diferente de onde o sistema está aberto ({currentOrigin}). Ele só funcionará
+              depois que o subdomínio estiver conectado e validado.
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={domainInvalid}
+              onClick={() => window.open(`${previewBaseUrl}/exemplo`, "_blank", "noopener,noreferrer")}
+            >
+              Testar link
+            </Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setShowGuide((v) => !v)}>
+              {showGuide ? "Ocultar" : "Ver"} passo a passo (Locaweb)
+            </Button>
+          </div>
+          {showGuide && <LocawebGuide />}
         </Field>
         <Field label="Apelidos reservados (separados por vírgula)">
           <Input
