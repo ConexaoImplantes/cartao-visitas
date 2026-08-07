@@ -133,6 +133,33 @@ function DashboardPage() {
         )}
       </header>
 
+      <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-4">
+        <div className="flex flex-wrap gap-6">
+          <Metric label="Visitas" value={totals.views} />
+          <Metric label="Cliques" value={totals.clicks} />
+          <Metric label="WhatsApp" value={totals.whatsapp} />
+          <Metric label="E-mail" value={totals.email} />
+          <Metric label="Telefone" value={totals.telefone} />
+        </div>
+        <div className="flex gap-1 rounded-lg bg-[color:var(--surface-hover)] p-1">
+          {PERIODS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => setPeriod(p.days)}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                period === p.days
+                  ? "bg-[color:var(--accent)] text-[color:var(--text-inverted)]"
+                  : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+
+
       <div className="overflow-hidden rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)]">
         {rows === null ? (
           <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]">
