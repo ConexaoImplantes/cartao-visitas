@@ -2,6 +2,7 @@ export type CollaboratorStatus = "ativo" | "inativo";
 
 export interface Collaborator {
   id: string;
+  slug: string;
   nome: string;
   cargo: string;
   email: string;
