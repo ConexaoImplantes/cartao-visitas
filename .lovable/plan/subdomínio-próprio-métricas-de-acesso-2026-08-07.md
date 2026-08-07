@@ -12,6 +12,7 @@ Nada a programar: o app já tem o campo "Domínio base" em Configurações, que 
 4. Em **/cartao/configuracoes**, preencher o Domínio base com esse subdomínio. A partir daí todos os links e QR Codes já saem curtos.
 
 Melhoria no app para apoiar isso:
+
 - Na tela de Configurações, validar o domínio informado (formato) e mostrar um aviso quando ele for diferente do domínio em que o sistema está aberto, com um botão "Testar link" que abre um exemplo.
 
 ## Parte 2 — Registro de acessos e cliques
@@ -19,17 +20,22 @@ Melhoria no app para apoiar isso:
 Nova tabela `card_events` guardando: cartão (id + slug), tipo do evento (`view`, `whatsapp`, `email`, `telefone`, `rede_social`), rótulo do alvo, data/hora, referenciador e origem (dispositivo). Sem dados pessoais do visitante.
 
 Regras de acesso:
+
 - Visitantes anônimos podem apenas **inserir** eventos (nunca ler).
 - Somente usuários autenticados com permissão de dashboard podem ler.
 
 Comportamento:
+
 - A página pública registra um `view` ao abrir o cartão (uma vez por sessão do navegador, para não inflar números em recarregamentos).
 - Cada botão (WhatsApp, e-mail, telefone, redes sociais) registra o clique antes de redirecionar; falha no registro nunca bloqueia o redirecionamento.
 
 Onde aparecem as métricas:
+
 - **Dashboard**: colunas/indicadores de visitas e cliques por colaborador, com filtro de período (7 / 30 / 90 dias / total).
 - **Modal de compartilhamento**: resumo do cartão (visitas, cliques por canal).
-- Exportação CSV das configurações passa a incluir totais de visitas e cliques.
+- Exportação CSV das configurações passa a incluir totais de visitas e cliques.  
+  
+GERE O PASSO A PASSO COMPLETO DE CONFIGURAÇÃO DO SUBDOMÍNIO LOCAWEB
 
 ## Detalhes técnicos
 
