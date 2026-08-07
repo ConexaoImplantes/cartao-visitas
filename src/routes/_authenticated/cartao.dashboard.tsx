@@ -201,6 +201,11 @@ function DashboardPage() {
                             <Download className="size-4" />
                           </IconBtn>
                         )}
+                        {can("dashboard.share") && (
+                          <IconBtn title="Compartilhar com o colaborador" onClick={() => setSharing(c)}>
+                            <Share2 className="size-4" />
+                          </IconBtn>
+                        )}
                         {can("dashboard.delete") && (
                           <IconBtn title="Excluir" danger onClick={() => setToDelete(c)}>
                             <Trash2 className="size-4" />
