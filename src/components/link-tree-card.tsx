@@ -232,6 +232,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={key}
+                  onClick={() => track("rede_social", key)}
                   className="grid place-items-center rounded-full bg-white/8 transition active:scale-95"
                   style={{ width: inst.socialIconSize + 20, height: inst.socialIconSize + 20 }}
                 >
