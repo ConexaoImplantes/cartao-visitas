@@ -172,7 +172,13 @@ function SettingsPage() {
     );
   }
 
-  const previewBase = normalizeBaseUrl(settings.publico.baseUrl) || "(domínio atual)";
+  const previewBaseUrl = normalizeBaseUrl(settings.publico.baseUrl);
+  const previewBase = previewBaseUrl || "(domínio atual)";
+  const rawDomain = settings.publico.baseUrl.trim();
+  const domainInvalid =
+    !!rawDomain && !/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+\/?$/i.test(rawDomain);
+  const currentOrigin = typeof window !== "undefined" ? window.location.origin : "";
+  const domainMismatch = !!previewBaseUrl && !!currentOrigin && previewBaseUrl !== currentOrigin;
 
   return (
     <div className="space-y-6">
