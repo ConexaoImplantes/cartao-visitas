@@ -48,16 +48,19 @@ function CtaButton({
   label,
   theme,
   external,
+  onClick,
 }: {
   href: string;
   Icon: React.ComponentType<{ size?: number; color?: string }>;
   label: string;
   theme: ThemeConfig;
   external?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <a
       href={href}
+      onClick={onClick}
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
       className="group flex w-full items-center gap-4 rounded-2xl bg-white/8 px-4 py-3 backdrop-blur transition hover:bg-white/12 active:scale-[0.99]"
