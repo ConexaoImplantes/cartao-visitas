@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
+import { ShareDialog } from "@/components/share-dialog";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
 
 
