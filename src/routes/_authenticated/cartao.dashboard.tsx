@@ -188,6 +188,7 @@ function DashboardPage() {
                   <th className="p-4">Colaborador</th>
                   <th className="hidden p-4 md:table-cell">Cargo</th>
                   <th className="hidden p-4 lg:table-cell">E-mail</th>
+                  <th className="p-4">Métricas</th>
                   <th className="p-4">Status</th>
                   <th className="p-4 text-right">Ações</th>
                 </tr>
