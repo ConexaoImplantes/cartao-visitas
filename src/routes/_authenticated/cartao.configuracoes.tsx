@@ -26,7 +26,7 @@ import {
   saveSettings,
   type AppSettings,
 } from "@/lib/settings";
-import { fileToDataUrl } from "@/lib/image-utils";
+import { compressImageContain } from "@/lib/image-utils";
 
 export const Route = createFileRoute("/_authenticated/cartao/configuracoes")({
   head: () => ({
@@ -94,7 +94,7 @@ function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const dataUrl = await fileToDataUrl(file);
+      const dataUrl = await compressImageContain(file, 512);
       patch("marca", { logoUrl: dataUrl });
     } catch {
       toast.error("Não foi possível carregar a imagem");
