@@ -7,6 +7,7 @@ export type PermissionKey =
   | "dashboard.download_qr"
   | "dashboard.view_qr"
   | "dashboard.view_link"
+  | "dashboard.share"
   | "tema.view"
   | "tema.edit";
 
