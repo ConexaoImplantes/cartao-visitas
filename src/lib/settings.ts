@@ -45,6 +45,12 @@ export function normalizeSettings(raw: unknown): AppSettings {
 
 /** Cache em memória para que geradores de link/QR usem o domínio configurado. */
 let cachedBaseUrl = "";
+let cachedSettings: AppSettings = DEFAULT_SETTINGS;
+
+/** Configurações já carregadas (padrões enquanto o fetch não conclui). */
+export function getCachedSettings(): AppSettings {
+  return cachedSettings;
+}
 
 export function getPublicBaseUrl(): string {
   if (cachedBaseUrl) return cachedBaseUrl;
@@ -65,6 +71,7 @@ export function normalizeBaseUrl(url: string): string {
 export async function fetchSettings(): Promise<AppSettings> {
   const { data } = await supabase.from("app_settings").select("config").eq("id", "global").maybeSingle();
   const settings = normalizeSettings(data?.config);
+  cachedSettings = settings;
   setPublicBaseUrl(settings.publico.baseUrl);
   return settings;
 }
@@ -74,6 +81,9 @@ export async function saveSettings(settings: AppSettings) {
   const { error } = await supabase
     .from("app_settings")
     .upsert({ id: "global", config: settings as never, updated_by: auth.user?.id ?? null });
-  if (!error) setPublicBaseUrl(settings.publico.baseUrl);
+  if (!error) {
+    cachedSettings = settings;
+    setPublicBaseUrl(settings.publico.baseUrl);
+  }
   return error;
 }

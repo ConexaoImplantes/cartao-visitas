@@ -31,13 +31,13 @@ export function slugify(input: string): string {
 }
 
 /** Retorna mensagem de erro ou null quando o slug é válido. */
-export function validateSlug(slug: string): string | null {
+export function validateSlug(slug: string, extraReserved: string[] = []): string | null {
   if (!slug) return "Informe o apelido do link";
   if (slug.length < 3) return "Apelido muito curto (mín. 3 caracteres)";
   if (slug.length > 60) return "Apelido muito longo (máx. 60 caracteres)";
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))
     return "Use apenas letras minúsculas, números e hífens";
-  if (RESERVED_SLUGS.has(slug) || slug.startsWith("_"))
+  if (RESERVED_SLUGS.has(slug) || extraReserved.includes(slug) || slug.startsWith("_"))
     return "Este apelido é reservado pelo sistema";
   return null;
 }
