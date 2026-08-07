@@ -88,6 +88,17 @@ function DashboardPage() {
     fetchCardStats(period).then(setStats);
   }, [period, permLoading, can]);
 
+  const totals = Object.values(stats).reduce(
+    (acc, s) => ({
+      views: acc.views + Number(s.views ?? 0),
+      clicks: acc.clicks + Number(s.clicks ?? 0),
+      whatsapp: acc.whatsapp + Number(s.whatsapp ?? 0),
+      email: acc.email + Number(s.email ?? 0),
+      telefone: acc.telefone + Number(s.telefone ?? 0),
+    }),
+    { views: 0, clicks: 0, whatsapp: 0, email: 0, telefone: 0 },
+  );
+
   async function toggleStatus(c: Collaborator) {
     const next = c.status === "ativo" ? "inativo" : "ativo";
     const { error } = await supabase.from("collaborators").update({ status: next }).eq("id", c.id);
