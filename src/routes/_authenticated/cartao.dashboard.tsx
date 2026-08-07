@@ -48,7 +48,7 @@ function DashboardPage() {
   async function openQrView(c: Collaborator) {
     setQrView({ c, dataUrl: null });
     try {
-      const dataUrl = await generateQrDataUrl(c.id);
+      const dataUrl = await generateQrDataUrl(c.slug);
       setQrView({ c, dataUrl });
     } catch {
       toast.error("Falha ao gerar QR Code");
@@ -181,7 +181,7 @@ function DashboardPage() {
                       <div className="flex items-center justify-end gap-1">
                         {can("dashboard.view_link") && (
                           <IconBtn title="Visualizar Link Tree" asChild>
-                            <a href={buildCardUrl(c.id)} target="_blank" rel="noreferrer">
+                            <a href={buildCardUrl(c.slug)} target="_blank" rel="noreferrer">
                               <ExternalLink className="size-4" />
                             </a>
                           </IconBtn>
@@ -197,7 +197,7 @@ function DashboardPage() {
                           </IconBtn>
                         )}
                         {can("dashboard.download_qr") && (
-                          <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.id, c.nome)}>
+                          <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.slug, c.nome)}>
                             <Download className="size-4" />
                           </IconBtn>
                         )}
@@ -263,11 +263,11 @@ function DashboardPage() {
               </div>
             )}
             <p className="break-all text-center text-xs text-[color:var(--text-muted)]">
-              {qrView && buildCardUrl(qrView.c.id)}
+              {qrView && buildCardUrl(qrView.c.slug)}
             </p>
             <Button
               variant="outline"
-              onClick={() => qrView && downloadQrPng(qrView.c.id, qrView.c.nome)}
+              onClick={() => qrView && downloadQrPng(qrView.c.slug, qrView.c.nome)}
               disabled={!qrView?.dataUrl}
             >
               <Download className="size-4" /> Baixar PNG

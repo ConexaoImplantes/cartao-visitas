@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import { CSV_TEMPLATE, CSV_HEADERS, parseCsv, mapRows, type ImportRow } from "@/lib/csv-import";
+import { uniqueSlug } from "@/lib/slug";
 
 export const Route = createFileRoute("/_authenticated/cartao/importar")({
   head: () => ({
@@ -93,13 +94,23 @@ function ImportPage() {
     const { data: auth } = await supabase.auth.getUser();
     const createdBy = auth.user?.id ?? null;
 
+    const { data: existingSlugs } = await supabase.from("collaborators").select("slug");
+    const taken = new Set((existingSlugs ?? []).map((s) => s.slug as string));
+    const slugByLine = new Map<number, string>();
+    for (const r of valid) {
+      const s = uniqueSlug(r.nome, taken);
+      taken.add(s);
+      slugByLine.set(r.line, s);
+    }
+
     let created = 0;
     const failed: { line: number; message: string }[] = [];
 
     for (let i = 0; i < valid.length; i += 25) {
       const chunk = valid.slice(i, i + 25);
-      const payload = chunk.map((r) => ({
+      const toRow = (r: (typeof valid)[number]) => ({
         nome: r.nome,
+        slug: slugByLine.get(r.line)!,
         cargo: r.cargo,
         email: r.email,
         whatsapp: r.whatsapp,
@@ -107,28 +118,20 @@ function ImportPage() {
         foto_url: r.foto_url,
         status: r.status,
         created_by: createdBy,
-      }));
-      const { error } = await supabase.from("collaborators").insert(payload);
+      });
+      const { error } = await supabase.from("collaborators").insert(chunk.map(toRow));
       if (!error) {
         created += chunk.length;
         continue;
       }
       // Fallback linha a linha para identificar exatamente o que falhou
       for (const r of chunk) {
-        const { error: rowError } = await supabase.from("collaborators").insert({
-          nome: r.nome,
-          cargo: r.cargo,
-          email: r.email,
-          whatsapp: r.whatsapp,
-          telefone_fixo: r.telefone_fixo,
-          foto_url: r.foto_url,
-          status: r.status,
-          created_by: createdBy,
-        });
+        const { error: rowError } = await supabase.from("collaborators").insert(toRow(r));
         if (rowError) failed.push({ line: r.line, message: rowError.message });
         else created += 1;
       }
     }
+
 
     setImporting(false);
     setResult({ created, failed });

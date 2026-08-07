@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeTheme, type Collaborator, type ThemeConfig } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
 
-export const Route = createFileRoute("/cartao/$id")({
+export const Route = createFileRoute("/$slug")({
   ssr: false,
   component: PublicCardPage,
   notFoundComponent: () => (
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/cartao/$id")({
 });
 
 function PublicCardPage() {
-  const { id } = Route.useParams();
+  const { slug } = Route.useParams();
   const [state, setState] = useState<
     | { kind: "loading" }
     | { kind: "ready"; c: Collaborator; theme: ThemeConfig }
@@ -29,14 +29,12 @@ function PublicCardPage() {
     let alive = true;
     (async () => {
       const [{ data: cData }, { data: tData }] = await Promise.all([
-        supabase.from("collaborators").select("*").eq("id", id).maybeSingle(),
+        supabase.from("collaborators").select("*").eq("slug", slug).maybeSingle(),
         supabase.from("theme_config").select("config").eq("id", "global").maybeSingle(),
       ]);
       if (!alive) return;
       const theme: ThemeConfig = normalizeTheme(tData?.config);
       if (!cData) {
-        // Could be missing OR inactive (anon RLS hides inactive). Treat as missing/inactive.
-        // Try again as a generic select to distinguish — anon won't return inactive.
         setState({ kind: "missing" });
         return;
       }
@@ -54,7 +52,7 @@ function PublicCardPage() {
     return () => {
       alive = false;
     };
-  }, [id]);
+  }, [slug]);
 
   if (state.kind === "loading") {
     return (

@@ -9,6 +9,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
+import { slugify, validateSlug } from "@/lib/slug";
 import {
   decodePhone,
   decodeTelefone,
@@ -36,6 +37,8 @@ const EMPTY_PHONE: PhoneParts = { ddi: "55", ddd: "", number: "" };
 export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }: Props) {
   const editing = !!collaborator;
   const [nome, setNome] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugTouched, setSlugTouched] = useState(false);
   const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
   const [foto, setFoto] = useState<string | null>("");
@@ -48,6 +51,8 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
   useEffect(() => {
     if (!open) return;
     setNome(collaborator?.nome ?? "");
+    setSlug(collaborator?.slug ?? "");
+    setSlugTouched(!!collaborator);
     setCargo(collaborator?.cargo ?? "");
     setEmail(collaborator?.email ?? "");
     setFoto(collaborator?.foto_url ?? "");
@@ -58,6 +63,12 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     setTelFixo({ ddi: t.phone.ddi || "55", ddd: t.phone.ddd, number: t.phone.number });
     setRamal(t.ramal);
   }, [open, collaborator]);
+
+  function handleNome(v: string) {
+    setNome(v);
+    if (!slugTouched) setSlug(slugify(v));
+  }
+
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -88,9 +99,16 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       toast.error("Informe o ramal");
       return;
     }
+    const finalSlug = slugify(slug || nome);
+    const slugError = validateSlug(finalSlug);
+    if (slugError) {
+      toast.error(slugError);
+      return;
+    }
     setSaving(true);
     const payload = {
       ...parsed.data,
+      slug: finalSlug,
       whatsapp: encodePhone(whats),
       telefone_fixo:
         encodeTelefone({ kind: telKind, phone: telFixo, ramal }) || null,
@@ -101,9 +119,14 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       : await supabase.from("collaborators").insert(payload);
     setSaving(false);
     if (error) {
-      toast.error("Não foi possível salvar", { description: error.message });
+      const duplicate = error.code === "23505" || /duplicate key|unique/i.test(error.message);
+      toast.error(
+        duplicate ? "Este apelido de link já está em uso" : "Não foi possível salvar",
+        { description: duplicate ? `Tente outro no lugar de "${finalSlug}"` : error.message },
+      );
       return;
     }
+
     toast.success(editing ? "Colaborador atualizado" : "Link Tree gerado com sucesso");
     onSaved();
     onOpenChange(false);
@@ -141,7 +164,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Nome completo">
-              <Input value={nome} onChange={(e) => setNome(e.target.value)} required />
+              <Input value={nome} onChange={(e) => handleNome(e.target.value)} required />
             </Field>
             <Field label="Cargo">
               <Input value={cargo} onChange={(e) => setCargo(e.target.value)} required />
@@ -151,6 +174,22 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </Field>
             </div>
+            <div className="sm:col-span-2">
+              <Field label="Link personalizado">
+                <div className="flex items-center gap-2">
+                  <span className="shrink-0 text-xs text-[color:var(--text-muted)]">/</span>
+                  <Input
+                    value={slug}
+                    onChange={(e) => { setSlugTouched(true); setSlug(slugify(e.target.value)); }}
+                    placeholder="nome-do-consultor"
+                  />
+                </div>
+              </Field>
+              <p className="mt-1 text-xs text-[color:var(--text-muted)]">
+                Endereço público do Link Tree. Deve ser único.
+              </p>
+            </div>
+
           </div>
 
           <div className="space-y-2 rounded-xl border border-[color:var(--border-strong)] p-3">
