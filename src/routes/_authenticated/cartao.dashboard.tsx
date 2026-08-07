@@ -333,6 +333,15 @@ function DashboardPage() {
   );
 }
 
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <div className="text-xs uppercase tracking-wide text-[color:var(--text-muted)]">{label}</div>
+      <div className="font-display text-2xl font-bold text-[color:var(--text-main)]">{value}</div>
+    </div>
+  );
+}
+
 function IconBtn({
   children,
   onClick,
