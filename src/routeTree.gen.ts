@@ -9,27 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as CartaoIdRouteImport } from './routes/cartao.$id'
-import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
-import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
-import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
+import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
+import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
+import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartaoIdRoute = CartaoIdRouteImport.update({
@@ -37,16 +37,10 @@ const CartaoIdRoute = CartaoIdRouteImport.update({
   path: '/cartao/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCartaoDashboardRoute =
-  AuthenticatedCartaoDashboardRouteImport.update({
-    id: '/cartao/dashboard',
-    path: '/cartao/dashboard',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedCartaoImportarRoute =
-  AuthenticatedCartaoImportarRouteImport.update({
-    id: '/cartao/importar',
-    path: '/cartao/importar',
+const AuthenticatedCartaoUsuariosRoute =
+  AuthenticatedCartaoUsuariosRouteImport.update({
+    id: '/cartao/usuarios',
+    path: '/cartao/usuarios',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
@@ -54,10 +48,16 @@ const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
   path: '/cartao/tema',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCartaoUsuariosRoute =
-  AuthenticatedCartaoUsuariosRouteImport.update({
-    id: '/cartao/usuarios',
-    path: '/cartao/usuarios',
+const AuthenticatedCartaoImportarRoute =
+  AuthenticatedCartaoImportarRouteImport.update({
+    id: '/cartao/importar',
+    path: '/cartao/importar',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCartaoDashboardRoute =
+  AuthenticatedCartaoDashboardRouteImport.update({
+    id: '/cartao/dashboard',
+    path: '/cartao/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 
@@ -130,11 +130,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -144,11 +144,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cartao/$id': {
@@ -158,18 +158,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartaoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/cartao/dashboard': {
-      id: '/_authenticated/cartao/dashboard'
-      path: '/cartao/dashboard'
-      fullPath: '/cartao/dashboard'
-      preLoaderRoute: typeof AuthenticatedCartaoDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/cartao/importar': {
-      id: '/_authenticated/cartao/importar'
-      path: '/cartao/importar'
-      fullPath: '/cartao/importar'
-      preLoaderRoute: typeof AuthenticatedCartaoImportarRouteImport
+    '/_authenticated/cartao/usuarios': {
+      id: '/_authenticated/cartao/usuarios'
+      path: '/cartao/usuarios'
+      fullPath: '/cartao/usuarios'
+      preLoaderRoute: typeof AuthenticatedCartaoUsuariosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cartao/tema': {
@@ -179,11 +172,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoTemaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/cartao/usuarios': {
-      id: '/_authenticated/cartao/usuarios'
-      path: '/cartao/usuarios'
-      fullPath: '/cartao/usuarios'
-      preLoaderRoute: typeof AuthenticatedCartaoUsuariosRouteImport
+    '/_authenticated/cartao/importar': {
+      id: '/_authenticated/cartao/importar'
+      path: '/cartao/importar'
+      fullPath: '/cartao/importar'
+      preLoaderRoute: typeof AuthenticatedCartaoImportarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cartao/dashboard': {
+      id: '/_authenticated/cartao/dashboard'
+      path: '/cartao/dashboard'
+      fullPath: '/cartao/dashboard'
+      preLoaderRoute: typeof AuthenticatedCartaoDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
   }
