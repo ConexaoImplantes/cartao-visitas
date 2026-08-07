@@ -67,9 +67,22 @@ function ImportPage() {
       toast.error("Limite de 500 colaboradores por importação");
       return;
     }
+    // Marca e-mails que já existem no banco para evitar duplicidade
+    const emails = parsed.map((r) => r.email).filter(Boolean);
+    if (emails.length) {
+      const { data: existing } = await supabase
+        .from("collaborators")
+        .select("email")
+        .in("email", emails);
+      const taken = new Set((existing ?? []).map((e) => (e.email ?? "").toLowerCase()));
+      for (const r of parsed) {
+        if (r.email && taken.has(r.email)) r.errors.push("E-mail já cadastrado");
+      }
+    }
+
     setFileName(file.name);
     setRows(parsed);
-  }
+
 
   async function runImport() {
     if (!valid.length) return;
