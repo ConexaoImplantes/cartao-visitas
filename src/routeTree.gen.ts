@@ -17,6 +17,7 @@ import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authe
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
 import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
+import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_authenticated/cartao.configuracoes'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -60,11 +61,18 @@ const AuthenticatedCartaoDashboardRoute =
     path: '/cartao/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCartaoConfiguracoesRoute =
+  AuthenticatedCartaoConfiguracoesRouteImport.update({
+    id: '/cartao/configuracoes',
+    path: '/cartao/configuracoes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/$slug': typeof SlugRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/configuracoes'
     | '/cartao/dashboard'
     | '/cartao/importar'
     | '/cartao/tema'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/configuracoes'
     | '/cartao/dashboard'
     | '/cartao/importar'
     | '/cartao/tema'
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/cartao/configuracoes'
     | '/_authenticated/cartao/dashboard'
     | '/_authenticated/cartao/importar'
     | '/_authenticated/cartao/tema'
@@ -186,10 +199,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cartao/configuracoes': {
+      id: '/_authenticated/cartao/configuracoes'
+      path: '/cartao/configuracoes'
+      fullPath: '/cartao/configuracoes'
+      preLoaderRoute: typeof AuthenticatedCartaoConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCartaoConfiguracoesRoute: typeof AuthenticatedCartaoConfiguracoesRoute
   AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
   AuthenticatedCartaoImportarRoute: typeof AuthenticatedCartaoImportarRoute
   AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
@@ -197,6 +218,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCartaoConfiguracoesRoute: AuthenticatedCartaoConfiguracoesRoute,
   AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,
   AuthenticatedCartaoImportarRoute: AuthenticatedCartaoImportarRoute,
   AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
