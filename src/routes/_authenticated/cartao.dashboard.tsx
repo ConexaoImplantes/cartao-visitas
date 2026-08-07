@@ -228,6 +228,10 @@ function DashboardPage() {
         onSaved={load}
       />
 
+      <ShareDialog collaborator={sharing} onOpenChange={(o) => !o && setSharing(null)} />
+
+
+
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
