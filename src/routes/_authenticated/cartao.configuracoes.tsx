@@ -380,6 +380,34 @@ function SettingsPage() {
   );
 }
 
+function LocawebGuide() {
+  const steps = [
+    "No painel da Locaweb, abra Domínios > seu domínio > Zona DNS (Editar DNS).",
+    "Crie um registro do tipo A com o nome 'cartao' (ou o subdomínio desejado) apontando para 185.158.133.1.",
+    "Crie um registro TXT com o nome '_lovable' e o valor de verificação exibido em Configurações do projeto > Domínios.",
+    "Salve as alterações na Locaweb e volte ao Lovable: Configurações do projeto > Domínios > Conectar domínio, informando cartao.suaempresa.com.br.",
+    "Aguarde a propagação do DNS (normalmente de 15 minutos a algumas horas, podendo chegar a 72h) até o status ficar Ativo com SSL emitido.",
+    "Com o domínio ativo, preencha aqui o campo Domínio base com cartao.suaempresa.com.br e salve — links e QR Codes passam a usar o novo endereço.",
+  ];
+  return (
+    <ol className="mt-3 space-y-2 rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface-hover)] p-4 text-xs text-[color:var(--text-muted)]">
+      {steps.map((s, i) => (
+        <li key={i} className="flex gap-2">
+          <span className="grid size-5 shrink-0 place-items-center rounded-full bg-[color:var(--accent)] text-[10px] font-bold text-[color:var(--text-inverted)]">
+            {i + 1}
+          </span>
+          <span>{s}</span>
+        </li>
+      ))}
+      <li className="pt-1 text-[color:var(--text-main)]">
+        Dica: QR Codes já impressos com o domínio antigo continuam funcionando enquanto o endereço anterior
+        estiver ativo — gere novos QR Codes após a troca.
+      </li>
+    </ol>
+  );
+}
+
+
 function Section({
   icon: Icon,
   title,
