@@ -213,6 +213,16 @@ function DashboardPage() {
                     </td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] md:table-cell">{c.cargo}</td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] lg:table-cell">{c.email}</td>
+                    <td className="whitespace-nowrap p-4 text-xs text-[color:var(--text-muted)]">
+                      <span className="font-semibold text-[color:var(--text-main)]">
+                        {Number(stats[c.id]?.views ?? 0)}
+                      </span>{" "}
+                      visitas ·{" "}
+                      <span className="font-semibold text-[color:var(--text-main)]">
+                        {Number(stats[c.id]?.clicks ?? 0)}
+                      </span>{" "}
+                      cliques
+                    </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <Switch
