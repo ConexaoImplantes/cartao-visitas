@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/cartao/tema")({
 
 const SAMPLE: Collaborator = {
   id: "preview",
+  slug: "ana-carolina-silva",
   nome: "Ana Carolina Silva",
   cargo: "Consultora Comercial",
   email: "ana.silva@conexao.com.br",

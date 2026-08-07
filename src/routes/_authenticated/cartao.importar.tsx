@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import { CSV_TEMPLATE, CSV_HEADERS, parseCsv, mapRows, type ImportRow } from "@/lib/csv-import";
+import { uniqueSlug } from "@/lib/slug";
 
 export const Route = createFileRoute("/_authenticated/cartao/importar")({
   head: () => ({

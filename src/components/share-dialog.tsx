@@ -19,20 +19,20 @@ export function ShareDialog({
   const [qr, setQr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const url = collaborator ? buildCardUrl(collaborator.id) : "";
+  const url = collaborator ? buildCardUrl(collaborator.slug) : "";
 
   useEffect(() => {
     setQr(null);
     setCopied(false);
     if (!collaborator) return;
     let mounted = true;
-    generateQrDataUrl(collaborator.id)
+    generateQrDataUrl(collaborator.slug)
       .then((d) => mounted && setQr(d))
       .catch(() => toast.error("Falha ao gerar QR Code"));
     return () => {
       mounted = false;
     };
-  }, [collaborator?.id]);
+  }, [collaborator?.slug]);
 
   async function copyLink() {
     try {
@@ -103,7 +103,7 @@ export function ShareDialog({
             <Button
               variant="outline"
               disabled={!qr}
-              onClick={() => collaborator && downloadQrPng(collaborator.id, collaborator.nome)}
+              onClick={() => collaborator && downloadQrPng(collaborator.slug, collaborator.nome)}
             >
               <Download className="size-4" /> QR Code
             </Button>
