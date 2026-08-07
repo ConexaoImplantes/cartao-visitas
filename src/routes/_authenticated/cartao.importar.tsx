@@ -82,6 +82,9 @@ function ImportPage() {
 
     setFileName(file.name);
     setRows(parsed);
+  }
+
+
 
 
   async function runImport() {
