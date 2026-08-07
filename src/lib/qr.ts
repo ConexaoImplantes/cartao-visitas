@@ -1,9 +1,11 @@
 import QRCode from "qrcode";
+import { getPublicBaseUrl } from "./settings";
 
 export function buildCardUrl(slug: string): string {
-  if (typeof window === "undefined") return `/${slug}`;
-  return `${window.location.origin}/${slug}`;
+  const base = getPublicBaseUrl();
+  return base ? `${base}/${slug}` : `/${slug}`;
 }
+
 
 export async function generateQrDataUrl(slug: string): Promise<string> {
   return QRCode.toDataURL(buildCardUrl(slug), {

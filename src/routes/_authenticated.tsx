@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut, LayoutDashboard, Palette, Users, UploadCloud } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
 import logoUrl from "@/assets/logo-conexao.png";
 
@@ -21,6 +22,11 @@ function AuthLayout() {
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/login", replace: true });
   }, [loading, session, navigate]);
+
+  useEffect(() => {
+    if (!session) return;
+    fetchSettings().catch(() => {});
+  }, [session]);
 
   if (loading || !session) {
     return (
@@ -46,9 +52,13 @@ function AuthLayout() {
       ? ([{ to: "/cartao/tema", label: "Tema", icon: Palette }] as const)
       : ([] as const)),
     ...(isSuperAdmin
-      ? ([{ to: "/cartao/usuarios", label: "Usuários", icon: Users }] as const)
+      ? ([
+          { to: "/cartao/usuarios", label: "Usuários", icon: Users },
+          { to: "/cartao/configuracoes", label: "Configurações", icon: Settings },
+        ] as const)
       : ([] as const)),
   ] as const;
+
 
   return (
     <div className="min-h-screen bg-background">

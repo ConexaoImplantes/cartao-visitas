@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
 import { slugify, validateSlug } from "@/lib/slug";
+import { getCachedSettings } from "@/lib/settings";
 import {
   decodePhone,
   decodeTelefone,
@@ -50,23 +51,32 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
   useEffect(() => {
     if (!open) return;
+    const cfg = getCachedSettings();
     setNome(collaborator?.nome ?? "");
     setSlug(collaborator?.slug ?? "");
-    setSlugTouched(!!collaborator);
+    setSlugTouched(!!collaborator || cfg.cadastro.slugMode === "manual");
     setCargo(collaborator?.cargo ?? "");
     setEmail(collaborator?.email ?? "");
     setFoto(collaborator?.foto_url ?? "");
     const w = decodePhone(collaborator?.whatsapp);
-    setWhats({ ddi: w.ddi || "55", ddd: w.ddd, number: w.number });
+    setWhats({
+      ddi: w.ddi || cfg.cadastro.ddiPadrao || "55",
+      ddd: w.ddd || (collaborator ? "" : cfg.cadastro.dddPadrao),
+      number: w.number,
+    });
     const t = decodeTelefone(collaborator?.telefone_fixo ?? "");
     setTelKind(t.kind);
-    setTelFixo({ ddi: t.phone.ddi || "55", ddd: t.phone.ddd, number: t.phone.number });
+    setTelFixo({
+      ddi: t.phone.ddi || cfg.cadastro.ddiPadrao || "55",
+      ddd: t.phone.ddd || (collaborator ? "" : cfg.cadastro.dddPadrao),
+      number: t.phone.number,
+    });
     setRamal(t.ramal);
   }, [open, collaborator]);
 
   function handleNome(v: string) {
     setNome(v);
-    if (!slugTouched) setSlug(slugify(v));
+    if (!slugTouched && getCachedSettings().cadastro.slugMode === "auto") setSlug(slugify(v));
   }
 
 
@@ -100,7 +110,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       return;
     }
     const finalSlug = slugify(slug || nome);
-    const slugError = validateSlug(finalSlug);
+    const slugError = validateSlug(finalSlug, getCachedSettings().publico.reservedSlugs);
     if (slugError) {
       toast.error(slugError);
       return;
@@ -116,7 +126,9 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     };
     const { error } = editing
       ? await supabase.from("collaborators").update(payload).eq("id", collaborator!.id)
-      : await supabase.from("collaborators").insert(payload);
+      : await supabase
+          .from("collaborators")
+          .insert({ ...payload, status: getCachedSettings().cadastro.statusPadrao });
     setSaving(false);
     if (error) {
       const duplicate = error.code === "23505" || /duplicate key|unique/i.test(error.message);
