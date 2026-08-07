@@ -164,7 +164,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Nome completo">
-              <Input value={nome} onChange={(e) => setNome(e.target.value)} required />
+              <Input value={nome} onChange={(e) => handleNome(e.target.value)} required />
             </Field>
             <Field label="Cargo">
               <Input value={cargo} onChange={(e) => setCargo(e.target.value)} required />
@@ -174,6 +174,22 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </Field>
             </div>
+            <div className="sm:col-span-2">
+              <Field label="Link personalizado">
+                <div className="flex items-center gap-2">
+                  <span className="shrink-0 text-xs text-[color:var(--text-muted)]">/</span>
+                  <Input
+                    value={slug}
+                    onChange={(e) => { setSlugTouched(true); setSlug(slugify(e.target.value)); }}
+                    placeholder="nome-do-consultor"
+                  />
+                </div>
+              </Field>
+              <p className="mt-1 text-xs text-[color:var(--text-muted)]">
+                Endereço público do Link Tree. Deve ser único.
+              </p>
+            </div>
+
           </div>
 
           <div className="space-y-2 rounded-xl border border-[color:var(--border-strong)] p-3">
