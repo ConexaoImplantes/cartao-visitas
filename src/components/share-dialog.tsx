@@ -114,6 +114,24 @@ export function ShareDialog({
               <Download className="size-4" /> QR Code
             </Button>
           </div>
+
+          <div className="grid w-full grid-cols-4 gap-2 rounded-lg border border-[color:var(--border-strong)] p-3 text-center">
+            {[
+              { label: "Visitas", value: stats?.views },
+              { label: "WhatsApp", value: stats?.whatsapp },
+              { label: "E-mail", value: stats?.email },
+              { label: "Telefone", value: stats?.telefone },
+            ].map((m) => (
+              <div key={m.label}>
+                <div className="font-display text-lg font-bold text-[color:var(--text-main)]">
+                  {Number(m.value ?? 0)}
+                </div>
+                <div className="text-[10px] uppercase tracking-wide text-[color:var(--text-muted)]">
+                  {m.label}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
