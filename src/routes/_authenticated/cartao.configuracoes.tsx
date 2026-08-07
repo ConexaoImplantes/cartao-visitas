@@ -27,6 +27,7 @@ import {
   type AppSettings,
 } from "@/lib/settings";
 import { compressImageContain } from "@/lib/image-utils";
+import { fetchCardStats } from "@/lib/analytics";
 
 export const Route = createFileRoute("/_authenticated/cartao/configuracoes")({
   head: () => ({
