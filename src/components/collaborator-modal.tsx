@@ -36,6 +36,8 @@ const EMPTY_PHONE: PhoneParts = { ddi: "55", ddd: "", number: "" };
 export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }: Props) {
   const editing = !!collaborator;
   const [nome, setNome] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugTouched, setSlugTouched] = useState(false);
   const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
   const [foto, setFoto] = useState<string | null>("");
@@ -48,6 +50,8 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
   useEffect(() => {
     if (!open) return;
     setNome(collaborator?.nome ?? "");
+    setSlug(collaborator?.slug ?? "");
+    setSlugTouched(!!collaborator);
     setCargo(collaborator?.cargo ?? "");
     setEmail(collaborator?.email ?? "");
     setFoto(collaborator?.foto_url ?? "");
@@ -58,6 +62,12 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     setTelFixo({ ddi: t.phone.ddi || "55", ddd: t.phone.ddd, number: t.phone.number });
     setRamal(t.ramal);
   }, [open, collaborator]);
+
+  function handleNome(v: string) {
+    setNome(v);
+    if (!slugTouched) setSlug(slugify(v));
+  }
+
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
