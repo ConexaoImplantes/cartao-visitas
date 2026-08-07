@@ -129,7 +129,7 @@ function SettingsPage() {
     const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const csv = [
       headers.join(";"),
-      ...data.map((r) => {
+      ...data.map((r: Record<string, unknown>) => {
         const row = r as Record<string, unknown>;
         const s = stats[String(row['id'])];
         const withStats: Record<string, unknown> = {
