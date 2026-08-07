@@ -131,7 +131,7 @@ function SettingsPage() {
       ...data.map((r) => {
         const row = r as Record<string, unknown>;
         const s = stats[String(row['id'])];
-        const withStats = {
+        const withStats: Record<string, unknown> = {
           ...row,
           visitas: Number(s?.views ?? 0),
           cliques: Number(s?.clicks ?? 0),
