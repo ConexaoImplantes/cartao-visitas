@@ -22,6 +22,14 @@ import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+import { fetchCardStats, type CardStats } from "@/lib/analytics";
+
+const PERIODS: Array<{ label: string; days: number | null }> = [
+  { label: "7 dias", days: 7 },
+  { label: "30 dias", days: 30 },
+  { label: "90 dias", days: 90 },
+  { label: "Total", days: null },
+];
 
 
 export const Route = createFileRoute("/_authenticated/cartao/dashboard")({
