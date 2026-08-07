@@ -43,6 +43,7 @@ function PublicCardPage() {
         return;
       }
       setState({ kind: "ready", c: cData as Collaborator, theme });
+      void trackView((cData as Collaborator).id, slug);
       const empresa = theme.institucional.nomeEmpresa?.trim();
       const consultor = (cData as Collaborator).nome?.trim();
       if (typeof document !== "undefined") {
