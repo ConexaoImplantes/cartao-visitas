@@ -37,6 +37,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "dashboard.view_link", label: "Abrir Link Tree" },
       { key: "dashboard.view_qr", label: "Visualizar QR Code" },
       { key: "dashboard.download_qr", label: "Baixar QR Code" },
+      { key: "dashboard.share", label: "Compartilhar com o colaborador" },
     ],
   },
   {
