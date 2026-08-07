@@ -23,6 +23,7 @@ export type Database = {
           foto_url: string | null
           id: string
           nome: string
+          slug: string
           status: string
           telefone_fixo: string | null
           updated_at: string
@@ -36,6 +37,7 @@ export type Database = {
           foto_url?: string | null
           id?: string
           nome: string
+          slug: string
           status?: string
           telefone_fixo?: string | null
           updated_at?: string
@@ -49,6 +51,7 @@ export type Database = {
           foto_url?: string | null
           id?: string
           nome?: string
+          slug?: string
           status?: string
           telefone_fixo?: string | null
           updated_at?: string
