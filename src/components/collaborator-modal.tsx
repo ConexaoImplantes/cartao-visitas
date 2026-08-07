@@ -126,7 +126,9 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     };
     const { error } = editing
       ? await supabase.from("collaborators").update(payload).eq("id", collaborator!.id)
-      : await supabase.from("collaborators").insert(payload);
+      : await supabase
+          .from("collaborators")
+          .insert({ ...payload, status: getCachedSettings().cadastro.statusPadrao });
     setSaving(false);
     if (error) {
       const duplicate = error.code === "23505" || /duplicate key|unique/i.test(error.message);
