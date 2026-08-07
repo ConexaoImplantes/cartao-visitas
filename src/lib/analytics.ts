@@ -72,7 +72,7 @@ export function sinceFromDays(days: number | null): string | null {
 /** Busca contagens agregadas por colaborador. */
 export async function fetchCardStats(days: number | null): Promise<Record<string, CardStats>> {
   const { data, error } = await supabase.rpc("card_event_stats", {
-    _since: sinceFromDays(days),
+    _since: sinceFromDays(days) ?? undefined,
   });
   if (error || !data) return {};
   const map: Record<string, CardStats> = {};
