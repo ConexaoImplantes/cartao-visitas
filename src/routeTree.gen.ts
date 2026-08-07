@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CartaoIdRouteImport } from './routes/cartao.$id'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
@@ -30,11 +29,6 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartaoIdRoute = CartaoIdRouteImport.update({
-  id: '/cartao/$id',
-  path: '/cartao/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCartaoUsuariosRoute =
@@ -64,7 +58,6 @@ const AuthenticatedCartaoDashboardRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/cartao/$id': typeof CartaoIdRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -73,7 +66,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/cartao/$id': typeof CartaoIdRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -84,7 +76,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/cartao/$id': typeof CartaoIdRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
@@ -95,7 +86,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
-    | '/cartao/$id'
     | '/cartao/dashboard'
     | '/cartao/importar'
     | '/cartao/tema'
@@ -104,7 +94,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
-    | '/cartao/$id'
     | '/cartao/dashboard'
     | '/cartao/importar'
     | '/cartao/tema'
@@ -114,7 +103,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/login'
-    | '/cartao/$id'
     | '/_authenticated/cartao/dashboard'
     | '/_authenticated/cartao/importar'
     | '/_authenticated/cartao/tema'
@@ -125,7 +113,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  CartaoIdRoute: typeof CartaoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -149,13 +136,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cartao/$id': {
-      id: '/cartao/$id'
-      path: '/cartao/$id'
-      fullPath: '/cartao/$id'
-      preLoaderRoute: typeof CartaoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/cartao/usuarios': {
@@ -211,7 +191,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
-  CartaoIdRoute: CartaoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
