@@ -45,6 +45,8 @@ function DashboardPage() {
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
   const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
   const [sharing, setSharing] = useState<Collaborator | null>(null);
+  const [period, setPeriod] = useState<number | null>(30);
+  const [stats, setStats] = useState<Record<string, CardStats>>({});
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
