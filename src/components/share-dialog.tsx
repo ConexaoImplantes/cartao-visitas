@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import type { Collaborator } from "@/lib/types";
 import { phoneDigits } from "@/lib/types";
 import { buildCardUrl, generateQrDataUrl, downloadQrPng } from "@/lib/qr";
+import { fetchCardStats, type CardStats } from "@/lib/analytics";
 
 export function ShareDialog({
   collaborator,
@@ -18,17 +19,22 @@ export function ShareDialog({
 }) {
   const [qr, setQr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [stats, setStats] = useState<CardStats | null>(null);
 
   const url = collaborator ? buildCardUrl(collaborator.slug) : "";
 
   useEffect(() => {
     setQr(null);
     setCopied(false);
+    setStats(null);
     if (!collaborator) return;
     let mounted = true;
     generateQrDataUrl(collaborator.slug)
       .then((d) => mounted && setQr(d))
       .catch(() => toast.error("Falha ao gerar QR Code"));
+    fetchCardStats(null).then((all) => {
+      if (mounted) setStats(all[collaborator.id] ?? null);
+    });
     return () => {
       mounted = false;
     };
