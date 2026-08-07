@@ -83,6 +83,11 @@ function DashboardPage() {
     load();
   }, []);
 
+  useEffect(() => {
+    if (permLoading || !can("dashboard.view")) return;
+    fetchCardStats(period).then(setStats);
+  }, [period, permLoading, can]);
+
   async function toggleStatus(c: Collaborator) {
     const next = c.status === "ativo" ? "inativo" : "ativo";
     const { error } = await supabase.from("collaborators").update({ status: next }).eq("id", c.id);
