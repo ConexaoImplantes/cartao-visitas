@@ -23,6 +23,11 @@ function AuthLayout() {
     if (!loading && !session) navigate({ to: "/login", replace: true });
   }, [loading, session, navigate]);
 
+  useEffect(() => {
+    if (!session) return;
+    fetchSettings().catch(() => {});
+  }, [session]);
+
   if (loading || !session) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">
@@ -47,9 +52,13 @@ function AuthLayout() {
       ? ([{ to: "/cartao/tema", label: "Tema", icon: Palette }] as const)
       : ([] as const)),
     ...(isSuperAdmin
-      ? ([{ to: "/cartao/usuarios", label: "Usuários", icon: Users }] as const)
+      ? ([
+          { to: "/cartao/usuarios", label: "Usuários", icon: Users },
+          { to: "/cartao/configuracoes", label: "Configurações", icon: Settings },
+        ] as const)
       : ([] as const)),
   ] as const;
+
 
   return (
     <div className="min-h-screen bg-background">
