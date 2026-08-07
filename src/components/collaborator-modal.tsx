@@ -9,6 +9,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
+import { slugify, validateSlug } from "@/lib/slug";
 import {
   decodePhone,
   decodeTelefone,
