@@ -18,6 +18,7 @@ import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
 import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_authenticated/cartao.configuracoes'
+import { Route as AuthenticatedCartaoCartaoFisicoRouteImport } from './routes/_authenticated/cartao.cartao-fisico'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -67,11 +68,18 @@ const AuthenticatedCartaoConfiguracoesRoute =
     path: '/cartao/configuracoes',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCartaoCartaoFisicoRoute =
+  AuthenticatedCartaoCartaoFisicoRouteImport.update({
+    id: '/cartao/cartao-fisico',
+    path: '/cartao/cartao-fisico',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
@@ -94,6 +103,7 @@ export interface FileRoutesById {
   '/$slug': typeof SlugRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
     | '/cartao/importar'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
     | '/cartao/importar'
@@ -127,6 +139,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/cartao/cartao-fisico'
     | '/_authenticated/cartao/configuracoes'
     | '/_authenticated/cartao/dashboard'
     | '/_authenticated/cartao/importar'
@@ -206,10 +219,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoConfiguracoesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cartao/cartao-fisico': {
+      id: '/_authenticated/cartao/cartao-fisico'
+      path: '/cartao/cartao-fisico'
+      fullPath: '/cartao/cartao-fisico'
+      preLoaderRoute: typeof AuthenticatedCartaoCartaoFisicoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCartaoCartaoFisicoRoute: typeof AuthenticatedCartaoCartaoFisicoRoute
   AuthenticatedCartaoConfiguracoesRoute: typeof AuthenticatedCartaoConfiguracoesRoute
   AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
   AuthenticatedCartaoImportarRoute: typeof AuthenticatedCartaoImportarRoute
@@ -218,6 +239,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCartaoCartaoFisicoRoute: AuthenticatedCartaoCartaoFisicoRoute,
   AuthenticatedCartaoConfiguracoesRoute: AuthenticatedCartaoConfiguracoesRoute,
   AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,
   AuthenticatedCartaoImportarRoute: AuthenticatedCartaoImportarRoute,
