@@ -243,13 +243,16 @@ export async function buildGuidePdf(c: GuideInput): Promise<Uint8Array> {
       color: rgb(NAVY.r, NAVY.g, NAVY.b),
     });
   }
-  page.drawText(c.email || "", {
-    x: MARGIN + qrSize + 34,
-    y: y - 76,
-    size: 9,
-    font: regular,
-    color: rgb(MUTED.r, MUTED.g, MUTED.b),
-  });
+  page.drawText(
+    c.kitUrl ? `Kit digital: ${c.kitUrl}` : c.email || "",
+    {
+      x: MARGIN + qrSize + 34,
+      y: y - 76,
+      size: 9,
+      font: regular,
+      color: rgb(MUTED.r, MUTED.g, MUTED.b),
+    },
+  );
 
   y = y - qrSize - 52;
 
