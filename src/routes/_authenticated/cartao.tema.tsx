@@ -23,6 +23,8 @@ import {
 } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
 import { compressImageContain } from "@/lib/image-utils";
+import { imageLinkToDataUrl } from "@/lib/image-link";
+
 import { usePermissions } from "@/hooks/use-permissions";
 
 export const Route = createFileRoute("/_authenticated/cartao/tema")({
