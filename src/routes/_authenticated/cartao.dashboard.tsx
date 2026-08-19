@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Plus,
   Trash2,
@@ -11,12 +11,22 @@ import {
   ListChecks,
   MoreHorizontal,
   Pencil,
+  Search,
+  X,
 } from "lucide-react";
 import { decodeTelefone, formatPhoneDisplay, maskNumberOnly } from "@/lib/types";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +53,10 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
+
+function removeAccents(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
 const PERIODS: Array<{ label: string; days: number | null }> = [
   { label: "7 dias", days: 7 },
