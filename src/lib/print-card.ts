@@ -265,9 +265,9 @@ export async function buildPrintCardsPdf(
 
     // 1. QR Code
     const qr = await pdf.embedPng(await qrPngBytes(c.slug));
-    const qrSize = 26.4;
-    const qrPos = pt(5.8, 10.8 + qrSize);
-    const pad = mm(1);
+    const qrSize = CARD_LAYOUT.qr.size;
+    const qrPos = pt(CARD_LAYOUT.qr.x, CARD_LAYOUT.qr.yTop + qrSize);
+    const pad = mm(CARD_LAYOUT.qr.padding);
     front.drawRectangle({
       x: qrPos.x - pad,
       y: qrPos.y - pad,
@@ -277,12 +277,12 @@ export async function buildPrintCardsPdf(
     });
     front.drawImage(qr, { x: qrPos.x, y: qrPos.y, width: mm(qrSize), height: mm(qrSize) });
 
-    const textX = 37.3;
+    const textX = CARD_LAYOUT.textX;
     const maxTextW = TRIM_W - textX - 5;
 
     // 2. Nome — Open Sans Bold 11pt #FFFFFF
-    const nomeSize = fitSize(nome, fontBold, 11, maxTextW);
-    const nomePos = pt(textX, 21.4);
+    const nomeSize = fitSize(nome, fontBold, CARD_LAYOUT.nome.size, maxTextW);
+    const nomePos = pt(textX, CARD_LAYOUT.nome.baseline);
     front.drawText(nome, {
       x: nomePos.x,
       y: nomePos.y,
@@ -292,9 +292,9 @@ export async function buildPrintCardsPdf(
     });
 
     // 3. Cargo — Open Sans Itálico 7pt #C59937
-    const cargoSize = fitSize(c.cargo, fontItalic, 7, maxTextW);
-    const cargoPos = pt(textX, 24.6);
-    const gold = rgbHex("#c59937");
+    const cargoSize = fitSize(c.cargo, fontItalic, CARD_LAYOUT.cargo.size, maxTextW);
+    const cargoPos = pt(textX, CARD_LAYOUT.cargo.baseline);
+    const gold = rgbHex(CARD_LAYOUT.cargo.color);
     front.drawText(c.cargo, {
       x: cargoPos.x,
       y: cargoPos.y,
@@ -304,9 +304,9 @@ export async function buildPrintCardsPdf(
     });
 
     // 4. Logo horizontal
-    const logoH = 3.4;
+    const logoH = CARD_LAYOUT.logo.height;
     const logoW = (logo.width / logo.height) * logoH;
-    const logoPos = pt(textX, 29.6);
+    const logoPos = pt(textX, CARD_LAYOUT.logo.bottom);
     front.drawImage(logo, {
       x: logoPos.x,
       y: logoPos.y,
@@ -315,12 +315,12 @@ export async function buildPrintCardsPdf(
     });
 
     // 5. Site — Open Sans Itálico 4,5pt #6A7070
-    const siteColor = rgbHex("#6a7070");
-    const sitePos = pt(textX + logoW + 3.5, 27.8);
+    const siteColor = rgbHex(CARD_LAYOUT.site.color);
+    const sitePos = pt(textX + logoW + CARD_LAYOUT.site.gap, CARD_LAYOUT.site.baseline);
     front.drawText(site, {
       x: sitePos.x,
       y: sitePos.y,
-      size: 4.5,
+      size: CARD_LAYOUT.site.size,
       font: fontItalic,
       color: rgb(siteColor.r, siteColor.g, siteColor.b),
     });
