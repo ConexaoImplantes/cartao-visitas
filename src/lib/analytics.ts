@@ -1,6 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type CardEventType = "view" | "whatsapp" | "email" | "telefone" | "rede_social";
+export type CardEventType =
+  | "view"
+  | "whatsapp"
+  | "email"
+  | "telefone"
+  | "rede_social"
+  | "kit_view";
 
 export interface CardStats {
   collaborator_id: string;
@@ -10,6 +16,7 @@ export interface CardStats {
   email: number;
   telefone: number;
   rede_social: number;
+  kit_views?: number;
 }
 
 function deviceKind(): string {

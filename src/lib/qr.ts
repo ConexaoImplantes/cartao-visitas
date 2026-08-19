@@ -6,6 +6,11 @@ export function buildCardUrl(slug: string): string {
   return base ? `${base}/${slug}` : `/${slug}`;
 }
 
+/** Página pública onde o colaborador acessa e baixa o próprio kit digital. */
+export function buildKitUrl(slug: string): string {
+  return `${buildCardUrl(slug)}/kit`;
+}
+
 
 export async function generateQrDataUrl(slug: string): Promise<string> {
   return QRCode.toDataURL(buildCardUrl(slug), {
