@@ -69,8 +69,8 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
  * Todas as medidas em mm a partir do canto superior esquerdo do corte.
  */
 export const CARD_LAYOUT_ANTIGO = {
-  /** padding-left de ~16px (3,2 mm) em relação à arte anterior */
-  textX: 43.2,
+  /** textos mais próximos da linha vertical azul */
+  textX: 36.0,
   nome: { baseline: 17.6, size: 12, color: "#004a8f" },
   cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
   /** bloco e-mail/site/celular ~32px (6,4 mm) abaixo do cargo */
