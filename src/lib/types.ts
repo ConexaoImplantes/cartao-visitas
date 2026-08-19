@@ -159,6 +159,7 @@ export const DEFAULT_THEME: ThemeConfig = {
     socialIconSize: 20,
   },
   impressao: { frenteUrl: "", versoUrl: "", marcaTop: 29.2, marcaLogoAltura: 2.6 },
+  assinatura: { bgUrl: "" },
 };
 
 export const FONT_OPTIONS = [
@@ -193,6 +194,7 @@ export function normalizeTheme(input: unknown): ThemeConfig {
       },
     },
     impressao: { ...DEFAULT_THEME.impressao, ...(t.impressao ?? {}) },
+    assinatura: { ...DEFAULT_THEME.assinatura, ...(t.assinatura ?? {}) },
   };
 }
 
