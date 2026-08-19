@@ -38,6 +38,7 @@ const EMPTY_PHONE: PhoneParts = { ddi: "55", ddd: "", number: "" };
 export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }: Props) {
   const editing = !!collaborator;
   const [nome, setNome] = useState("");
+  const [nomeCartao, setNomeCartao] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [cargo, setCargo] = useState("");
@@ -53,6 +54,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     if (!open) return;
     const cfg = getCachedSettings();
     setNome(collaborator?.nome ?? "");
+    setNomeCartao(collaborator?.nome_cartao ?? "");
     setSlug(collaborator?.slug ?? "");
     setSlugTouched(!!collaborator || cfg.cadastro.slugMode === "manual");
     setCargo(collaborator?.cargo ?? "");
@@ -123,6 +125,7 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       telefone_fixo:
         encodeTelefone({ kind: telKind, phone: telFixo, ramal }) || null,
       foto_url: foto || null,
+      nome_cartao: nomeCartao.trim() || null,
     };
     const { error } = editing
       ? await supabase.from("collaborators").update(payload).eq("id", collaborator!.id)
@@ -181,6 +184,19 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
             <Field label="Cargo">
               <Input value={cargo} onChange={(e) => setCargo(e.target.value)} required />
             </Field>
+            <div className="sm:col-span-2">
+              <Field label="Nome no cartão impresso (opcional)">
+                <Input
+                  value={nomeCartao}
+                  onChange={(e) => setNomeCartao(e.target.value)}
+                  placeholder={nome || "Nome curto para caber na arte"}
+                  maxLength={40}
+                />
+                <p className="mt-1 text-xs text-[color:var(--text-muted)]">
+                  Usado apenas na arte do cartão de visitas para impressão. Em branco, usa o nome completo.
+                </p>
+              </Field>
+            </div>
             <div className="sm:col-span-2">
               <Field label="E-mail institucional">
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
