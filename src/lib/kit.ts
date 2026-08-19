@@ -224,6 +224,7 @@ export async function buildKitFiles(
     email: c.email,
     slug: c.slug,
     modelo: opts.print.modelo,
+    kitUrl: buildKitUrl(c.slug),
   });
   files.push({
     name: `COMO-USAR-${base}.pdf`,
