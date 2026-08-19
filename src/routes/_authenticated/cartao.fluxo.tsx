@@ -308,6 +308,15 @@ function FluxoPage() {
                           {st.done ? step.description : st.reason}
                         </div>
                       </div>
+                      {can("fluxo.marcar_etapas") && (
+                        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[color:var(--text-muted)]">
+                          <Checkbox
+                            checked={!!st.manual}
+                            onCheckedChange={(v) => toggleManual(selected, step.key, v === true)}
+                          />
+                          Já incluso
+                        </label>
+                      )}
                       <Button asChild variant="ghost" size="sm">
                         {step.key === "linktree" ? (
                           <Link to="/cartao/dashboard">
