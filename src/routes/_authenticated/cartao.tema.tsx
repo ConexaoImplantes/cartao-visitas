@@ -122,15 +122,16 @@ export function ThemePage() {
         {/* Editor */}
         <div className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
           <Tabs defaultValue="background">
-            <TabsList className="grid w-full grid-cols-5 bg-[color:var(--surface-hover)]">
-              <TabsTrigger value="background">Fundo</TabsTrigger>
-              <TabsTrigger value="icons">Ícones</TabsTrigger>
-              <TabsTrigger value="typography">Tipografia</TabsTrigger>
-              <TabsTrigger value="institucional">Instituição</TabsTrigger>
-              <TabsTrigger value="impressao">Impressão</TabsTrigger>
-              <TabsTrigger value="assinatura">Assinatura</TabsTrigger>
-              <TabsTrigger value="foto-perfil">Perfil</TabsTrigger>
+            <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-lg bg-[color:var(--surface-hover)] p-1 sm:grid-cols-4 xl:grid-cols-7">
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="background">Fundo</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="icons">Ícones</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="typography">Tipografia</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="institucional">Instituição</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="impressao">Impressão</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="assinatura">Assinatura</TabsTrigger>
+              <TabsTrigger className="w-full whitespace-nowrap text-xs sm:text-sm" value="foto-perfil">Perfil</TabsTrigger>
             </TabsList>
+
 
             {/* ============================= BACKGROUND ============================= */}
             <TabsContent value="background" className="space-y-5 pt-5">
