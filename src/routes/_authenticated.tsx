@@ -45,6 +45,9 @@ function AuthLayout() {
     ...(can("dashboard.view")
       ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
       : ([] as const)),
+    ...(can("dashboard.view")
+      ? ([{ to: "/cartao/cartao-fisico", label: "Cartão Físico", icon: Printer }] as const)
+      : ([] as const)),
     ...(can("dashboard.create")
       ? ([{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] as const)
       : ([] as const)),
