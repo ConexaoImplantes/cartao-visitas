@@ -3,6 +3,7 @@ import {
   CARD_LAYOUT,
   CARD_TRIM,
   DEFAULT_PRINT_ASSETS,
+  marcaGeometry,
   type PrintCardInput,
 } from "@/lib/print-card";
 import { buildCardUrl } from "@/lib/qr";
