@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Plus,
   Trash2,
@@ -11,12 +11,22 @@ import {
   ListChecks,
   MoreHorizontal,
   Pencil,
+  Search,
+  X,
 } from "lucide-react";
 import { decodeTelefone, formatPhoneDisplay, maskNumberOnly } from "@/lib/types";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +54,10 @@ import { ShareDialog } from "@/components/share-dialog";
 
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 
+function removeAccents(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 const PERIODS: Array<{ label: string; days: number | null }> = [
   { label: "7 dias", days: 7 },
   { label: "30 dias", days: 30 },
@@ -66,9 +80,29 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"todos" | "ativo" | "inativo">("todos");
+  const [sort, setSort] = useState<"recentes" | "az" | "za">("recentes");
 
+  const filteredRows = useMemo(() => {
+    if (!rows) return [];
+    const normalizedQuery = removeAccents(query.trim().toLowerCase());
+    const list = rows.filter((r) => {
+      if (statusFilter !== "todos" && r.status !== statusFilter) return false;
+      if (!normalizedQuery) return true;
+      return removeAccents(r.nome).toLowerCase().includes(normalizedQuery);
+    });
+    if (sort === "az") {
+      list.sort((a, b) => removeAccents(a.nome).localeCompare(removeAccents(b.nome), "pt-BR", { sensitivity: "base" }));
+    } else if (sort === "za") {
+      list.sort((a, b) => removeAccents(b.nome).localeCompare(removeAccents(a.nome), "pt-BR", { sensitivity: "base" }));
+    } else {
+      list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    return list;
+  }, [rows, query, statusFilter, sort]);
 
-
+  const hasActiveFilters = query.trim() !== "" || statusFilter !== "todos" || sort !== "recentes";
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
@@ -181,16 +215,71 @@ function DashboardPage() {
         </div>
       </section>
 
-
+      <section className="flex flex-col gap-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-4 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[color:var(--text-muted)]" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nome..."
+            className="w-full border-[color:var(--border)] bg-[color:var(--surface-hover)] pl-9 text-[color:var(--text-main)] placeholder:text-[color:var(--text-muted)]"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="w-[140px] border-[color:var(--border)] bg-[color:var(--surface-hover)] text-[color:var(--text-main)]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="ativo">Ativos</SelectItem>
+              <SelectItem value="inativo">Inativos</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
+            <SelectTrigger className="w-[160px] border-[color:var(--border)] bg-[color:var(--surface-hover)] text-[color:var(--text-main)]">
+              <SelectValue placeholder="Ordenar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recentes">Mais recentes</SelectItem>
+              <SelectItem value="az">Nome A-Z</SelectItem>
+              <SelectItem value="za">Nome Z-A</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setQuery(""); setStatusFilter("todos"); setSort("recentes"); }}
+              className="text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+            >
+              <X className="size-4" />
+              <span className="hidden sm:inline">Limpar</span>
+            </Button>
+          )}
+        </div>
+      </section>
 
       <div className="overflow-hidden rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)]">
         {rows === null ? (
           <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]">
             <Loader2 className="mr-2 size-4 animate-spin" /> Carregando...
           </div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <div className="p-12 text-center text-[color:var(--text-muted)]">
-            Nenhum colaborador cadastrado ainda. Clique em <strong>Novo</strong> para começar.
+            {hasActiveFilters ? (
+              <>
+                Nenhum colaborador encontrado para os filtros selecionados.{" "}
+                <button
+                  onClick={() => { setQuery(""); setStatusFilter("todos"); setSort("recentes"); }}
+                  className="underline hover:text-[color:var(--text-main)]"
+                >
+                  Limpar filtros
+                </button>
+              </>
+            ) : (
+              <>Nenhum colaborador cadastrado ainda. Clique em <strong>Novo</strong> para começar.</>
+            )}
           </div>
         ) : (
           <div className="w-full">
@@ -205,7 +294,7 @@ function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="block md:table-row-group">
-                {rows.map((c) => {
+                {filteredRows.map((c) => {
                   const tel = decodeTelefone(c.telefone_fixo);
                   const telLabel =
                     tel.kind === "ramal"
