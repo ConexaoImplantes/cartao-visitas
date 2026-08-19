@@ -215,7 +215,50 @@ function DashboardPage() {
         </div>
       </section>
 
-
+      <section className="flex flex-col gap-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-4 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[color:var(--text-muted)]" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nome..."
+            className="w-full border-[color:var(--border)] bg-[color:var(--surface-hover)] pl-9 text-[color:var(--text-main)] placeholder:text-[color:var(--text-muted)]"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="w-[140px] border-[color:var(--border)] bg-[color:var(--surface-hover)] text-[color:var(--text-main)]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="ativo">Ativos</SelectItem>
+              <SelectItem value="inativo">Inativos</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
+            <SelectTrigger className="w-[160px] border-[color:var(--border)] bg-[color:var(--surface-hover)] text-[color:var(--text-main)]">
+              <SelectValue placeholder="Ordenar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recentes">Mais recentes</SelectItem>
+              <SelectItem value="az">Nome A-Z</SelectItem>
+              <SelectItem value="za">Nome Z-A</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setQuery(""); setStatusFilter("todos"); setSort("recentes"); }}
+              className="text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+            >
+              <X className="size-4" />
+              <span className="hidden sm:inline">Limpar</span>
+            </Button>
+          )}
+        </div>
+      </section>
 
       <div className="overflow-hidden rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)]">
         {rows === null ? (
