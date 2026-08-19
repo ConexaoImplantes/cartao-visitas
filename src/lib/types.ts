@@ -4,6 +4,8 @@ export interface Collaborator {
   id: string;
   slug: string;
   nome: string;
+  /** Nome curto usado apenas na arte do cartão impresso. */
+  nome_cartao?: string | null;
   cargo: string;
   email: string;
   whatsapp: string;
