@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer, CreditCard } from "lucide-react";
+import { Plus, ExternalLink, Trash2, Loader2, Share2, Printer, CreditCard } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -315,11 +315,6 @@ function DashboardPage() {
                             <a href={buildCardUrl(c.slug)} target="_blank" rel="noreferrer">
                               <ExternalLink className="size-4" />
                             </a>
-                          </IconBtn>
-                        )}
-                        {can("dashboard.edit") && (
-                          <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
-                            <Pencil className="size-4" />
                           </IconBtn>
                         )}
                         {can("dashboard.view") && (
