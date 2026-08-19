@@ -114,7 +114,7 @@ export async function buildPrintCardsPdf(
   const bgBack = await embedImage(backBytes);
   const logo = await embedImage(logoBytes);
 
-  const site = (getCachedSettings().marca.metaTitle && "") || "www.conexao.com.br";
+  const site = backgrounds.site || "www.conexao.com.br";
   const generatedAt = new Date().toLocaleDateString("pt-BR");
 
   const newPage = (bg: typeof bgFront) => {
