@@ -76,7 +76,7 @@ export const CARD_LAYOUT_ANTIGO = {
   site: { baseline: 29.2, size: 7, color: "#000000", opacity: 0.7 },
   /** o rótulo "Tel.:" e o ícone do WhatsApp já fazem parte da arte de fundo;
    *  o celular fica alinhado horizontalmente ao ícone verde */
-  celular: { x: 61.5, baseline: 33.7, size: 7, color: "#000000", opacity: 0.7 },
+  celular: { x: 37.0, baseline: 33.7, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
 
 
