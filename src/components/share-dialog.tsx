@@ -116,6 +116,23 @@ export function ShareDialog({
             </Button>
           </div>
 
+          <div className="w-full space-y-1.5">
+            <p className="text-xs font-medium text-[color:var(--text-muted)]">
+              Kit digital do colaborador (artes + manual)
+            </p>
+            <div className="flex w-full gap-2">
+              <Input
+                readOnly
+                value={kitUrl}
+                className="text-xs"
+                onFocus={(e) => e.currentTarget.select()}
+              />
+              <Button variant="outline" size="icon" title="Copiar link do kit" onClick={copyKit}>
+                {copiedKit ? <Check className="size-4" /> : <Copy className="size-4" />}
+              </Button>
+            </div>
+          </div>
+
           <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3">
             <Button variant="outline" onClick={shareWhatsApp}>
               <MessageCircle className="size-4" /> WhatsApp
