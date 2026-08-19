@@ -82,6 +82,11 @@ export interface ThemeConfig {
     };
     socialIconSize: number;
   };
+  /** Artes do cartão de visitas impresso (90x48mm). Vazio = arte padrão. */
+  impressao: {
+    frenteUrl: string;
+    versoUrl: string;
+  };
 }
 
 export const BLOB_POSITIONS: { value: BlobPosition; label: string }[] = [
