@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import {
   CARD_LAYOUT,
+  CARD_LAYOUT_ANTIGO,
   CARD_TRIM,
   DEFAULT_PRINT_ASSETS,
+  formatPhoneAntigo,
   marcaGeometry,
+  type CardModelo,
   type PrintCardInput,
 } from "@/lib/print-card";
 import { buildCardUrl } from "@/lib/qr";
 import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
 import fontBoldAsset from "@/assets/OpenSans-Bold.ttf.asset.json";
 import fontItalicAsset from "@/assets/OpenSans-Italic.ttf.asset.json";
+import fontFrutigerAsset from "@/assets/FrutigerLTStd-LightCn.otf.asset.json";
 
 /** pt -> mm */
 const PT = 25.4 / 72;
@@ -24,6 +28,7 @@ function ensureFonts() {
     new FontFace("OpenSansPreview", `url(${fontRegularAsset.url})`).load(),
     new FontFace("OpenSansPreview", `url(${fontBoldAsset.url})`, { weight: "700" }).load(),
     new FontFace("OpenSansPreview", `url(${fontItalicAsset.url})`, { style: "italic" }).load(),
+    new FontFace("FrutigerPreview", `url(${fontFrutigerAsset.url})`).load(),
   ])
     .then((faces) => {
       faces.forEach((f) => (document as any).fonts.add(f));
@@ -34,8 +39,11 @@ function ensureFonts() {
 
 export interface PrintCardPreviewProps {
   card: PrintCardInput;
+  modelo?: CardModelo;
   frenteUrl?: string;
   versoUrl?: string;
+  antigoFrenteUrl?: string;
+  antigoVersoUrl?: string;
   site?: string;
   /** distance (mm) from the card top to the top of the logo + site block */
   marcaTop?: number;
@@ -48,8 +56,11 @@ export interface PrintCardPreviewProps {
 
 export function PrintCardPreview({
   card,
+  modelo = "novo",
   frenteUrl,
   versoUrl,
+  antigoFrenteUrl,
+  antigoVersoUrl,
   site,
   marcaTop,
   marcaLogoAltura,
@@ -59,6 +70,7 @@ export function PrintCardPreview({
   const marca = marcaGeometry(marcaTop, marcaLogoAltura);
   const [qr, setQr] = useState<string | null>(null);
   const [, setFontsReady] = useState(false);
+  const isAntigo = modelo === "antigo";
 
   useEffect(() => {
     const p = ensureFonts();
@@ -67,7 +79,7 @@ export function PrintCardPreview({
 
   useEffect(() => {
     let alive = true;
-    if (!card.slug) {
+    if (!card.slug || isAntigo) {
       setQr(null);
       return;
     }
@@ -85,7 +97,7 @@ export function PrintCardPreview({
     return () => {
       alive = false;
     };
-  }, [card.slug]);
+  }, [card.slug, isAntigo]);
 
   const px = (mm: number) => `${mm * scale}px`;
   const nome = (card.nome_cartao || card.nome || "").trim();
@@ -93,14 +105,41 @@ export function PrintCardPreview({
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 
-  const bg = side === "frente"
-    ? frenteUrl || DEFAULT_PRINT_ASSETS.frenteUrl
-    : versoUrl || DEFAULT_PRINT_ASSETS.versoUrl;
+  const bg = isAntigo
+    ? side === "frente"
+      ? antigoFrenteUrl || DEFAULT_PRINT_ASSETS.antigoFrenteUrl
+      : antigoVersoUrl || DEFAULT_PRINT_ASSETS.antigoVersoUrl
+    : side === "frente"
+      ? frenteUrl || DEFAULT_PRINT_ASSETS.frenteUrl
+      : versoUrl || DEFAULT_PRINT_ASSETS.versoUrl;
 
   const baselineTop = (baselineMm: number, sizePt: number) =>
     baselineMm - sizePt * PT * ASCENT;
 
   const backLogoW = CARD_LAYOUT.backLogoWidth;
+
+  const antigoLine = (
+    text: string,
+    x: number,
+    baseline: number,
+    size: number,
+    color: string,
+    opacity = 1,
+  ) => (
+    <div
+      className="absolute whitespace-nowrap"
+      style={{
+        left: px(x),
+        top: px(baselineTop(baseline, size)),
+        fontSize: px(size * PT),
+        lineHeight: 1,
+        color,
+        opacity,
+      }}
+    >
+      {text}
+    </div>
+  );
 
   return (
     <div
@@ -108,7 +147,9 @@ export function PrintCardPreview({
       style={{
         width: px(CARD_TRIM.w),
         height: px(CARD_TRIM.h),
-        fontFamily: "OpenSansPreview, system-ui, sans-serif",
+        fontFamily: isAntigo
+          ? "FrutigerPreview, system-ui, sans-serif"
+          : "OpenSansPreview, system-ui, sans-serif",
       }}
     >
       <img
@@ -118,7 +159,50 @@ export function PrintCardPreview({
         draggable={false}
       />
 
-      {side === "frente" ? (
+      {isAntigo ? (
+        side === "frente" && (
+          <>
+            {antigoLine(
+              nome,
+              CARD_LAYOUT_ANTIGO.textX,
+              CARD_LAYOUT_ANTIGO.nome.baseline,
+              CARD_LAYOUT_ANTIGO.nome.size,
+              CARD_LAYOUT_ANTIGO.nome.color,
+            )}
+            {antigoLine(
+              card.cargo,
+              CARD_LAYOUT_ANTIGO.textX,
+              CARD_LAYOUT_ANTIGO.cargo.baseline,
+              CARD_LAYOUT_ANTIGO.cargo.size,
+              CARD_LAYOUT_ANTIGO.cargo.color,
+            )}
+            {antigoLine(
+              card.email ?? "",
+              CARD_LAYOUT_ANTIGO.textX,
+              CARD_LAYOUT_ANTIGO.email.baseline,
+              CARD_LAYOUT_ANTIGO.email.size,
+              CARD_LAYOUT_ANTIGO.email.color,
+              CARD_LAYOUT_ANTIGO.email.opacity,
+            )}
+            {antigoLine(
+              siteText,
+              CARD_LAYOUT_ANTIGO.textX,
+              CARD_LAYOUT_ANTIGO.site.baseline,
+              CARD_LAYOUT_ANTIGO.site.size,
+              CARD_LAYOUT_ANTIGO.site.color,
+              CARD_LAYOUT_ANTIGO.site.opacity,
+            )}
+            {antigoLine(
+              formatPhoneAntigo(card.whatsapp),
+              CARD_LAYOUT_ANTIGO.celular.x,
+              CARD_LAYOUT_ANTIGO.celular.baseline,
+              CARD_LAYOUT_ANTIGO.celular.size,
+              CARD_LAYOUT_ANTIGO.celular.color,
+              CARD_LAYOUT_ANTIGO.celular.opacity,
+            )}
+          </>
+        )
+      ) : side === "frente" ? (
         <>
           {/* QR */}
           <div
