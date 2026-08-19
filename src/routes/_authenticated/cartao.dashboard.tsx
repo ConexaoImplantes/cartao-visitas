@@ -381,32 +381,6 @@ function DashboardPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!qrView} onOpenChange={(o) => !o && setQrView(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>QR Code — {qrView?.c.nome}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-2">
-            {qrView?.dataUrl ? (
-              <img src={qrView.dataUrl} alt={`QR Code ${qrView.c.nome}`} className="size-64 rounded-lg bg-white p-3" />
-            ) : (
-              <div className="flex size-64 items-center justify-center rounded-lg bg-[color:var(--surface-hover)]">
-                <Loader2 className="size-6 animate-spin text-[color:var(--text-muted)]" />
-              </div>
-            )}
-            <p className="break-all text-center text-xs text-[color:var(--text-muted)]">
-              {qrView && buildCardUrl(qrView.c.slug)}
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => qrView && downloadQrPng(qrView.c.slug, qrView.c.nome)}
-              disabled={!qrView?.dataUrl}
-            >
-              <Download className="size-4" /> Baixar PNG
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
 
   );
