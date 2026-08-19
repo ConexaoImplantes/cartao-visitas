@@ -205,7 +205,7 @@ export function LinkTreeCard({ collaborator, theme }: Props) {
 
 
         {/* Footer */}
-        <footer className="mt-10 flex items-start justify-between gap-4 border-t border-white/10 pt-6">
+        <footer className="mt-10 flex items-center justify-between gap-4 border-t border-white/10 pt-6">
           <div className="flex flex-col gap-2">
             <img
               src={logoSrc}
