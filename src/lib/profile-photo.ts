@@ -27,13 +27,20 @@ export const DEFAULT_FRAME = {
   y: 0,
 } as const;
 
-export type ProfileFrame = { zoom: number; x: number; y: number };
+/**
+ * `camadas` = fundo + pessoa recortada + moldura dourada.
+ * `estatico` = apenas a foto preenchendo o quadrado 1080x1080.
+ */
+export type ProfileMode = "camadas" | "estatico";
+
+export type ProfileFrame = { zoom: number; x: number; y: number; mode: ProfileMode };
 
 export const FRAME_LIMITS = {
   zoom: { min: 0.6, max: 1.8, step: 0.01 },
   x: { min: -400, max: 400, step: 2 },
   y: { min: -1000, max: 1000, step: 2 },
 } as const;
+
 
 /** Base de composição: pessoa ancorada na base, alinhada à direita do círculo. */
 const BASE_HEIGHT = 0.94; // fração do lado
