@@ -129,6 +129,7 @@ export function ThemePage() {
               <TabsTrigger value="institucional">Instituição</TabsTrigger>
               <TabsTrigger value="impressao">Impressão</TabsTrigger>
               <TabsTrigger value="assinatura">Assinatura</TabsTrigger>
+              <TabsTrigger value="foto-perfil">Perfil</TabsTrigger>
             </TabsList>
 
             {/* ============================= BACKGROUND ============================= */}
