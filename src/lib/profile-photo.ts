@@ -72,54 +72,16 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
- * Gera (e memoriza) a camada dourada da arte padrão: os pixels em que o fundo
- * padrão difere da variante limpa (moldura dourada + logo). Essa camada é
- * desenhada por cima da pessoa, deixando a foto na camada de baixo.
+ * Carrega (e memoriza) a camada dourada da arte. Essa camada é desenhada por
+ * cima da foto do colaborador, mantendo-a na camada de baixo.
  */
-let goldOverlayPromise: Promise<HTMLCanvasElement | null> | null = null;
+let goldOverlayPromise: Promise<HTMLImageElement | null> | null = null;
 
-async function getGoldOverlay(): Promise<HTMLCanvasElement | null> {
+async function getGoldOverlay(): Promise<HTMLImageElement | null> {
   if (!goldOverlayPromise) {
-    goldOverlayPromise = (async () => {
-      try {
-        const [bg, clean] = await Promise.all([
-          loadImage(DEFAULT_PROFILE_BACKGROUNDS.bgUrl),
-          loadImage(DEFAULT_PROFILE_BACKGROUNDS.cleanUrl),
-        ]);
-        const s = PROFILE_SIZE;
-        const mk = (img: HTMLImageElement) => {
-          const c = document.createElement("canvas");
-          c.width = s;
-          c.height = s;
-          const cx = c.getContext("2d", { willReadFrequently: true })!;
-          cx.drawImage(img, 0, 0, s, s);
-          return cx.getImageData(0, 0, s, s);
-        };
-        const a = mk(bg);
-        const b = mk(clean);
-        const out = document.createElement("canvas");
-        out.width = s;
-        out.height = s;
-        const octx = out.getContext("2d")!;
-        const od = octx.createImageData(s, s);
-        for (let i = 0; i < a.data.length; i += 4) {
-          const d = Math.max(
-            Math.abs(a.data[i] - b.data[i]),
-            Math.abs(a.data[i + 1] - b.data[i + 1]),
-            Math.abs(a.data[i + 2] - b.data[i + 2]),
-            Math.abs(a.data[i + 3] - b.data[i + 3]),
-          );
-          od.data[i] = a.data[i];
-          od.data[i + 1] = a.data[i + 1];
-          od.data[i + 2] = a.data[i + 2];
-          od.data[i + 3] = d <= 8 ? 0 : Math.min(255, Math.round((d / 40) * 255));
-        }
-        octx.putImageData(od, 0, 0);
-        return out;
-      } catch {
-        return null;
-      }
-    })();
+    goldOverlayPromise = loadImage(DEFAULT_PROFILE_BACKGROUNDS.overlayUrl).catch(
+      () => null,
+    );
   }
   return goldOverlayPromise;
 }
