@@ -322,6 +322,13 @@ function DashboardPage() {
                             <Pencil className="size-4" />
                           </IconBtn>
                         )}
+                        {can("dashboard.view") && (
+                          <IconBtn title="Ver / editar arte do cartão físico" asChild>
+                            <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
+                              <CreditCard className="size-4" />
+                            </Link>
+                          </IconBtn>
+                        )}
                         {can("dashboard.download_card") && (
                           <IconBtn
                             title="Baixar cartão para impressão (PDF)"
