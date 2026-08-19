@@ -46,6 +46,8 @@ export const DEFAULT_PROFILE_BACKGROUNDS = {
   cleanUrl: bgCleanAsset.url as string,
   /** Camada de fundo (base) da composição. */
   baseUrl: bgFotoAsset.url as string,
+  /** Moldura dourada que fica acima da foto do colaborador. */
+  overlayUrl: douradoAsset.url as string,
 };
 
 export function normalizeFrame(input: unknown): ProfileFrame {
