@@ -223,18 +223,31 @@ export async function buildPrintCardsPdf(
   pdf.setTitle("Cartões de visita — Conexão Digital Implant");
   pdf.setCreator("Link Tree Corporativo");
 
-  const [bold, italic, regular, frontBytes, backBytes, logoBytes] = await Promise.all([
+  const isAntigo = backgrounds.modelo === "antigo";
+
+  const [bold, italic, regular, frutiger, frontBytes, backBytes, logoBytes] = await Promise.all([
     fetchBytes(fontBoldAsset.url),
     fetchBytes(fontItalicAsset.url),
     fetchBytes(fontRegularAsset.url),
-    fetchBytes(backgrounds.frenteUrl || bgFrontAsset.url),
-    fetchBytes(backgrounds.versoUrl || bgBackAsset.url),
+    fetchBytes(fontFrutigerAsset.url),
+    fetchBytes(
+      isAntigo
+        ? backgrounds.antigoFrenteUrl || bgAntigoFrontAsset.url
+        : backgrounds.frenteUrl || bgFrontAsset.url,
+    ),
+    fetchBytes(
+      isAntigo
+        ? backgrounds.antigoVersoUrl || bgAntigoBackAsset.url
+        : backgrounds.versoUrl || bgBackAsset.url,
+    ),
     fetchBytes(logoAsset.url),
   ]);
 
   const fontBold = await pdf.embedFont(bold, { subset: true });
   const fontItalic = await pdf.embedFont(italic, { subset: true });
   const fontRegular = await pdf.embedFont(regular, { subset: true });
+  const fontFrutiger = await pdf.embedFont(frutiger, { subset: true });
+
 
   const embedImage = async (b: Uint8Array) =>
     isJpeg(b) ? pdf.embedJpg(b) : pdf.embedPng(b);
