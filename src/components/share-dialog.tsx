@@ -52,7 +52,21 @@ export function ShareDialog({
   }
 
   function message() {
-    return `Olá, ${collaborator?.nome ?? ""}! Este é o seu cartão de visitas digital (Link Tree Corporativo): ${url}`;
+    return (
+      `Olá, ${collaborator?.nome ?? ""}! Este é o seu cartão de visitas digital (Link Tree Corporativo): ${url}` +
+      `\n\nE aqui está o seu kit digital completo (foto de perfil, assinatura de e-mail, cartão de visitas e manual de uso): ${kitUrl}`
+    );
+  }
+
+  async function copyKit() {
+    try {
+      await navigator.clipboard.writeText(kitUrl);
+      setCopiedKit(true);
+      toast.success("Link do kit copiado");
+      setTimeout(() => setCopiedKit(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
   }
 
   function shareWhatsApp() {
