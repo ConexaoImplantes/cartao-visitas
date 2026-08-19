@@ -48,6 +48,13 @@ function FluxoPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [batchBusy, setBatchBusy] = useState(false);
   const [progress, setProgress] = useState("");
+  const [markBusy, setMarkBusy] = useState(false);
+  const [batchSteps, setBatchSteps] = useState<Record<KitStepKey, boolean>>({
+    foto: false,
+    linktree: false,
+    assinatura: false,
+    cartao: false,
+  });
 
   useEffect(() => {
     if (!permLoading && !can("fluxo.view")) {
