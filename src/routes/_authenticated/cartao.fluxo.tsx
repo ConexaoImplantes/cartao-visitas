@@ -380,6 +380,47 @@ function FluxoPage() {
           )}
         </section>
       </div>
+
+      {can("fluxo.marcar_etapas") && (
+        <section className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
+          <div className="font-medium text-[color:var(--text-main)]">
+            Marcar etapas em lote
+          </div>
+          <p className="mt-1 text-xs text-[color:var(--text-muted)]">
+            Use quando o material já existe mas o sistema não reconhece (ex.: todos já possuem foto
+            de perfil). A ação vale para os {rows?.length ?? 0} colaboradores da lista.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            {KIT_STEPS.map((step) => (
+              <label
+                key={step.key}
+                className="flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-main)]"
+              >
+                <Checkbox
+                  checked={batchSteps[step.key]}
+                  onCheckedChange={(v) =>
+                    setBatchSteps((prev) => ({ ...prev, [step.key]: v === true }))
+                  }
+                />
+                {step.label}
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button
+              onClick={() => applyBatchManual(true)}
+              disabled={markBusy || !rows?.length}
+              className="gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
+            >
+              {markBusy ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+              Marcar como concluídas
+            </Button>
+            <Button variant="outline" onClick={() => applyBatchManual(false)} disabled={markBusy}>
+              Remover marcações
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
