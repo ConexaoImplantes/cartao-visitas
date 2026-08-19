@@ -85,6 +85,7 @@ export type Database = {
           foto_url: string | null
           id: string
           nome: string
+          nome_cartao: string | null
           slug: string
           status: string
           telefone_fixo: string | null
@@ -99,6 +100,7 @@ export type Database = {
           foto_url?: string | null
           id?: string
           nome: string
+          nome_cartao?: string | null
           slug: string
           status?: string
           telefone_fixo?: string | null
@@ -113,6 +115,7 @@ export type Database = {
           foto_url?: string | null
           id?: string
           nome?: string
+          nome_cartao?: string | null
           slug?: string
           status?: string
           telefone_fixo?: string | null
