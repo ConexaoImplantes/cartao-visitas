@@ -385,7 +385,7 @@ export async function buildPrintCardsPdf(
       drawA(site, L.textX, L.site.baseline, L.site.size, L.site.color, L.site.opacity);
       drawA(
         formatPhoneAntigo(c.whatsapp),
-        L.celular.x,
+        L.textX,
         L.celular.baseline,
         L.celular.size,
         L.celular.color,
