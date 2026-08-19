@@ -17,7 +17,7 @@ import logoUrl from "@/assets/logo-conexao.png";
 interface NavItem {
   to: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
 }
 
 export const Route = createFileRoute("/_authenticated")({
