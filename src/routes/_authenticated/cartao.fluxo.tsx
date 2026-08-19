@@ -274,6 +274,20 @@ function FluxoPage() {
                       cartão de visitas (PDF) + QR Code.
                     </p>
                   </div>
+                  <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(buildKitUrl(selected.slug));
+                        toast.success("Link do kit do colaborador copiado");
+                      } catch {
+                        toast.error("Não foi possível copiar o link");
+                      }
+                    }}
+                  >
+                    <Link2 className="size-4" /> Link do kit
+                  </Button>
                   <Button
                     onClick={() => handleKit(selected)}
                     disabled={!status.ready || busyId === selected.id || !opts}
