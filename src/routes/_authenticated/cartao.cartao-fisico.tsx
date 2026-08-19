@@ -11,12 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { PrintCardPreview } from "@/components/print-card-preview";
+import { ArtViewerDialog, EMPTY_ART_VIEWER, type ArtViewerState } from "@/components/art-viewer-dialog";
 import { slugify, validateSlug } from "@/lib/slug";
 import {
   downloadPrintCard,
   downloadPrintCardsBatch,
   loadPrintOptions,
-  openPrintCardPdf,
+  createPrintCardPdfUrl,
   type PrintBackgrounds,
 } from "@/lib/print-card";
 
@@ -202,9 +203,20 @@ function CartaoFisicoPage() {
   async function handleOpenPdf() {
     if (!previewCard) return;
     setBusy("pdf");
+    setViewer({
+      open: true,
+      title: `Cartão de visitas — ${previewCard.nome}`,
+      description: "PDF real de impressão (frente e verso), com sangria e marcas de corte.",
+      url: null,
+      kind: "pdf",
+      loading: true,
+      filename: `cartao-${previewCard.slug || "colaborador"}.pdf`,
+    });
     try {
-      await openPrintCardPdf([previewCard], bgs);
+      const url = await createPrintCardPdfUrl([previewCard], bgs);
+      setViewer((v) => ({ ...v, url, loading: false }));
     } catch (e: any) {
+      setViewer(EMPTY_ART_VIEWER);
       toast.error("Falha ao gerar o PDF", { description: e?.message });
     } finally {
       setBusy(null);
