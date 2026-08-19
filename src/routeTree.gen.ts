@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SlugIndexRouteImport } from './routes/$slug.index'
 import { Route as SlugKitRouteImport } from './routes/$slug.kit'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
@@ -33,20 +33,20 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SlugRoute = SlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SlugIndexRoute = SlugIndexRouteImport.update({
+  id: '/$slug/',
+  path: '/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SlugKitRoute = SlugKitRouteImport.update({
-  id: '/kit',
-  path: '/kit',
-  getParentRoute: () => SlugRoute,
+  id: '/$slug/kit',
+  path: '/$slug/kit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCartaoUsuariosRoute =
   AuthenticatedCartaoUsuariosRouteImport.update({
@@ -104,9 +104,9 @@ const AuthenticatedCartaoAssinaturaRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRouteWithChildren
   '/login': typeof LoginRoute
   '/$slug/kit': typeof SlugKitRoute
+  '/$slug/': typeof SlugIndexRoute
   '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -119,9 +119,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRouteWithChildren
   '/login': typeof LoginRoute
   '/$slug/kit': typeof SlugKitRoute
+  '/$slug': typeof SlugIndexRoute
   '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -135,10 +135,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/$slug/kit': typeof SlugKitRoute
+  '/$slug/': typeof SlugIndexRoute
   '/_authenticated/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/_authenticated/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -153,9 +153,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$slug'
     | '/login'
     | '/$slug/kit'
+    | '/$slug/'
     | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
@@ -168,9 +168,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$slug'
     | '/login'
     | '/$slug/kit'
+    | '/$slug'
     | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
@@ -183,10 +183,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/$slug'
     | '/_authenticated'
     | '/login'
     | '/$slug/kit'
+    | '/$slug/'
     | '/_authenticated/cartao/assinatura'
     | '/_authenticated/cartao/cartao-fisico'
     | '/_authenticated/cartao/configuracoes'
@@ -200,9 +200,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SlugRoute: typeof SlugRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  SlugKitRoute: typeof SlugKitRoute
+  SlugIndexRoute: typeof SlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -221,13 +222,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$slug': {
-      id: '/$slug'
-      path: '/$slug'
-      fullPath: '/$slug'
-      preLoaderRoute: typeof SlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -235,12 +229,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$slug/': {
+      id: '/$slug/'
+      path: '/$slug'
+      fullPath: '/$slug/'
+      preLoaderRoute: typeof SlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$slug/kit': {
       id: '/$slug/kit'
-      path: '/kit'
+      path: '/$slug/kit'
       fullPath: '/$slug/kit'
       preLoaderRoute: typeof SlugKitRouteImport
-      parentRoute: typeof SlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/cartao/usuarios': {
       id: '/_authenticated/cartao/usuarios'
@@ -308,16 +309,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface SlugRouteChildren {
-  SlugKitRoute: typeof SlugKitRoute
-}
-
-const SlugRouteChildren: SlugRouteChildren = {
-  SlugKitRoute: SlugKitRoute,
-}
-
-const SlugRouteWithChildren = SlugRoute._addFileChildren(SlugRouteChildren)
-
 interface AuthenticatedRouteChildren {
   AuthenticatedCartaoAssinaturaRoute: typeof AuthenticatedCartaoAssinaturaRoute
   AuthenticatedCartaoCartaoFisicoRoute: typeof AuthenticatedCartaoCartaoFisicoRoute
@@ -348,9 +339,10 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SlugRoute: SlugRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  SlugKitRoute: SlugKitRoute,
+  SlugIndexRoute: SlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
