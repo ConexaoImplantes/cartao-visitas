@@ -51,6 +51,9 @@ function AuthLayout() {
     ...(can("assinatura.view")
       ? ([{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] as const)
       : ([] as const)),
+    ...(can("foto_perfil.view")
+      ? ([{ to: "/cartao/foto-perfil", label: "Perfil", icon: UserRound }] as const)
+      : ([] as const)),
     ...(can("importar.view")
       ? ([{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] as const)
       : ([] as const)),
