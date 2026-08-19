@@ -75,7 +75,7 @@ function AuthLayout() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full items-center gap-4 px-4 py-3 sm:px-6 lg:gap-6">
           <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
           <nav className="flex flex-1 flex-nowrap items-center gap-0.5 overflow-hidden md:gap-1">
             {nav.map((n) => {
