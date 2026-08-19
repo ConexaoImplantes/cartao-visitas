@@ -294,11 +294,14 @@ function FotoPerfilPage() {
       const JSZip = (await import("jszip")).default;
       const zip = new JSZip();
       for (const c of items) {
+        const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
+        const saved = normalizeFrame(c.foto_perfil_ajuste);
         const blob = await profilePhotoBlob({
-          personUrl: c.foto_recortada_url ?? null,
+          personUrl: c.foto_recortada_url ?? c.foto_url ?? null,
           bgUrl,
-          frame: normalizeFrame(c.foto_perfil_ajuste),
+          frame: linktreeOnly ? { ...saved, mode: "estatico" } : saved,
         });
+
         zip.file(profileFileName(c.nome_cartao || c.nome), blob);
       }
       const out = await zip.generateAsync({ type: "blob" });
