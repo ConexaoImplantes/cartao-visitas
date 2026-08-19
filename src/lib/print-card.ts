@@ -1,10 +1,14 @@
 import bgFrontAsset from "@/assets/bg-f-cv.png.asset.json";
 import bgBackAsset from "@/assets/bg-v-cv.png.asset.json";
+import bgAntigoFrontAsset from "@/assets/bg-cv-antigo-f.png.asset.json";
+import bgAntigoBackAsset from "@/assets/bg-cv-antigo-v.png.asset.json";
 import logoAsset from "@/assets/logo-horizontal-branco.png.asset.json";
 import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
 import fontBoldAsset from "@/assets/OpenSans-Bold.ttf.asset.json";
 import fontItalicAsset from "@/assets/OpenSans-Italic.ttf.asset.json";
+import fontFrutigerAsset from "@/assets/FrutigerLTStd-LightCn.otf.asset.json";
 import { buildCardUrl } from "./qr";
+
 
 /** Millimetre -> PDF point. */
 const MM = 72 / 25.4;
