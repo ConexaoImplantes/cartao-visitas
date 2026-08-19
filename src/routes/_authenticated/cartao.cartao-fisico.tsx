@@ -81,6 +81,7 @@ function CartaoFisicoPage() {
 
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<"one" | "batch" | "pdf" | null>(null);
+  const [viewer, setViewer] = useState<ArtViewerState>(EMPTY_ART_VIEWER);
 
   const canEdit = can("dashboard.edit");
 
@@ -460,6 +461,11 @@ function CartaoFisicoPage() {
           )}
         </section>
       </div>
+
+      <ArtViewerDialog
+        state={viewer}
+        onOpenChange={(o) => setViewer((v) => (o ? { ...v, open: true } : EMPTY_ART_VIEWER))}
+      />
     </div>
   );
 }
