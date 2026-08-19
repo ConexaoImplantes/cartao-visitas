@@ -483,6 +483,11 @@ function AssinaturaPage() {
           )}
         </section>
       </div>
+
+      <ArtViewerDialog
+        state={viewer}
+        onOpenChange={(o) => setViewer((v) => (o ? { ...v, open: true } : EMPTY_ART_VIEWER))}
+      />
     </div>
   );
 }
