@@ -77,21 +77,22 @@ function AuthLayout() {
       <header className="sticky top-0 z-30 border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
           <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
-          <nav className="flex flex-1 flex-wrap items-center gap-1">
+          <nav className="flex flex-1 flex-nowrap items-center gap-0.5 overflow-hidden md:gap-1">
             {nav.map((n) => {
               const active = pathname.startsWith(n.to);
               return (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  title={n.label}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-colors md:gap-2 md:px-3 ${
                     active
                       ? "bg-[color:var(--surface-hover)] text-[color:var(--text-main)]"
                       : "text-[color:var(--text-muted)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-main)]"
                   }`}
                 >
                   <n.icon className="size-4" />
-                  <span className="hidden whitespace-nowrap sm:inline">{n.label}</span>
+                  <span className="hidden whitespace-nowrap 2xl:inline">{n.label}</span>
                 </Link>
               );
             })}
