@@ -1,6 +1,6 @@
 import bgFrontAsset from "@/assets/bg-f-cv.png.asset.json";
 import bgBackAsset from "@/assets/bg-v-cv.png.asset.json";
-import bgAntigoFrontAsset from "@/assets/bg-cv-antigo-f.png.asset.json";
+import bgAntigoFrontAsset from "@/assets/bg-cv-modelo-antigo-f.png.asset.json";
 import bgAntigoBackAsset from "@/assets/bg-cv-antigo-v.png.asset.json";
 import logoAsset from "@/assets/logo-horizontal-branco.png.asset.json";
 import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
@@ -69,14 +69,14 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
  * Todas as medidas em mm a partir do canto superior esquerdo do corte.
  */
 export const CARD_LAYOUT_ANTIGO = {
-  textX: 32.7,
+  textX: 40.0,
   nome: { baseline: 17.6, size: 12, color: "#004a8f" },
   cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
   email: { baseline: 25.0, size: 7, color: "#000000", opacity: 0.7 },
   site: { baseline: 27.5, size: 7, color: "#000000", opacity: 0.7 },
-  /** o rótulo "Tel.:" e o ícone do WhatsApp já fazem parte da arte de fundo;
-   *  o celular fica alinhado horizontalmente ao ícone verde */
-  celular: { x: 37.0, baseline: 30.5, size: 7, color: "#000000", opacity: 0.7 },
+  /** fundo novo traz o logo à esquerda e não possui rótulo de telefone;
+   *  renderizamos "Tel. DDI (DDD) número" alinhado aos demais dados */
+  celular: { baseline: 30.5, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
 
 
@@ -115,7 +115,7 @@ export interface PrintBackgrounds {
   marcaLogoAltura?: number;
 }
 
-/** Telefone no padrão do modelo antigo: 55 (11) 98877-6655 */
+/** Telefone no padrão do modelo antigo: Tel. 55 (11) 98877-6655 */
 export function formatPhoneAntigo(raw: string | null | undefined): string {
   const d = (raw ?? "").includes("|")
     ? raw!.split("|")
@@ -137,7 +137,7 @@ export function formatPhoneAntigo(raw: string | null | undefined): string {
     number.length > 8
       ? `${number.slice(0, 5)}-${number.slice(5)}`
       : `${number.slice(0, number.length - 4)}-${number.slice(-4)}`;
-  return [ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ");
+  return `Tel. ${[ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ")}`;
 }
 
 /** Loads print artwork + site from the global theme (falls back to defaults). */
@@ -385,7 +385,7 @@ export async function buildPrintCardsPdf(
       drawA(site, L.textX, L.site.baseline, L.site.size, L.site.color, L.site.opacity);
       drawA(
         formatPhoneAntigo(c.whatsapp),
-        L.celular.x,
+        L.textX,
         L.celular.baseline,
         L.celular.size,
         L.celular.color,

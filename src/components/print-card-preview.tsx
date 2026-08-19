@@ -194,7 +194,7 @@ export function PrintCardPreview({
             )}
             {antigoLine(
               formatPhoneAntigo(card.whatsapp),
-              CARD_LAYOUT_ANTIGO.celular.x,
+              CARD_LAYOUT_ANTIGO.textX,
               CARD_LAYOUT_ANTIGO.celular.baseline,
               CARD_LAYOUT_ANTIGO.celular.size,
               CARD_LAYOUT_ANTIGO.celular.color,
