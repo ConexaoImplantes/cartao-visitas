@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2, Download, Share2 } from "lucide-react";
+import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2, Download, Share2, Printer } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,13 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  downloadPrintCard,
+  downloadPrintCardsBatch,
+  loadPrintOptions,
+  type PrintBackgrounds,
+} from "@/lib/print-card";
 
 const PERIODS: Array<{ label: string; days: number | null }> = [
   { label: "7 dias", days: 7 },
@@ -47,6 +54,50 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [printing, setPrinting] = useState(false);
+
+  async function printOptions(): Promise<PrintBackgrounds> {
+    try {
+      return await loadPrintOptions();
+    } catch {
+      return {};
+    }
+  }
+
+  async function handlePrintOne(c: Collaborator) {
+    setPrinting(true);
+    try {
+      await downloadPrintCard(c, await printOptions());
+      toast.success("Cartão gerado para impressão");
+    } catch (e: any) {
+      toast.error("Falha ao gerar o cartão", { description: e?.message });
+    } finally {
+      setPrinting(false);
+    }
+  }
+
+  async function handlePrintBatch() {
+    const items = (rows ?? []).filter((r) => selected.has(r.id));
+    if (!items.length) return;
+    setPrinting(true);
+    try {
+      await downloadPrintCardsBatch(items, await printOptions());
+      toast.success(`${items.length} cartões gerados para impressão`);
+    } catch (e: any) {
+      toast.error("Falha ao gerar os cartões", { description: e?.message });
+    } finally {
+      setPrinting(false);
+    }
+  }
+
+  function toggleSelected(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
@@ -132,6 +183,14 @@ function DashboardPage() {
             Gerencie os cartões digitais e QR Codes dos colaboradores.
           </p>
         </div>
+        <div className="flex shrink-0 items-center gap-2">
+        {can("dashboard.download_card") && selected.size > 0 && (
+          <Button variant="outline" onClick={handlePrintBatch} disabled={printing}>
+            {printing ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />}
+            <span className="hidden sm:inline">Baixar {selected.size} cartões</span>
+            <span className="sm:hidden">{selected.size}</span>
+          </Button>
+        )}
         {can("dashboard.create") && (
           <Button
             onClick={() => { setEditing(null); setModalOpen(true); }}
@@ -142,6 +201,7 @@ function DashboardPage() {
             <span className="sm:hidden">Novo</span>
           </Button>
         )}
+        </div>
       </header>
 
       <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-4">
@@ -185,6 +245,17 @@ function DashboardPage() {
             <table className="w-full text-sm">
               <thead className="text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
                 <tr className="border-b border-[color:var(--border-strong)]">
+                  {can("dashboard.download_card") && (
+                    <th className="w-10 p-4">
+                      <Checkbox
+                        checked={!!rows.length && selected.size === rows.length}
+                        onCheckedChange={(v) =>
+                          setSelected(v ? new Set(rows.map((r) => r.id)) : new Set())
+                        }
+                        aria-label="Selecionar todos"
+                      />
+                    </th>
+                  )}
                   <th className="p-4">Colaborador</th>
                   <th className="hidden p-4 md:table-cell">Cargo</th>
                   <th className="hidden p-4 lg:table-cell">E-mail</th>
@@ -196,6 +267,15 @@ function DashboardPage() {
               <tbody>
                 {rows.map((c) => (
                   <tr key={c.id} className="border-b border-[color:var(--border-strong)] last:border-0 hover:bg-[color:var(--surface-hover)]/50">
+                    {can("dashboard.download_card") && (
+                      <td className="p-4">
+                        <Checkbox
+                          checked={selected.has(c.id)}
+                          onCheckedChange={() => toggleSelected(c.id)}
+                          aria-label={`Selecionar ${c.nome}`}
+                        />
+                      </td>
+                    )}
                     <td className="p-4">
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
@@ -263,6 +343,14 @@ function DashboardPage() {
                         {can("dashboard.download_qr") && (
                           <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.slug, c.nome)}>
                             <Download className="size-4" />
+                          </IconBtn>
+                        )}
+                        {can("dashboard.download_card") && (
+                          <IconBtn
+                            title="Baixar cartão para impressão (PDF)"
+                            onClick={() => handlePrintOne(c)}
+                          >
+                            <Printer className="size-4" />
                           </IconBtn>
                         )}
                         {can("dashboard.share") && (
