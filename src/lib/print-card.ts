@@ -299,7 +299,6 @@ export async function buildPrintCardsPdf(
     front.drawImage(qr, { x: qrPos.x, y: qrPos.y, width: mm(qrSize), height: mm(qrSize) });
 
     const textX = CARD_LAYOUT.textX;
-    const maxTextW = TRIM_W - textX - 5;
 
     // 2. Nome — Open Sans Bold 11pt #FFFFFF (tamanho fixo, regra inegociável)
     const nomeSize = CARD_LAYOUT.nome.size;
