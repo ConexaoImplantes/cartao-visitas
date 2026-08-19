@@ -300,6 +300,7 @@ function FluxoPage() {
                     )}
                     Baixar kit
                   </Button>
+                  </div>
                 </div>
               )}
             </>
