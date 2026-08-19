@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer } from "lucide-react";
+import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer, CreditCard } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
