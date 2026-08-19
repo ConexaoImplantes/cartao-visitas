@@ -46,7 +46,7 @@ function AuthLayout() {
       ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
       : ([] as const)),
     ...(can("dashboard.view")
-      ? ([{ to: "/cartao/cartao-fisico", label: "Cartão Físico", icon: Printer }] as const)
+      ? ([{ to: "/cartao/cartao-fisico", label: "Cartão", icon: Printer }] as const)
       : ([] as const)),
     ...(can("dashboard.view")
       ? ([{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] as const)
@@ -60,7 +60,7 @@ function AuthLayout() {
     ...(isSuperAdmin
       ? ([
           { to: "/cartao/usuarios", label: "Usuários", icon: Users },
-          { to: "/cartao/configuracoes", label: "Configurações", icon: Settings },
+          { to: "/cartao/configuracoes", label: "Config", icon: Settings },
         ] as const)
       : ([] as const)),
   ] as const;
@@ -71,7 +71,7 @@ function AuthLayout() {
       <header className="sticky top-0 z-30 border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
           <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
-          <nav className="flex flex-1 items-center gap-1">
+          <nav className="flex flex-1 flex-wrap items-center gap-1">
             {nav.map((n) => {
               const active = pathname.startsWith(n.to);
               return (
@@ -85,7 +85,7 @@ function AuthLayout() {
                   }`}
                 >
                   <n.icon className="size-4" />
-                  <span className="hidden sm:inline">{n.label}</span>
+                  <span className="hidden whitespace-nowrap sm:inline">{n.label}</span>
                 </Link>
               );
             })}
