@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Download,
+  Eye,
   ImagePlus,
   Loader2,
   RotateCcw,
@@ -22,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import { normalizeTheme, type Collaborator } from "@/lib/types";
 import { ProfilePhotoPreview } from "@/components/profile-photo-preview";
+import { ArtViewerDialog, EMPTY_ART_VIEWER, type ArtViewerState } from "@/components/art-viewer-dialog";
 import { ShareDialog } from "@/components/share-dialog";
 import { removeBackground, blobToDataUrl, trimAndResizePng } from "@/lib/background-removal";
 import {
@@ -73,9 +75,10 @@ function FotoPerfilPage() {
   const [person, setPerson] = useState<string | null>(null);
   const [frame, setFrame] = useState<ProfileFrame>({ ...DEFAULT_FRAME });
   const [saving, setSaving] = useState(false);
-  const [busy, setBusy] = useState<"cut" | "one" | "batch" | "avatar" | null>(null);
+  const [busy, setBusy] = useState<"cut" | "one" | "batch" | "avatar" | "view" | null>(null);
   const [progress, setProgress] = useState("");
   const [sharing, setSharing] = useState<Collaborator | null>(null);
+  const [viewer, setViewer] = useState<ArtViewerState>(EMPTY_ART_VIEWER);
 
   const fileRef = useRef<HTMLInputElement>(null);
   const pngRef = useRef<HTMLInputElement>(null);
@@ -205,6 +208,29 @@ function FotoPerfilPage() {
       ),
     );
     toast.success("Foto de perfil salva");
+  }
+
+  async function handleView() {
+    if (!active) return;
+    setBusy("view");
+    setViewer({
+      open: true,
+      title: `Foto de perfil — ${active.nome_cartao || active.nome}`,
+      description: "Arte final em tamanho real (1080x1080 px).",
+      url: null,
+      kind: "image",
+      loading: true,
+      filename: profileFileName(active.nome_cartao || active.nome),
+    });
+    try {
+      const blob = await profilePhotoBlob({ personUrl: person, bgUrl, frame });
+      setViewer((v) => ({ ...v, url: URL.createObjectURL(blob), loading: false }));
+    } catch (e: any) {
+      setViewer(EMPTY_ART_VIEWER);
+      toast.error("Falha ao gerar a arte", { description: e?.message });
+    } finally {
+      setBusy(null);
+    }
   }
 
   async function handleDownloadOne() {
@@ -482,6 +508,14 @@ function FotoPerfilPage() {
                   {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
                   Salvar
                 </Button>
+                <Button variant="outline" onClick={handleView} disabled={busy !== null}>
+                  {busy === "view" ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                  Ver em tamanho real
+                </Button>
                 {canDownload && (
                   <>
                     <Button
@@ -519,6 +553,11 @@ function FotoPerfilPage() {
       </div>
 
       <ShareDialog collaborator={sharing} onOpenChange={(o) => !o && setSharing(null)} />
+
+      <ArtViewerDialog
+        state={viewer}
+        onOpenChange={(o) => setViewer((v) => (o ? { ...v, open: true } : EMPTY_ART_VIEWER))}
+      />
     </div>
   );
 }
