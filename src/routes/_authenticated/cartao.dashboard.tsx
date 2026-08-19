@@ -49,12 +49,12 @@ function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
-  const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [printing, setPrinting] = useState(false);
+  const [printingId, setPrintingId] = useState<string | null>(null);
 
   async function printOptions(): Promise<PrintBackgrounds> {
     try {
