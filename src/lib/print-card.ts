@@ -330,7 +330,7 @@ export async function buildPrintCardsPdf(
 
     const back = newPage(bgBack);
     // Verso: logo horizontal centralizado
-    const backLogoW = 46;
+    const backLogoW = CARD_LAYOUT.backLogoWidth;
     const backLogoH = (logo.height / logo.width) * backLogoW;
     back.drawImage(logo, {
       x: mm(OX + (TRIM_W - backLogoW) / 2),
