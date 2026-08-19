@@ -1,12 +1,24 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail, UserRound, ListChecks } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail, UserRound, ListChecks, MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logoUrl from "@/assets/logo-conexao.png";
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
