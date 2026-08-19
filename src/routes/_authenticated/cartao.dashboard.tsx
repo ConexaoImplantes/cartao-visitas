@@ -215,15 +215,6 @@ function DashboardPage() {
                     key={c.id}
                     className="mb-4 block rounded-xl border border-[color:var(--border-strong)] p-4 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
                   >
-                    {can("dashboard.download_card") && (
-                      <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Selecionar">
-                        <Checkbox
-                          checked={selected.has(c.id)}
-                          onCheckedChange={() => toggleSelected(c.id)}
-                          aria-label={`Selecionar ${c.nome}`}
-                        />
-                      </td>
-                    )}
                     <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Colaborador">
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
