@@ -6,7 +6,7 @@ import { normalizeTheme, type Collaborator, type ThemeConfig } from "@/lib/types
 import { LinkTreeCard } from "@/components/link-tree-card";
 import { trackView } from "@/lib/analytics";
 
-export const Route = createFileRoute("/$slug")({
+export const Route = createFileRoute("/$slug/")({
   ssr: false,
   component: PublicCardPage,
   notFoundComponent: () => (
