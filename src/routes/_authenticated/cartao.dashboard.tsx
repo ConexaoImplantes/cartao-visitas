@@ -147,13 +147,6 @@ function DashboardPage() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-        {can("dashboard.download_card") && selected.size > 0 && (
-          <Button variant="outline" onClick={handlePrintBatch} disabled={printing}>
-            {printing ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />}
-            <span className="hidden sm:inline">Baixar {selected.size} cartões</span>
-            <span className="sm:hidden">{selected.size}</span>
-          </Button>
-        )}
         {can("dashboard.create") && (
           <Button
             onClick={() => { setEditing(null); setModalOpen(true); }}
@@ -208,17 +201,6 @@ function DashboardPage() {
             <table className="w-full text-sm md:table">
               <thead className="hidden text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
                 <tr className="border-b border-[color:var(--border-strong)]">
-                  {can("dashboard.download_card") && (
-                    <th className="w-10 p-4">
-                      <Checkbox
-                        checked={!!rows.length && selected.size === rows.length}
-                        onCheckedChange={(v) =>
-                          setSelected(v ? new Set(rows.map((r) => r.id)) : new Set())
-                        }
-                        aria-label="Selecionar todos"
-                      />
-                    </th>
-                  )}
                   <th className="p-4">Colaborador</th>
                   <th className="hidden p-4 md:table-cell">Cargo</th>
                   <th className="hidden p-4 lg:table-cell">E-mail</th>
