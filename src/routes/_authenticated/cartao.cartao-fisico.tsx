@@ -116,8 +116,11 @@ function CartaoFisicoPage() {
         nome_cartao: draft.nome_cartao || active.nome_cartao,
         cargo: draft.cargo || active.cargo,
         slug: draft.slug || active.slug,
+        whatsapp: active.whatsapp,
+        email: active.email,
       }
     : null;
+
 
   function toggle(id: string) {
     setSelected((prev) => {
