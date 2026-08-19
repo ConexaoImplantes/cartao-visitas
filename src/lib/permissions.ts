@@ -16,6 +16,8 @@ export type PermissionKey =
   | "foto_perfil.download"
   | "assinatura.view"
   | "assinatura.download"
+  | "fluxo.view"
+  | "fluxo.download_kit"
   | "importar.view"
   | "tema.view"
   | "tema.edit";
@@ -76,6 +78,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: [
       { key: "assinatura.view", label: "Acessar a rota" },
       { key: "assinatura.download", label: "Baixar assinatura" },
+    ],
+  },
+  {
+    route: "fluxo",
+    label: "Fluxo guiado + Kit do colaborador",
+    description: "Passo a passo dos materiais e download do kit completo em ZIP.",
+    permissions: [
+      { key: "fluxo.view", label: "Acessar a rota" },
+      { key: "fluxo.download_kit", label: "Baixar o kit completo (ZIP)" },
     ],
   },
   {
