@@ -15,6 +15,8 @@ export interface Collaborator {
   foto_recortada_url?: string | null;
   /** Ajustes de enquadramento da foto de perfil ({ zoom, x, y }). */
   foto_perfil_ajuste?: unknown;
+  /** Etapas do fluxo marcadas manualmente como concluídas pelo admin. */
+  kit_manual?: Record<string, boolean> | null;
   status: CollaboratorStatus;
   created_at: string;
   updated_at: string;
