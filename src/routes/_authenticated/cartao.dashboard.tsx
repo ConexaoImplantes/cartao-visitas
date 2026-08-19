@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer } from "lucide-react";
+import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer, CreditCard } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -320,6 +320,13 @@ function DashboardPage() {
                         {can("dashboard.edit") && (
                           <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
                             <Pencil className="size-4" />
+                          </IconBtn>
+                        )}
+                        {can("dashboard.view") && (
+                          <IconBtn title="Ver / editar arte do cartão físico" asChild>
+                            <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
+                              <CreditCard className="size-4" />
+                            </Link>
                           </IconBtn>
                         )}
                         {can("dashboard.download_card") && (
