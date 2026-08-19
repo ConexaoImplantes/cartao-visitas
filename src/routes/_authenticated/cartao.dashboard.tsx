@@ -322,22 +322,17 @@ function DashboardPage() {
                             <Pencil className="size-4" />
                           </IconBtn>
                         )}
-                        {can("dashboard.view_qr") && (
-                          <IconBtn title="Visualizar QR Code" onClick={() => openQrView(c)}>
-                            <QrCode className="size-4" />
-                          </IconBtn>
-                        )}
-                        {can("dashboard.download_qr") && (
-                          <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.slug, c.nome)}>
-                            <Download className="size-4" />
-                          </IconBtn>
-                        )}
                         {can("dashboard.download_card") && (
                           <IconBtn
                             title="Baixar cartão para impressão (PDF)"
                             onClick={() => handlePrintOne(c)}
+                            disabled={printingId === c.id}
                           >
-                            <Printer className="size-4" />
+                            {printingId === c.id ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <Printer className="size-4" />
+                            )}
                           </IconBtn>
                         )}
                         {can("dashboard.share") && (
