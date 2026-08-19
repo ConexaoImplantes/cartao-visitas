@@ -165,29 +165,31 @@ export function PrintCardPreview({
             {card.cargo}
           </div>
 
-          {/* Logo + site */}
-          <img
-            src={DEFAULT_PRINT_ASSETS.logoUrl}
-            alt="Logo"
-            className="absolute"
+          {/* Bloco marca: logo + site alinhados horizontalmente */}
+          <div
+            className="absolute flex items-center"
             style={{
               left: px(CARD_LAYOUT.textX),
-              top: px(CARD_LAYOUT.logo.bottom - CARD_LAYOUT.logo.height),
-              height: px(CARD_LAYOUT.logo.height),
-              width: "auto",
-            }}
-          />
-          <div
-            className="absolute whitespace-nowrap italic"
-            style={{
-              left: px(CARD_LAYOUT.textX + CARD_LAYOUT.logo.height * 5.1 + CARD_LAYOUT.site.gap),
-              top: px(baselineTop(CARD_LAYOUT.site.baseline, CARD_LAYOUT.site.size)),
-              fontSize: px(CARD_LAYOUT.site.size * PT),
-              lineHeight: 1,
-              color: CARD_LAYOUT.site.color,
+              top: px(marca.logoTop),
+              height: px(marca.logoHeight),
+              gap: px(CARD_LAYOUT.site.gap),
             }}
           >
-            {siteText}
+            <img
+              src={DEFAULT_PRINT_ASSETS.logoUrl}
+              alt="Logo"
+              style={{ height: px(marca.logoHeight), width: "auto" }}
+            />
+            <span
+              className="whitespace-nowrap italic"
+              style={{
+                fontSize: px(CARD_LAYOUT.site.size * PT),
+                lineHeight: 1,
+                color: CARD_LAYOUT.site.color,
+              }}
+            >
+              {siteText}
+            </span>
           </div>
         </>
       ) : (
