@@ -329,10 +329,11 @@ export async function buildPrintCardsPdf(
       color: rgb(gold.r, gold.g, gold.b),
     });
 
-    // 4. Logo horizontal
-    const logoH = CARD_LAYOUT.logo.height;
+    // 4. Logo horizontal (bloco marca: logo + site alinhados horizontalmente)
+    const marca = marcaGeometry(backgrounds.marcaTop, backgrounds.marcaLogoAltura);
+    const logoH = marca.logoHeight;
     const logoW = (logo.width / logo.height) * logoH;
-    const logoPos = pt(textX, CARD_LAYOUT.logo.bottom);
+    const logoPos = pt(textX, marca.logoTop + logoH);
     front.drawImage(logo, {
       x: logoPos.x,
       y: logoPos.y,
@@ -342,7 +343,7 @@ export async function buildPrintCardsPdf(
 
     // 5. Site — Open Sans Itálico 4,5pt #6A7070
     const siteColor = rgbHex(CARD_LAYOUT.site.color);
-    const sitePos = pt(textX + logoW + CARD_LAYOUT.site.gap, CARD_LAYOUT.site.baseline);
+    const sitePos = pt(textX + logoW + CARD_LAYOUT.site.gap, marca.siteBaseline);
     front.drawText(site, {
       x: sitePos.x,
       y: sitePos.y,
