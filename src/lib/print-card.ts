@@ -20,6 +20,31 @@ const PAGE_H = TRIM_H + 2 * BLEED + 2 * MARKS;
 const OX = MARKS + BLEED;
 const OY = MARKS + BLEED;
 
+/**
+ * Shared geometry of the printed card (mm, measured from the trim's top-left
+ * corner). Exported so the on-screen preview matches the PDF exactly.
+ */
+export const CARD_TRIM = { w: TRIM_W, h: TRIM_H, bleed: BLEED };
+
+export const CARD_LAYOUT = {
+  qr: { x: 5.8, yTop: 10.8, size: 26.4, padding: 1 },
+  textX: 37.3,
+  /** baseline distance from top */
+  nome: { baseline: 21.4, size: 11, color: "#ffffff" },
+  cargo: { baseline: 24.6, size: 7, color: "#c59937" },
+  /** logo bottom edge distance from top */
+  logo: { bottom: 29.6, height: 3.4 },
+  site: { baseline: 27.8, size: 4.5, color: "#6a7070", gap: 3.5 },
+  backLogoWidth: 46,
+} as const;
+
+/** Default artwork bundled with the app (used when the theme has no upload). */
+export const DEFAULT_PRINT_ASSETS = {
+  frenteUrl: bgFrontAsset.url as string,
+  versoUrl: bgBackAsset.url as string,
+  logoUrl: logoAsset.url as string,
+};
+
 export interface PrintCardInput {
   nome: string;
   nome_cartao?: string | null;
