@@ -139,7 +139,19 @@ export function EmailSignaturePreview({ card, bgUrl, scale = 3 }: EmailSignature
           height: px(SIGN_LAYOUT.qr.size),
         }}
       >
-        {qr && <img src={qr} alt="QR Code" className="h-full w-full" />}
+        {qr && (
+          <img
+            src={qr}
+            alt="QR Code"
+            style={{
+              position: "absolute",
+              left: px(SIGN_LAYOUT.qr.padding),
+              top: px(SIGN_LAYOUT.qr.padding),
+              width: px(SIGN_LAYOUT.qr.size - SIGN_LAYOUT.qr.padding * 2),
+              height: px(SIGN_LAYOUT.qr.size - SIGN_LAYOUT.qr.padding * 2),
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,8 @@ export const SIGN_LAYOUT = {
   cargo: { x: 59.9, baseline: 15.1, size: 11, color: "#c59937" },
   celular: { x: 67.56, baseline: 26.16, size: 9, color: "#ffffff" },
   email: { x: 67.56, baseline: 33.65, size: 9, color: "#ffffff" },
-  qr: { x: 125.1, top: 22.8, size: 19.5 },
+  /** `padding` = respiro branco em volta do QR (obrigatório para leitura). */
+  qr: { x: 125.1, top: 22.8, size: 19.5, padding: 1.4 },
 } as const;
 
 export const DEFAULT_SIGNATURE_ASSETS = {
@@ -170,13 +171,15 @@ export async function renderSignaturePng(
 
   // QR Code
   if (card.slug) {
-    const size = mm(SIGN_LAYOUT.qr.size);
-    const qr = await loadImage(await qrDataUrl(card.slug, size));
+    const pad = mm(SIGN_LAYOUT.qr.padding);
+    const box = mm(SIGN_LAYOUT.qr.size);
+    const inner = box - pad * 2;
+    const qr = await loadImage(await qrDataUrl(card.slug, inner));
     const x = mm(SIGN_LAYOUT.qr.x);
     const y = mm(SIGN_LAYOUT.qr.top);
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(x, y, size, size);
-    ctx.drawImage(qr, x, y, size, size);
+    ctx.fillRect(x, y, box, box);
+    ctx.drawImage(qr, x + pad, y + pad, inner, inner);
   }
 
   return await new Promise<Blob>((resolve, reject) =>
