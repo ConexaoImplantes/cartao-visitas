@@ -22,10 +22,8 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 import { buildCardUrl } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   downloadPrintCard,
-  downloadPrintCardsBatch,
   loadPrintOptions,
   type PrintBackgrounds,
 } from "@/lib/print-card";
@@ -52,7 +50,6 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [printing, setPrinting] = useState(false);
   const [printingId, setPrintingId] = useState<string | null>(null);
 
@@ -76,27 +73,6 @@ function DashboardPage() {
     }
   }
 
-  async function handlePrintBatch() {
-    const items = (rows ?? []).filter((r) => selected.has(r.id));
-    if (!items.length) return;
-    setPrinting(true);
-    try {
-      await downloadPrintCardsBatch(items, await printOptions());
-      toast.success(`${items.length} cartões gerados para impressão`);
-    } catch (e: any) {
-      toast.error("Falha ao gerar os cartões", { description: e?.message });
-    } finally {
-      setPrinting(false);
-    }
-  }
-
-  function toggleSelected(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
