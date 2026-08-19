@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Save, Upload, Trash2, Plus } from "lucide-react";
+import { Loader2, Save, Upload, Trash2, Plus, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,8 @@ import {
 } from "@/lib/types";
 import { LinkTreeCard } from "@/components/link-tree-card";
 import { compressImageContain } from "@/lib/image-utils";
+import { imageLinkToDataUrl } from "@/lib/image-link";
+
 import { usePermissions } from "@/hooks/use-permissions";
 
 export const Route = createFileRoute("/_authenticated/cartao/tema")({
@@ -606,6 +608,7 @@ function ArtUploader({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState("");
 
   async function handleFile(f?: File | null) {
     if (!f) return;
@@ -614,6 +617,20 @@ function ArtUploader({
       onChange(await compressImageContain(f, 1400));
     } catch {
       toast.error("Falha ao carregar a imagem");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLink() {
+    if (!link.trim()) return;
+    setBusy(true);
+    try {
+      onChange(await imageLinkToDataUrl(link, 1400));
+      setLink("");
+      toast.success("Arte importada do link");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao importar do link");
     } finally {
       setBusy(false);
     }
@@ -642,6 +659,23 @@ function ArtUploader({
         className="hidden"
         onChange={(e) => handleFile(e.target.files?.[0])}
       />
+      <div className="mt-3 flex gap-2">
+        <Input
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="Cole o link (Google Drive, Dropbox, OneDrive ou URL da imagem)"
+          disabled={busy}
+        />
+        <Button variant="outline" size="sm" onClick={handleLink} disabled={busy || !link.trim()}>
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <LinkIcon className="size-4" />}
+          Importar
+        </Button>
+      </div>
+      <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">
+        O arquivo precisa estar compartilhado como “qualquer pessoa com o link”. A imagem é copiada
+        para o tema, então o link pode ser removido depois.
+      </p>
+
       <div className="mt-3 overflow-hidden rounded-md border border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]">
         <img
           src={url || ""}
