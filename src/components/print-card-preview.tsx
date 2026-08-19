@@ -145,7 +145,7 @@ export function PrintCardPreview({
             )}
           </div>
 
-          {/* Nome (reduz para caber, como no PDF) */}
+          {/* Nome — Open Sans Bold 11pt #FFFFFF (tamanho fixo) */}
           <div
             className="absolute whitespace-nowrap font-bold"
             style={{
