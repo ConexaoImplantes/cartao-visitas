@@ -207,7 +207,6 @@ function DashboardPage() {
               <tbody className="block md:table-row-group">
                 {rows.map((c) => {
                   const tel = decodeTelefone(c.telefone_fixo);
-                  const telDigits = tel.kind === "fixo" ? phoneDigits(c.telefone_fixo) : tel.ramal;
                   const telLabel =
                     tel.kind === "ramal"
                       ? `Ramal ${maskNumberOnly(tel.ramal) || tel.ramal}`
