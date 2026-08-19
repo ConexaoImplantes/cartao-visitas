@@ -280,13 +280,6 @@ export async function buildPrintCardsPdf(
     );
   };
 
-  /** Shrink the size until the text fits maxWidth. */
-  const fitSize = (text: string, font: any, size: number, maxWidthMm: number) => {
-    let s = size;
-    while (s > 5 && font.widthOfTextAtSize(text, s) > mm(maxWidthMm)) s -= 0.25;
-    return s;
-  };
-
   for (const c of items) {
     const nome = (c.nome_cartao || c.nome).trim();
     const front = newPage(bgFront);
@@ -306,10 +299,9 @@ export async function buildPrintCardsPdf(
     front.drawImage(qr, { x: qrPos.x, y: qrPos.y, width: mm(qrSize), height: mm(qrSize) });
 
     const textX = CARD_LAYOUT.textX;
-    const maxTextW = TRIM_W - textX - 5;
 
-    // 2. Nome — Open Sans Bold 11pt #FFFFFF
-    const nomeSize = fitSize(nome, fontBold, CARD_LAYOUT.nome.size, maxTextW);
+    // 2. Nome — Open Sans Bold 11pt #FFFFFF (tamanho fixo, regra inegociável)
+    const nomeSize = CARD_LAYOUT.nome.size;
     const nomePos = pt(textX, CARD_LAYOUT.nome.baseline);
     front.drawText(nome, {
       x: nomePos.x,
@@ -319,8 +311,8 @@ export async function buildPrintCardsPdf(
       color: rgb(1, 1, 1),
     });
 
-    // 3. Cargo — Open Sans Itálico 7pt #C59937
-    const cargoSize = fitSize(c.cargo, fontItalic, CARD_LAYOUT.cargo.size, maxTextW);
+    // 3. Cargo — Open Sans Itálico 7pt #C59937 (tamanho fixo, regra inegociável)
+    const cargoSize = CARD_LAYOUT.cargo.size;
     const cargoPos = pt(textX, CARD_LAYOUT.cargo.baseline);
     const gold = rgbHex(CARD_LAYOUT.cargo.color);
     front.drawText(c.cargo, {
