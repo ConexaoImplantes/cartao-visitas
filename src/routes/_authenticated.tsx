@@ -72,7 +72,7 @@ function AuthLayout() {
       : []),
   ];
 
-  function NavLink({ n, showLabel }: { n: NavItem; showLabel?: boolean }) {
+  function NavLink({ n, showLabel, extraClassName }: { n: NavItem; showLabel?: boolean; extraClassName?: string }) {
     const active = pathname.startsWith(n.to);
     return (
       <Link
@@ -83,10 +83,10 @@ function AuthLayout() {
           active
             ? "bg-[color:var(--surface-hover)] text-[color:var(--text-main)]"
             : "text-[color:var(--text-muted)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-main)]"
-        }`}
+        } ${extraClassName ?? ""}`}
       >
         <n.icon className="size-4" />
-        {showLabel && <span className="whitespace-nowrap">{n.label}</span>}
+        {showLabel && <span className="hidden whitespace-nowrap 2xl:inline">{n.label}</span>}
       </Link>
     );
   }
