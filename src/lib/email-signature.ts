@@ -227,10 +227,14 @@ export async function downloadSignaturesBatch(
   }
 }
 
-/** Abre a arte gerada em uma nova aba (conferência em tamanho real). */
-export async function openSignaturePng(card: SignatureInput, opts: SignatureOptions = {}) {
+/**
+ * Gera a arte e devolve um object URL para conferência em tamanho real
+ * DENTRO da plataforma (modal). Quem chama revoga a URL.
+ */
+export async function createSignaturePngUrl(
+  card: SignatureInput,
+  opts: SignatureOptions = {},
+): Promise<string> {
   const blob = await renderSignaturePng(card, opts);
-  const url = URL.createObjectURL(blob);
-  window.open(url, "_blank", "noopener,noreferrer");
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return URL.createObjectURL(blob);
 }
