@@ -315,7 +315,32 @@ function CartaoFisicoPage() {
 
         {/* ------------------------------ Preview ------------------------------ */}
         <section className="space-y-5 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
+          <div className="space-y-1.5">
+            <Label>Modelo do cartão</Label>
+            <div className="flex gap-2">
+              {(["novo", "antigo"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  disabled={savingModelo}
+                  onClick={() => handleModelo(m)}
+                  className={`flex-1 rounded-md border px-3 py-2 text-sm transition ${
+                    (bgs.modelo ?? "novo") === m
+                      ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--text-main)]"
+                      : "border-[color:var(--border-strong)] text-[color:var(--text-muted)] hover:bg-[color:var(--surface-hover)]"
+                  }`}
+                >
+                  {m === "novo" ? "Novo (padrão)" : "Antigo"}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-[color:var(--text-muted)]">
+              O modelo escolhido é aplicado na pré-visualização e nos PDFs gerados.
+            </p>
+          </div>
+
           {!previewCard ? (
+
             <p className="text-sm text-[color:var(--text-muted)]">
               Selecione um colaborador na lista para visualizar a arte.
             </p>
