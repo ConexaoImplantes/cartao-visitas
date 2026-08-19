@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Pencil,
 } from "lucide-react";
+import { decodeTelefone, formatPhoneDisplay, maskNumberOnly, phoneDigits } from "@/lib/types";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
