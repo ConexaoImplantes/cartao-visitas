@@ -19,6 +19,7 @@ import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authe
 import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_authenticated/cartao.configuracoes'
 import { Route as AuthenticatedCartaoCartaoFisicoRouteImport } from './routes/_authenticated/cartao.cartao-fisico'
+import { Route as AuthenticatedCartaoAssinaturaRouteImport } from './routes/_authenticated/cartao.assinatura'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -74,11 +75,18 @@ const AuthenticatedCartaoCartaoFisicoRoute =
     path: '/cartao/cartao-fisico',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCartaoAssinaturaRoute =
+  AuthenticatedCartaoAssinaturaRouteImport.update({
+    id: '/cartao/assinatura',
+    path: '/cartao/assinatura',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
@@ -90,6 +98,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$slug': typeof SlugRoute
   '/login': typeof LoginRoute
+  '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
@@ -103,6 +112,7 @@ export interface FileRoutesById {
   '/$slug': typeof SlugRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/_authenticated/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/cartao/assinatura'
     | '/_authenticated/cartao/cartao-fisico'
     | '/_authenticated/cartao/configuracoes'
     | '/_authenticated/cartao/dashboard'
@@ -226,10 +239,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoCartaoFisicoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cartao/assinatura': {
+      id: '/_authenticated/cartao/assinatura'
+      path: '/cartao/assinatura'
+      fullPath: '/cartao/assinatura'
+      preLoaderRoute: typeof AuthenticatedCartaoAssinaturaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCartaoAssinaturaRoute: typeof AuthenticatedCartaoAssinaturaRoute
   AuthenticatedCartaoCartaoFisicoRoute: typeof AuthenticatedCartaoCartaoFisicoRoute
   AuthenticatedCartaoConfiguracoesRoute: typeof AuthenticatedCartaoConfiguracoesRoute
   AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
@@ -239,6 +260,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCartaoAssinaturaRoute: AuthenticatedCartaoAssinaturaRoute,
   AuthenticatedCartaoCartaoFisicoRoute: AuthenticatedCartaoCartaoFisicoRoute,
   AuthenticatedCartaoConfiguracoesRoute: AuthenticatedCartaoConfiguracoesRoute,
   AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,

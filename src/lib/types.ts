@@ -91,6 +91,10 @@ export interface ThemeConfig {
     /** Altura (mm) do logo na frente do cartão */
     marcaLogoAltura: number;
   };
+  /** Arte de fundo da assinatura de e-mail (150x50mm). Vazio = arte padrão. */
+  assinatura: {
+    bgUrl: string;
+  };
 }
 
 export const BLOB_POSITIONS: { value: BlobPosition; label: string }[] = [
@@ -155,6 +159,7 @@ export const DEFAULT_THEME: ThemeConfig = {
     socialIconSize: 20,
   },
   impressao: { frenteUrl: "", versoUrl: "", marcaTop: 29.2, marcaLogoAltura: 2.6 },
+  assinatura: { bgUrl: "" },
 };
 
 export const FONT_OPTIONS = [
@@ -189,6 +194,7 @@ export function normalizeTheme(input: unknown): ThemeConfig {
       },
     },
     impressao: { ...DEFAULT_THEME.impressao, ...(t.impressao ?? {}) },
+    assinatura: { ...DEFAULT_THEME.assinatura, ...(t.assinatura ?? {}) },
   };
 }
 
