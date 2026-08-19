@@ -56,6 +56,28 @@ function CartaoFisicoPage() {
   const [bgs, setBgs] = useState<PrintBackgrounds>({});
 
   const [draft, setDraft] = useState({ nome_cartao: "", cargo: "", slug: "" });
+  const [savingModelo, setSavingModelo] = useState(false);
+
+  async function handleModelo(m: "novo" | "antigo") {
+    setBgs((p) => ({ ...p, modelo: m }));
+    if (!canEdit) return;
+    setSavingModelo(true);
+    const { data } = await supabase
+      .from("theme_config")
+      .select("config")
+      .eq("id", "global")
+      .maybeSingle();
+    const { normalizeTheme } = await import("@/lib/types");
+    const theme = normalizeTheme(data?.config);
+    const next = { ...theme, impressao: { ...theme.impressao, modelo: m } };
+    const { error } = await supabase
+      .from("theme_config")
+      .upsert({ id: "global", config: next as any, updated_at: new Date().toISOString() });
+    setSavingModelo(false);
+    if (error) toast.error("Não foi possível salvar o modelo", { description: error.message });
+    else toast.success(`Modelo ${m === "novo" ? "novo" : "antigo"} aplicado`);
+  }
+
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<"one" | "batch" | "pdf" | null>(null);
 
@@ -315,7 +337,32 @@ function CartaoFisicoPage() {
 
         {/* ------------------------------ Preview ------------------------------ */}
         <section className="space-y-5 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
+          <div className="space-y-1.5">
+            <Label>Modelo do cartão</Label>
+            <div className="flex gap-2">
+              {(["novo", "antigo"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  disabled={savingModelo}
+                  onClick={() => handleModelo(m)}
+                  className={`flex-1 rounded-md border px-3 py-2 text-sm transition ${
+                    (bgs.modelo ?? "novo") === m
+                      ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--text-main)]"
+                      : "border-[color:var(--border-strong)] text-[color:var(--text-muted)] hover:bg-[color:var(--surface-hover)]"
+                  }`}
+                >
+                  {m === "novo" ? "Novo (padrão)" : "Antigo"}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-[color:var(--text-muted)]">
+              O modelo escolhido é aplicado na pré-visualização e nos PDFs gerados.
+            </p>
+          </div>
+
           {!previewCard ? (
+
             <p className="text-sm text-[color:var(--text-muted)]">
               Selecione um colaborador na lista para visualizar a arte.
             </p>
