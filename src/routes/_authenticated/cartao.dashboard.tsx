@@ -65,14 +65,14 @@ function DashboardPage() {
   }
 
   async function handlePrintOne(c: Collaborator) {
-    setPrinting(true);
+    setPrintingId(c.id);
     try {
       await downloadPrintCard(c, await printOptions());
       toast.success("Cartão gerado para impressão");
     } catch (e: any) {
       toast.error("Falha ao gerar o cartão", { description: e?.message });
     } finally {
-      setPrinting(false);
+      setPrintingId(null);
     }
   }
 
