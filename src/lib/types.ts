@@ -184,6 +184,7 @@ export function normalizeTheme(input: unknown): ThemeConfig {
         ...((t.institucional as any)?.socialColors ?? {}),
       },
     },
+    impressao: { ...DEFAULT_THEME.impressao, ...(t.impressao ?? {}) },
   };
 }
 
