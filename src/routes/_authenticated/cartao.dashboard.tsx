@@ -1,6 +1,18 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Loader2, Share2, Printer, CreditCard, Mail, UserRound, ListChecks } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Loader2,
+  Share2,
+  Printer,
+  CreditCard,
+  Mail,
+  UserRound,
+  ListChecks,
+  MoreHorizontal,
+  Pencil,
+} from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,8 +27,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
+import type { PermissionKey } from "@/lib/permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
@@ -199,41 +220,43 @@ function DashboardPage() {
         ) : (
           <div className="w-full">
             <table className="w-full text-sm md:table">
-              <thead className="hidden text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
+              <thead className="hidden text-left text-[10px] uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
                 <tr className="border-b border-[color:var(--border-strong)]">
-                  <th className="p-4">Colaborador</th>
-                  <th className="hidden p-4 md:table-cell">Cargo</th>
-                  <th className="hidden p-4 lg:table-cell">E-mail</th>
-                  <th className="p-4">Métricas</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Ações</th>
+                  <th className="p-2 md:p-3">Colaborador</th>
+                  <th className="p-2 md:p-3">Métricas</th>
+                  <th className="p-2 md:p-3">Status</th>
+                  <th className="p-2 text-right md:p-3">Ações</th>
                 </tr>
               </thead>
               <tbody className="block md:table-row-group">
                 {rows.map((c) => (
                   <tr
                     key={c.id}
-                    className="mb-4 block rounded-xl border border-[color:var(--border-strong)] p-4 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
+                    className="mb-3 block rounded-xl border border-[color:var(--border-strong)] p-3 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
                   >
-                    <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Colaborador">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
+                    <td className="block p-2 md:table-cell md:p-3" data-label="Colaborador">
+                      <div className="flex min-w-0 items-start gap-2">
+                        <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
                           {c.foto_url ? (
                             <img src={c.foto_url} alt={c.nome} className="size-full object-cover" />
                           ) : (
-                            <span className="text-sm font-semibold">{c.nome.charAt(0)}</span>
+                            <span className="text-xs font-semibold">{c.nome.charAt(0)}</span>
                           )}
                         </div>
-                        <div className="min-w-0">
-                          <div className="truncate font-medium text-[color:var(--text-main)]">{c.nome}</div>
-                          <div className="truncate text-xs text-[color:var(--text-muted)] md:hidden">{c.cargo}</div>
-                          <div className="truncate text-xs text-[color:var(--text-muted)] lg:hidden">{c.email}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="line-clamp-2 text-[13px] font-medium leading-snug text-[color:var(--text-main)]">
+                            {c.nome}
+                          </div>
+                          <div className="line-clamp-1 text-[11px] text-[color:var(--text-muted)]">
+                            {c.cargo}
+                          </div>
+                          <div className="line-clamp-2 break-all text-[11px] text-[color:var(--text-muted)]">
+                            {c.email}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="hidden p-4 text-[color:var(--text-muted)] md:table-cell">{c.cargo}</td>
-                    <td className="hidden p-4 text-[color:var(--text-muted)] lg:table-cell">{c.email}</td>
-                    <td className="block p-0 pb-3 pt-1 text-xs text-[color:var(--text-muted)] md:table-cell md:whitespace-nowrap md:p-4" data-label="Métricas">
+                    <td className="block p-2 text-[11px] text-[color:var(--text-muted)] md:table-cell md:whitespace-nowrap md:p-3" data-label="Métricas">
                       <span className="font-semibold text-[color:var(--text-main)]">
                         {Number(stats[c.id]?.views ?? 0)}
                       </span>{" "}
@@ -243,7 +266,7 @@ function DashboardPage() {
                       </span>{" "}
                       cliques
                     </td>
-                    <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Status">
+                    <td className="block p-2 md:table-cell md:p-3" data-label="Status">
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={c.status === "ativo"}
@@ -251,7 +274,7 @@ function DashboardPage() {
                           disabled={!can("dashboard.toggle_status")}
                         />
                         <span
-                          className="rounded-full px-2 py-0.5 text-xs font-medium"
+                          className="rounded-full px-2 py-0.5 text-[10px] font-medium"
                           style={{
                             background: c.status === "ativo" ? "var(--success)20" : "var(--warning)20",
                             color: c.status === "ativo" ? "var(--success)" : "var(--warning)",
@@ -261,60 +284,19 @@ function DashboardPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="block p-0 md:table-cell md:p-4" data-label="Ações">
-                      <div className="grid grid-cols-7 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
-                        {can("fluxo.view") && (
-                          <IconBtn title="Fluxo do colaborador / kit completo" asChild>
-                            <Link to="/cartao/fluxo">
-                              <ListChecks className="size-4" />
-                            </Link>
-                          </IconBtn>
-                        )}
-                        {can("dashboard.view") && (
-                          <IconBtn title="Ver / editar arte do cartão físico" asChild>
-                            <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
-                              <CreditCard className="size-4" />
-                            </Link>
-                          </IconBtn>
-                        )}
-                        {can("dashboard.view") && (
-                          <IconBtn title="Ver / editar assinatura de e-mail" asChild>
-                            <Link to="/cartao/assinatura" search={{ id: c.id }}>
-                              <Mail className="size-4" />
-                            </Link>
-                          </IconBtn>
-                        )}
-                        {can("foto_perfil.view") && (
-                          <IconBtn title="Ver / editar foto de perfil" asChild>
-                            <Link to="/cartao/foto-perfil" search={{ id: c.id }}>
-                              <UserRound className="size-4" />
-                            </Link>
-                          </IconBtn>
-                        )}
-                        {can("dashboard.download_card") && (
-                          <IconBtn
-                            title="Baixar cartão para impressão (PDF)"
-                            onClick={() => handlePrintOne(c)}
-                            disabled={printingId === c.id}
-                          >
-                            {printingId === c.id ? (
-                              <Loader2 className="size-4 animate-spin" />
-                            ) : (
-                              <Printer className="size-4" />
-                            )}
-                          </IconBtn>
-                        )}
-                        {can("dashboard.share") && (
-                          <IconBtn title="Compartilhar com o colaborador" onClick={() => setSharing(c)}>
-                            <Share2 className="size-4" />
-                          </IconBtn>
-                        )}
-                        {can("dashboard.delete") && (
-                          <IconBtn title="Excluir" danger onClick={() => setToDelete(c)}>
-                            <Trash2 className="size-4" />
-                          </IconBtn>
-                        )}
-                      </div>
+                    <td className="block p-2 text-right md:table-cell md:p-3" data-label="Ações">
+                      <ActionsMenu
+                        c={c}
+                        can={can}
+                        onEdit={() => {
+                          setEditing(c);
+                          setModalOpen(true);
+                        }}
+                        onShare={() => setSharing(c)}
+                        onDelete={() => setToDelete(c)}
+                        onPrint={() => handlePrintOne(c)}
+                        printingId={printingId}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -364,32 +346,88 @@ function Metric({ label, value }: { label: string; value: number }) {
   );
 }
 
-function IconBtn({
-  children,
-  onClick,
-  title,
-  danger,
-  asChild,
-  disabled,
+function ActionsMenu({
+  c,
+  can,
+  onEdit,
+  onShare,
+  onDelete,
+  onPrint,
+  printingId,
 }: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  title: string;
-  danger?: boolean;
-  asChild?: boolean;
-  disabled?: boolean;
+  c: Collaborator;
+  can: (permission: PermissionKey) => boolean;
+  onEdit: () => void;
+  onShare: () => void;
+  onDelete: () => void;
+  onPrint: () => void;
+  printingId: string | null;
 }) {
   return (
-    <Button
-      asChild={asChild}
-      variant="ghost"
-      size="icon"
-      title={title}
-      onClick={onClick}
-      disabled={disabled}
-      className={danger ? "text-[color:var(--error)] hover:bg-[color:var(--error)]/10 hover:text-[color:var(--error)]" : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"}
-    >
-      {children}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"
+        >
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onEdit(); }}>
+          <Pencil className="size-4" /> Editar
+        </DropdownMenuItem>
+        {can("fluxo.view") && (
+          <DropdownMenuItem asChild>
+            <Link to="/cartao/fluxo">
+              <ListChecks className="size-4" /> Fluxo / Kit
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {can("dashboard.view") && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
+                <CreditCard className="size-4" /> Cartão físico
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/assinatura" search={{ id: c.id }}>
+                <Mail className="size-4" /> Assinatura
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        {can("foto_perfil.view") && (
+          <DropdownMenuItem asChild>
+            <Link to="/cartao/foto-perfil" search={{ id: c.id }}>
+              <UserRound className="size-4" /> Foto de perfil
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {can("dashboard.download_card") && (
+          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onPrint(); }} disabled={printingId === c.id}>
+            {printingId === c.id ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />} Imprimir cartão
+          </DropdownMenuItem>
+        )}
+        {can("dashboard.share") && (
+          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onShare(); }}>
+            <Share2 className="size-4" /> Compartilhar
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        {can("dashboard.delete") && (
+          <DropdownMenuItem
+            onSelect={(e) => { e.preventDefault(); onDelete(); }}
+            className="text-[color:var(--error)] focus:bg-[color:var(--error)]/10 focus:text-[color:var(--error)]"
+          >
+            <Trash2 className="size-4" /> Excluir
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
