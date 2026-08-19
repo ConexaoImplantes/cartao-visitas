@@ -263,20 +263,65 @@ export function ThemePage() {
 
             {/* ============================= INSTITUCIONAL ============================= */}
             <TabsContent value="impressao" className="space-y-4 pt-5">
+              <div className="space-y-1.5">
+                <Label>Modelo do cartão</Label>
+                <div className="flex gap-2">
+                  {(["novo", "antigo"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => patch("impressao", { ...theme.impressao, modelo: m })}
+                      className={`flex-1 rounded-md border px-3 py-2 text-sm capitalize transition ${
+                        theme.impressao.modelo === m
+                          ? "border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--text-main)]"
+                          : "border-[color:var(--border-strong)] text-[color:var(--text-muted)]"
+                      }`}
+                    >
+                      {m === "novo" ? "Novo (padrão)" : "Antigo"}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-[color:var(--text-muted)]">
+                  O modelo antigo usa a arte azul clássica, tipografia Frutiger e exibe celular e
+                  e-mail no lugar do QR Code.
+                </p>
+              </div>
               <p className="text-sm text-[color:var(--text-muted)]">
                 Artes do cartão de visitas impresso (90x48&nbsp;mm). Envie imagens na proporção
                 90x48 (ideal 1063x567&nbsp;px). Em branco, o sistema usa a arte padrão da Conexão.
               </p>
-              <ArtUploader
-                label="Arte da frente"
-                url={theme.impressao.frenteUrl}
-                onChange={(v) => patch("impressao", { ...theme.impressao, frenteUrl: v })}
-              />
-              <ArtUploader
-                label="Arte do verso"
-                url={theme.impressao.versoUrl}
-                onChange={(v) => patch("impressao", { ...theme.impressao, versoUrl: v })}
-              />
+              {theme.impressao.modelo === "antigo" ? (
+                <>
+                  <ArtUploader
+                    label="Arte da frente (modelo antigo)"
+                    url={theme.impressao.antigoFrenteUrl}
+                    onChange={(v) =>
+                      patch("impressao", { ...theme.impressao, antigoFrenteUrl: v })
+                    }
+                  />
+                  <ArtUploader
+                    label="Arte do verso (modelo antigo)"
+                    url={theme.impressao.antigoVersoUrl}
+                    onChange={(v) =>
+                      patch("impressao", { ...theme.impressao, antigoVersoUrl: v })
+                    }
+                  />
+                </>
+              ) : (
+                <>
+                  <ArtUploader
+                    label="Arte da frente"
+                    url={theme.impressao.frenteUrl}
+                    onChange={(v) => patch("impressao", { ...theme.impressao, frenteUrl: v })}
+                  />
+                  <ArtUploader
+                    label="Arte do verso"
+                    url={theme.impressao.versoUrl}
+                    onChange={(v) => patch("impressao", { ...theme.impressao, versoUrl: v })}
+                  />
+                </>
+              )}
+
 
               <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
                 <p className="text-sm font-medium text-[color:var(--text-main)]">
