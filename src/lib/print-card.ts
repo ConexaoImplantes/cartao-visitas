@@ -64,28 +64,78 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
   };
 }
 
+/**
+ * Layout do MODELO ANTIGO (arte com logo à esquerda e dados à direita).
+ * Todas as medidas em mm a partir do canto superior esquerdo do corte.
+ */
+export const CARD_LAYOUT_ANTIGO = {
+  textX: 32.7,
+  nome: { baseline: 18.6, size: 12, color: "#004a8f" },
+  cargo: { baseline: 22.2, size: 8, color: "#659ad2" },
+  email: { baseline: 30.2, size: 7, color: "#000000", opacity: 0.7 },
+  site: { baseline: 33.2, size: 7, color: "#000000", opacity: 0.7 },
+  /** o rótulo "Tel.:" já faz parte da arte de fundo */
+  celular: { x: 36.9, baseline: 36.2, size: 7, color: "#000000", opacity: 0.7 },
+} as const;
+
 /** Default artwork bundled with the app (used when the theme has no upload). */
 export const DEFAULT_PRINT_ASSETS = {
   frenteUrl: bgFrontAsset.url as string,
   versoUrl: bgBackAsset.url as string,
   logoUrl: logoAsset.url as string,
+  antigoFrenteUrl: bgAntigoFrontAsset.url as string,
+  antigoVersoUrl: bgAntigoBackAsset.url as string,
+  frutigerUrl: fontFrutigerAsset.url as string,
 };
+
+export type CardModelo = "novo" | "antigo";
 
 export interface PrintCardInput {
   nome: string;
   nome_cartao?: string | null;
   cargo: string;
   slug: string;
+  /** usados apenas no modelo antigo */
+  whatsapp?: string | null;
+  email?: string | null;
 }
 
 export interface PrintBackgrounds {
+  modelo?: CardModelo;
   frenteUrl?: string;
   versoUrl?: string;
+  antigoFrenteUrl?: string;
+  antigoVersoUrl?: string;
   site?: string;
   /** distance (mm) from the card top to the top of the logo + site block */
   marcaTop?: number;
   /** logo height (mm) on the front card */
   marcaLogoAltura?: number;
+}
+
+/** Telefone no padrão do modelo antigo: 55 (11) 98877-6655 */
+export function formatPhoneAntigo(raw: string | null | undefined): string {
+  const d = (raw ?? "").includes("|")
+    ? raw!.split("|")
+    : [null];
+  let ddi = "", ddd = "", number = "";
+  if (d.length === 3) {
+    ddi = (d[0] ?? "").replace(/\D/g, "");
+    ddd = (d[1] ?? "").replace(/\D/g, "");
+    number = (d[2] ?? "").replace(/\D/g, "");
+  } else {
+    const all = (raw ?? "").replace(/\D/g, "");
+    if (!all) return "";
+    number = all.slice(-9);
+    ddd = all.slice(-11, -9);
+    ddi = all.slice(0, Math.max(0, all.length - 11));
+  }
+  if (!number) return "";
+  const n =
+    number.length > 8
+      ? `${number.slice(0, 5)}-${number.slice(5)}`
+      : `${number.slice(0, number.length - 4)}-${number.slice(-4)}`;
+  return [ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ");
 }
 
 /** Loads print artwork + site from the global theme (falls back to defaults). */
@@ -99,13 +149,17 @@ export async function loadPrintOptions(): Promise<PrintBackgrounds> {
     .maybeSingle();
   const theme = normalizeTheme(data?.config);
   return {
+    modelo: theme.impressao.modelo,
     frenteUrl: theme.impressao.frenteUrl || undefined,
     versoUrl: theme.impressao.versoUrl || undefined,
+    antigoFrenteUrl: theme.impressao.antigoFrenteUrl || undefined,
+    antigoVersoUrl: theme.impressao.antigoVersoUrl || undefined,
     site: theme.institucional.site || undefined,
     marcaTop: theme.impressao.marcaTop,
     marcaLogoAltura: theme.impressao.marcaLogoAltura,
   };
 }
+
 
 function mm(v: number) {
   return v * MM;
