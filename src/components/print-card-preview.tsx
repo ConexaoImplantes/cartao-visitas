@@ -156,9 +156,7 @@ export function PrintCardPreview({
               color: CARD_LAYOUT.nome.color,
             }}
           >
-            <FitText maxWidthPx={(CARD_TRIM.w - CARD_LAYOUT.textX - 5) * scale}>
-              {nome}
-            </FitText>
+            {nome}
           </div>
 
           {/* Cargo */}
