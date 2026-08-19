@@ -401,12 +401,14 @@ function IconBtn({
   title,
   danger,
   asChild,
+  disabled,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   title: string;
   danger?: boolean;
   asChild?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <Button
@@ -415,6 +417,7 @@ function IconBtn({
       size="icon"
       title={title}
       onClick={onClick}
+      disabled={disabled}
       className={danger ? "text-[color:var(--error)] hover:bg-[color:var(--error)]/10 hover:text-[color:var(--error)]" : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"}
     >
       {children}
