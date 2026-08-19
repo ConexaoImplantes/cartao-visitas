@@ -138,7 +138,16 @@ export function kitStatus(c: Collaborator, opts?: Partial<KitOptions>): KitStatu
             : "Escolha o modelo do cartão na rota Cartão.",
         };
 
-  const steps = { foto, linktree, assinatura, cartao } as KitStatus["steps"];
+  const auto = { foto, linktree, assinatura, cartao } as KitStatus["steps"];
+  const manual = manualSteps(c);
+  const steps = Object.fromEntries(
+    (Object.keys(auto) as KitStepKey[]).map((k) => [
+      k,
+      manual[k] && !auto[k].done
+        ? { done: true, manual: true, reason: "Marcado como concluído pelo administrador." }
+        : { ...auto[k], manual: manual[k] },
+    ]),
+  ) as KitStatus["steps"];
   const completed = Object.values(steps).filter((s) => s.done).length;
   return { steps, completed, ready: completed === KIT_STEPS.length };
 }
