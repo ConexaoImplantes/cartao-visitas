@@ -87,6 +87,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: [
       { key: "fluxo.view", label: "Acessar a rota" },
       { key: "fluxo.download_kit", label: "Baixar o kit completo (ZIP)" },
+      { key: "fluxo.marcar_etapas", label: "Marcar etapas como concluídas (individual e em lote)" },
     ],
   },
   {
