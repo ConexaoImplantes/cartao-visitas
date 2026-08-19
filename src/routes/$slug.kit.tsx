@@ -172,12 +172,15 @@ function KitPage() {
   }
 
   async function photoBlob() {
+    const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
+    const saved = normalizeFrame(c.foto_perfil_ajuste);
     return profilePhotoBlob({
-      personUrl: c.foto_recortada_url,
+      personUrl: c.foto_recortada_url ?? c.foto_url,
       bgUrl: opts.profileBgUrl || null,
-      frame: normalizeFrame(c.foto_perfil_ajuste),
+      frame: linktreeOnly ? { ...saved, mode: "estatico" } : saved,
     });
   }
+
 
   async function signatureBlob() {
     return renderSignaturePng(
