@@ -539,41 +539,44 @@ function FotoPerfilPage() {
                     </p>
                   </div>
 
-                  <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
-                    <FrameSlider
-                      label="Zoom"
-                      value={frame.zoom}
-                      limits={FRAME_LIMITS.zoom}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v * 100)}%`}
-                      onChange={(v) => setFrame((f) => ({ ...f, zoom: v }))}
-                    />
-                    <FrameSlider
-                      label="Posição horizontal"
-                      value={frame.x}
-                      limits={FRAME_LIMITS.x}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v)} px`}
-                      onChange={(v) => setFrame((f) => ({ ...f, x: v }))}
-                    />
-                    <FrameSlider
-                      label="Posição vertical"
-                      value={frame.y}
-                      limits={FRAME_LIMITS.y}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v)} px`}
-                      onChange={(v) => setFrame((f) => ({ ...f, y: v }))}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={!canEdit}
-                      onClick={() => setFrame({ ...DEFAULT_FRAME })}
-                    >
-                      <RotateCcw className="size-4" />
-                      Restaurar enquadramento padrão
-                    </Button>
-                  </div>
+                  {frame.mode === "camadas" && (
+                    <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
+                      <FrameSlider
+                        label="Zoom"
+                        value={frame.zoom}
+                        limits={FRAME_LIMITS.zoom}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v * 100)}%`}
+                        onChange={(v) => setFrame((f) => ({ ...f, zoom: v }))}
+                      />
+                      <FrameSlider
+                        label="Posição horizontal"
+                        value={frame.x}
+                        limits={FRAME_LIMITS.x}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v)} px`}
+                        onChange={(v) => setFrame((f) => ({ ...f, x: v }))}
+                      />
+                      <FrameSlider
+                        label="Posição vertical"
+                        value={frame.y}
+                        limits={FRAME_LIMITS.y}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v)} px`}
+                        onChange={(v) => setFrame((f) => ({ ...f, y: v }))}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={!canEdit}
+                        onClick={() => setFrame({ ...DEFAULT_FRAME })}
+                      >
+                        <RotateCcw className="size-4" />
+                        Restaurar enquadramento padrão
+                      </Button>
+                    </div>
+                  )}
+
                 </div>
               </div>
 
