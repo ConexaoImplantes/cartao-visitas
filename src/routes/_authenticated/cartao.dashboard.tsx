@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2, Download, Share2, Printer } from "lucide-react";
+import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
-import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+import { buildCardUrl } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
