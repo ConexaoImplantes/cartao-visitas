@@ -56,6 +56,28 @@ function CartaoFisicoPage() {
   const [bgs, setBgs] = useState<PrintBackgrounds>({});
 
   const [draft, setDraft] = useState({ nome_cartao: "", cargo: "", slug: "" });
+  const [savingModelo, setSavingModelo] = useState(false);
+
+  async function handleModelo(m: "novo" | "antigo") {
+    setBgs((p) => ({ ...p, modelo: m }));
+    if (!canEdit) return;
+    setSavingModelo(true);
+    const { data } = await supabase
+      .from("theme_config")
+      .select("config")
+      .eq("id", "global")
+      .maybeSingle();
+    const { normalizeTheme } = await import("@/lib/types");
+    const theme = normalizeTheme(data?.config);
+    const next = { ...theme, impressao: { ...theme.impressao, modelo: m } };
+    const { error } = await supabase
+      .from("theme_config")
+      .upsert({ id: "global", config: next as any, updated_at: new Date().toISOString() });
+    setSavingModelo(false);
+    if (error) toast.error("Não foi possível salvar o modelo", { description: error.message });
+    else toast.success(`Modelo ${m === "novo" ? "novo" : "antigo"} aplicado`);
+  }
+
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<"one" | "batch" | "pdf" | null>(null);
 
