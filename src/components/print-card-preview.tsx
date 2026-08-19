@@ -36,6 +36,10 @@ export interface PrintCardPreviewProps {
   frenteUrl?: string;
   versoUrl?: string;
   site?: string;
+  /** distance (mm) from the card top to the top of the logo + site block */
+  marcaTop?: number;
+  /** logo height (mm) */
+  marcaLogoAltura?: number;
   /** Pixels per millimetre (preview resolution). */
   scale?: number;
   side?: "frente" | "verso";
@@ -46,9 +50,12 @@ export function PrintCardPreview({
   frenteUrl,
   versoUrl,
   site,
+  marcaTop,
+  marcaLogoAltura,
   scale = 5,
   side = "frente",
 }: PrintCardPreviewProps) {
+  const marca = marcaGeometry(marcaTop, marcaLogoAltura);
   const [qr, setQr] = useState<string | null>(null);
   const [, setFontsReady] = useState(false);
 
