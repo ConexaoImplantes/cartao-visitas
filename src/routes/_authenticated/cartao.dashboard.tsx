@@ -80,9 +80,29 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"todos" | "ativo" | "inativo">("todos");
+  const [sort, setSort] = useState<"recentes" | "az" | "za">("recentes");
 
+  const filteredRows = useMemo(() => {
+    if (!rows) return [];
+    const normalizedQuery = removeAccents(query.trim().toLowerCase());
+    const list = rows.filter((r) => {
+      if (statusFilter !== "todos" && r.status !== statusFilter) return false;
+      if (!normalizedQuery) return true;
+      return removeAccents(r.nome).toLowerCase().includes(normalizedQuery);
+    });
+    if (sort === "az") {
+      list.sort((a, b) => removeAccents(a.nome).localeCompare(removeAccents(b.nome), "pt-BR", { sensitivity: "base" }));
+    } else if (sort === "za") {
+      list.sort((a, b) => removeAccents(b.nome).localeCompare(removeAccents(a.nome), "pt-BR", { sensitivity: "base" }));
+    } else {
+      list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    return list;
+  }, [rows, query, statusFilter, sort]);
 
-
+  const hasActiveFilters = query.trim() !== "" || statusFilter !== "todos" || sort !== "recentes";
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
