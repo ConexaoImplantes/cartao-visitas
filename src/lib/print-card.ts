@@ -115,7 +115,7 @@ export interface PrintBackgrounds {
   marcaLogoAltura?: number;
 }
 
-/** Telefone no padrão do modelo antigo: 55 (11) 98877-6655 */
+/** Telefone no padrão do modelo antigo: Tel. 55 (11) 98877-6655 */
 export function formatPhoneAntigo(raw: string | null | undefined): string {
   const d = (raw ?? "").includes("|")
     ? raw!.split("|")
@@ -137,7 +137,7 @@ export function formatPhoneAntigo(raw: string | null | undefined): string {
     number.length > 8
       ? `${number.slice(0, 5)}-${number.slice(5)}`
       : `${number.slice(0, number.length - 4)}-${number.slice(-4)}`;
-  return [ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ");
+  return `Tel. ${[ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ")}`;
 }
 
 /** Loads print artwork + site from the global theme (falls back to defaults). */
