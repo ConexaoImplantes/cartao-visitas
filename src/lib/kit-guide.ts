@@ -18,6 +18,8 @@ export interface GuideInput {
   slug: string;
   /** Modelo escolhido do cartão de visitas. */
   modelo?: "novo" | "antigo";
+  /** Página pública onde o colaborador rebaixa os materiais. */
+  kitUrl?: string;
 }
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
