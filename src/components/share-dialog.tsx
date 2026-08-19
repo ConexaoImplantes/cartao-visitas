@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Collaborator } from "@/lib/types";
 import { phoneDigits } from "@/lib/types";
-import { buildCardUrl, generateQrDataUrl, downloadQrPng } from "@/lib/qr";
+import { buildCardUrl, buildKitUrl, generateQrDataUrl, downloadQrPng } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 
 export function ShareDialog({
@@ -19,13 +19,16 @@ export function ShareDialog({
 }) {
   const [qr, setQr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedKit, setCopiedKit] = useState(false);
   const [stats, setStats] = useState<CardStats | null>(null);
 
   const url = collaborator ? buildCardUrl(collaborator.slug) : "";
+  const kitUrl = collaborator ? buildKitUrl(collaborator.slug) : "";
 
   useEffect(() => {
     setQr(null);
     setCopied(false);
+    setCopiedKit(false);
     setStats(null);
     if (!collaborator) return;
     let mounted = true;
