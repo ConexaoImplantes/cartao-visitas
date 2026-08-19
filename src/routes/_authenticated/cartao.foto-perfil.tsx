@@ -192,6 +192,7 @@ function FotoPerfilPage() {
     try {
       const raw = await removeBackground(file, setProgress);
       setPerson(await trimAndResizePng(raw));
+      setUsingLinktree(false);
       setFrame({ ...DEFAULT_FRAME });
       toast.success("Fundo removido. Ajuste o enquadramento e salve.");
     } catch (e: any) {
@@ -210,6 +211,7 @@ function FotoPerfilPage() {
     try {
       const dataUrl = await blobToDataUrl(file);
       setPerson(await trimAndResizePng(dataUrl));
+      setUsingLinktree(false);
       setFrame({ ...DEFAULT_FRAME });
       toast.success("Imagem carregada");
     } catch (e: any) {
@@ -400,7 +402,11 @@ function FotoPerfilPage() {
                         {r.nome_cartao || r.nome}
                       </div>
                       <div className="truncate text-xs">
-                        {r.foto_recortada_url ? "Foto pronta" : "Sem foto recortada"}
+                        {r.foto_recortada_url
+                          ? "Foto pronta"
+                          : r.foto_url
+                            ? "Foto do Link Tree"
+                            : "Sem foto"}
                       </div>
                     </button>
                   </div>
@@ -470,7 +476,37 @@ function FotoPerfilPage() {
                         <ImagePlus className="size-4" />
                         PNG já sem fundo
                       </Button>
+                      {active.foto_url && (
+                        <Button
+                          variant="outline"
+                          disabled={!canEdit || busy !== null}
+                          onClick={handleUseLinktreePhoto}
+                        >
+                          <ImagePlus className="size-4" />
+                          Usar foto do Link Tree
+                        </Button>
+                      )}
+                      {usingLinktree && (
+                        <Button
+                          variant="outline"
+                          disabled={!canEdit || busy !== null}
+                          onClick={handleRemoveBgCurrent}
+                        >
+                          {busy === "cut" ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Sparkles className="size-4" />
+                          )}
+                          Remover fundo desta foto
+                        </Button>
+                      )}
                     </div>
+                    {usingLinktree && (
+                      <p className="text-xs text-[color:var(--text-muted)]">
+                        Usando a foto já definida no Link Tree. Você pode mantê-la e apenas salvar,
+                        ou recriar a arte enviando uma nova foto.
+                      </p>
+                    )}
                     <input
                       ref={fileRef}
                       type="file"
