@@ -68,7 +68,9 @@ export function normalizeFrame(input: unknown): ProfileFrame {
     zoom: clamp(f.zoom, DEFAULT_FRAME.zoom, FRAME_LIMITS.zoom.min, FRAME_LIMITS.zoom.max),
     x: clamp(f.x, DEFAULT_FRAME.x, FRAME_LIMITS.x.min, FRAME_LIMITS.x.max),
     y: clamp(f.y, DEFAULT_FRAME.y, FRAME_LIMITS.y.min, FRAME_LIMITS.y.max),
+    mode: f.mode === "estatico" ? "estatico" : "camadas",
   };
+
 }
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
