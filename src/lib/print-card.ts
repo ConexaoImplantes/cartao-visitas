@@ -69,14 +69,16 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
  * Todas as medidas em mm a partir do canto superior esquerdo do corte.
  */
 export const CARD_LAYOUT_ANTIGO = {
-  textX: 40.0,
+  /** padding-left de ~16px (3,2 mm) em relação à arte anterior */
+  textX: 43.2,
   nome: { baseline: 17.6, size: 12, color: "#004a8f" },
   cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
-  email: { baseline: 25.0, size: 7, color: "#000000", opacity: 0.7 },
-  site: { baseline: 27.5, size: 7, color: "#000000", opacity: 0.7 },
+  /** bloco e-mail/site/celular ~32px (6,4 mm) abaixo do cargo */
+  email: { baseline: 27.6, size: 7, color: "#000000", opacity: 0.7 },
+  site: { baseline: 30.1, size: 7, color: "#000000", opacity: 0.7 },
   /** fundo novo traz o logo à esquerda e não possui rótulo de telefone;
    *  renderizamos "Tel. DDI (DDD) número" alinhado aos demais dados */
-  celular: { baseline: 30.5, size: 7, color: "#000000", opacity: 0.7 },
+  celular: { baseline: 33.1, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
 
 
