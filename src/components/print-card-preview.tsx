@@ -147,30 +147,18 @@ export function PrintCardPreview({
 
           {/* Nome (reduz para caber, como no PDF) */}
           <div
-            className="absolute origin-left whitespace-nowrap font-bold"
+            className="absolute whitespace-nowrap font-bold"
             style={{
               left: px(CARD_LAYOUT.textX),
               top: px(baselineTop(CARD_LAYOUT.nome.baseline, CARD_LAYOUT.nome.size)),
-              maxWidth: px(CARD_TRIM.w - CARD_LAYOUT.textX - 5),
               fontSize: px(CARD_LAYOUT.nome.size * PT),
               lineHeight: 1,
               color: CARD_LAYOUT.nome.color,
-              overflow: "hidden",
-              textOverflow: "clip",
             }}
           >
-            <span
-              className="inline-block origin-left"
-              style={{
-                transform: `scale(${Math.min(
-                  1,
-                  (CARD_TRIM.w - CARD_LAYOUT.textX - 5) /
-                    Math.max(1, nome.length * CARD_LAYOUT.nome.size * PT * 0.52),
-                )})`,
-              }}
-            >
+            <FitText maxWidthPx={(CARD_TRIM.w - CARD_LAYOUT.textX - 5) * scale}>
               {nome}
-            </span>
+            </FitText>
           </div>
 
           {/* Cargo */}
