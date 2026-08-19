@@ -5,7 +5,6 @@ import {
   Trash2,
   Loader2,
   Share2,
-  Printer,
   CreditCard,
   Mail,
   UserRound,
@@ -43,11 +42,6 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
-import {
-  downloadPrintCard,
-  loadPrintOptions,
-  type PrintBackgrounds,
-} from "@/lib/print-card";
 
 const PERIODS: Array<{ label: string; days: number | null }> = [
   { label: "7 dias", days: 7 },
@@ -71,28 +65,8 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
-  const [printing, setPrinting] = useState(false);
-  const [printingId, setPrintingId] = useState<string | null>(null);
 
-  async function printOptions(): Promise<PrintBackgrounds> {
-    try {
-      return await loadPrintOptions();
-    } catch {
-      return {};
-    }
-  }
 
-  async function handlePrintOne(c: Collaborator) {
-    setPrintingId(c.id);
-    try {
-      await downloadPrintCard(c, await printOptions());
-      toast.success("Cartão gerado para impressão");
-    } catch (e: any) {
-      toast.error("Falha ao gerar o cartão", { description: e?.message });
-    } finally {
-      setPrintingId(null);
-    }
-  }
 
 
   useEffect(() => {
@@ -294,8 +268,6 @@ function DashboardPage() {
                         }}
                         onShare={() => setSharing(c)}
                         onDelete={() => setToDelete(c)}
-                        onPrint={() => handlePrintOne(c)}
-                        printingId={printingId}
                       />
                     </td>
                   </tr>
@@ -352,16 +324,12 @@ function ActionsMenu({
   onEdit,
   onShare,
   onDelete,
-  onPrint,
-  printingId,
 }: {
   c: Collaborator;
   can: (permission: PermissionKey) => boolean;
   onEdit: () => void;
   onShare: () => void;
   onDelete: () => void;
-  onPrint: () => void;
-  printingId: string | null;
 }) {
   return (
     <DropdownMenu>
@@ -387,20 +355,6 @@ function ActionsMenu({
             </Link>
           </DropdownMenuItem>
         )}
-        {can("dashboard.view") && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
-                <CreditCard className="size-4" /> Cartão físico
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/cartao/assinatura" search={{ id: c.id }}>
-                <Mail className="size-4" /> Assinatura
-              </Link>
-            </DropdownMenuItem>
-          </>
-        )}
         {can("foto_perfil.view") && (
           <DropdownMenuItem asChild>
             <Link to="/cartao/foto-perfil" search={{ id: c.id }}>
@@ -408,16 +362,26 @@ function ActionsMenu({
             </Link>
           </DropdownMenuItem>
         )}
-        {can("dashboard.download_card") && (
-          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onPrint(); }} disabled={printingId === c.id}>
-            {printingId === c.id ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />} Imprimir cartão
-          </DropdownMenuItem>
+        {can("dashboard.view") && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/assinatura" search={{ id: c.id }}>
+                <Mail className="size-4" /> Assinatura
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
+                <CreditCard className="size-4" /> Cartão físico
+              </Link>
+            </DropdownMenuItem>
+          </>
         )}
         {can("dashboard.share") && (
           <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onShare(); }}>
             <Share2 className="size-4" /> Compartilhar
           </DropdownMenuItem>
         )}
+
         <DropdownMenuSeparator />
         {can("dashboard.delete") && (
           <DropdownMenuItem
