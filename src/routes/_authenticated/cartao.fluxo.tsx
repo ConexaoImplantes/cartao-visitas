@@ -4,16 +4,19 @@ import { Check, Loader2, Package, ArrowRight, CircleDashed, Link2 } from "lucide
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import {
   KIT_STEPS,
   kitStatus,
+  manualSteps,
   loadKitOptions,
   downloadKitZip,
   downloadKitZipBatch,
   type KitOptions,
+  type KitStepKey,
 } from "@/lib/kit";
 import { buildKitUrl } from "@/lib/qr";
 
@@ -45,6 +48,13 @@ function FluxoPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [batchBusy, setBatchBusy] = useState(false);
   const [progress, setProgress] = useState("");
+  const [markBusy, setMarkBusy] = useState(false);
+  const [batchSteps, setBatchSteps] = useState<Record<KitStepKey, boolean>>({
+    foto: false,
+    linktree: false,
+    assinatura: false,
+    cartao: false,
+  });
 
   useEffect(() => {
     if (!permLoading && !can("fluxo.view")) {
@@ -110,6 +120,59 @@ function FluxoPage() {
     } finally {
       setBatchBusy(false);
       setProgress("");
+    }
+  }
+
+  /** Marca/desmarca manualmente uma etapa de um colaborador. */
+  async function toggleManual(c: Collaborator, key: KitStepKey, value: boolean) {
+    const next = { ...manualSteps(c), [key]: value };
+    setRows((prev) =>
+      (prev ?? []).map((r) => (r.id === c.id ? ({ ...r, kit_manual: next } as Collaborator) : r)),
+    );
+    const { error } = await supabase
+      .from("collaborators")
+      .update({ kit_manual: next })
+      .eq("id", c.id);
+    if (error) {
+      toast.error("Não foi possível salvar a marcação", { description: error.message });
+      setRows((prev) =>
+        (prev ?? []).map((r) =>
+          r.id === c.id ? ({ ...r, kit_manual: manualSteps(c) } as Collaborator) : r,
+        ),
+      );
+    }
+  }
+
+  /** Aplica a marcação manual em lote para todos os colaboradores. */
+  async function applyBatchManual(value: boolean) {
+    const keys = (Object.keys(batchSteps) as KitStepKey[]).filter((k) => batchSteps[k]);
+    if (keys.length === 0 || !rows) {
+      toast.error("Selecione ao menos uma etapa");
+      return;
+    }
+    setMarkBusy(true);
+    try {
+      let ok = 0;
+      for (const c of rows) {
+        const next = { ...manualSteps(c) };
+        keys.forEach((k) => (next[k] = value));
+        const { error } = await supabase
+          .from("collaborators")
+          .update({ kit_manual: next })
+          .eq("id", c.id);
+        if (!error) {
+          ok += 1;
+          c.kit_manual = next;
+        }
+      }
+      setRows((prev) => (prev ? [...prev] : prev));
+      toast.success(
+        value
+          ? `${ok} colaboradores com etapas marcadas como concluídas`
+          : `Marcações removidas de ${ok} colaboradores`,
+      );
+    } finally {
+      setMarkBusy(false);
     }
   }
 
@@ -245,6 +308,15 @@ function FluxoPage() {
                           {st.done ? step.description : st.reason}
                         </div>
                       </div>
+                      {can("fluxo.marcar_etapas") && (
+                        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[color:var(--text-muted)]">
+                          <Checkbox
+                            checked={!!st.manual}
+                            onCheckedChange={(v) => toggleManual(selected, step.key, v === true)}
+                          />
+                          Já incluso
+                        </label>
+                      )}
                       <Button asChild variant="ghost" size="sm">
                         {step.key === "linktree" ? (
                           <Link to="/cartao/dashboard">
@@ -308,6 +380,47 @@ function FluxoPage() {
           )}
         </section>
       </div>
+
+      {can("fluxo.marcar_etapas") && (
+        <section className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
+          <div className="font-medium text-[color:var(--text-main)]">
+            Marcar etapas em lote
+          </div>
+          <p className="mt-1 text-xs text-[color:var(--text-muted)]">
+            Use quando o material já existe mas o sistema não reconhece (ex.: todos já possuem foto
+            de perfil). A ação vale para os {rows?.length ?? 0} colaboradores da lista.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            {KIT_STEPS.map((step) => (
+              <label
+                key={step.key}
+                className="flex cursor-pointer items-center gap-2 text-sm text-[color:var(--text-main)]"
+              >
+                <Checkbox
+                  checked={batchSteps[step.key]}
+                  onCheckedChange={(v) =>
+                    setBatchSteps((prev) => ({ ...prev, [step.key]: v === true }))
+                  }
+                />
+                {step.label}
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button
+              onClick={() => applyBatchManual(true)}
+              disabled={markBusy || !rows?.length}
+              className="gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
+            >
+              {markBusy ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+              Marcar como concluídas
+            </Button>
+            <Button variant="outline" onClick={() => applyBatchManual(false)} disabled={markBusy}>
+              Remover marcações
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
