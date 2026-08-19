@@ -123,9 +123,40 @@ function FotoPerfilPage() {
 
   useEffect(() => {
     if (!active) return;
-    setPerson(active.foto_recortada_url ?? null);
+    // Sem recorte salvo? Reaproveita a foto já definida no Link Tree.
+    setPerson(active.foto_recortada_url ?? active.foto_url ?? null);
+    setUsingLinktree(!active.foto_recortada_url && !!active.foto_url);
     setFrame(normalizeFrame(active.foto_perfil_ajuste));
   }, [active?.id]);
+
+  /** Carrega a foto atual do Link Tree como base da arte. */
+  function handleUseLinktreePhoto() {
+    if (!active?.foto_url) return;
+    setPerson(active.foto_url);
+    setUsingLinktree(true);
+    setFrame({ ...DEFAULT_FRAME });
+    toast.success("Foto do Link Tree carregada");
+  }
+
+  /** Remove o fundo da foto que está carregada no editor. */
+  async function handleRemoveBgCurrent() {
+    if (!person) return;
+    setBusy("cut");
+    setProgress("Preparando...");
+    try {
+      const blob = await (await fetch(person)).blob();
+      const raw = await removeBackground(blob, setProgress);
+      setPerson(await trimAndResizePng(raw));
+      setUsingLinktree(false);
+      setFrame({ ...DEFAULT_FRAME });
+      toast.success("Fundo removido. Ajuste o enquadramento e salve.");
+    } catch (e: any) {
+      toast.error("Falha ao remover o fundo", { description: e?.message });
+    } finally {
+      setBusy(null);
+      setProgress("");
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
