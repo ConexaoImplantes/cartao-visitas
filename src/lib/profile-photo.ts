@@ -1,5 +1,6 @@
 import bgAsset from "@/assets/fp-bg.png.asset.json";
 import bgCleanAsset from "@/assets/fp-bg-clean.png.asset.json";
+import bgFotoAsset from "@/assets/bg-foto.png.asset.json";
 
 /** Arte da foto de perfil: 1080 x 1080 px. */
 export const PROFILE_SIZE = 1080;
@@ -42,6 +43,8 @@ export const DEFAULT_PROFILE_BACKGROUNDS = {
   bgUrl: bgAsset.url as string,
   /** Variante clara sem moldura dourada. */
   cleanUrl: bgCleanAsset.url as string,
+  /** Camada de fundo (base) da composição. */
+  baseUrl: bgFotoAsset.url as string,
 };
 
 export function normalizeFrame(input: unknown): ProfileFrame {
@@ -140,7 +143,7 @@ export async function composeProfilePhoto(
 
   const scale = size / PROFILE_SIZE;
 
-  const bg = await loadImage(input.bgUrl || DEFAULT_PROFILE_BACKGROUNDS.bgUrl);
+  const bg = await loadImage(input.bgUrl || DEFAULT_PROFILE_BACKGROUNDS.baseUrl);
   ctx.drawImage(bg, 0, 0, size, size);
 
   if (input.personUrl) {
@@ -151,13 +154,11 @@ export async function composeProfilePhoto(
     const x = BASE_CENTER_X + frame.x - w / 2;
     const y = PROFILE_SIZE - h + frame.y;
     ctx.drawImage(person, x * scale, y * scale, w * scale, h * scale);
-
-    // Moldura dourada (e logo) por cima da pessoa — só na arte padrão.
-    if (!input.bgUrl) {
-      const overlay = await getGoldOverlay();
-      if (overlay) ctx.drawImage(overlay, 0, 0, size, size);
-    }
   }
+
+  // Camada 1 (topo): moldura dourada — sempre acima da foto e do fundo.
+  const overlay = await getGoldOverlay();
+  if (overlay) ctx.drawImage(overlay, 0, 0, size, size);
 
   return canvas;
 }
