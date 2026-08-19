@@ -45,13 +45,13 @@ function AuthLayout() {
     ...(can("dashboard.view")
       ? ([{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] as const)
       : ([] as const)),
-    ...(can("dashboard.view")
+    ...(can("cartao_fisico.view")
       ? ([{ to: "/cartao/cartao-fisico", label: "Cartão", icon: Printer }] as const)
       : ([] as const)),
-    ...(can("dashboard.view")
+    ...(can("assinatura.view")
       ? ([{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] as const)
       : ([] as const)),
-    ...(can("dashboard.create")
+    ...(can("importar.view")
       ? ([{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] as const)
       : ([] as const)),
     ...(can("tema.view")

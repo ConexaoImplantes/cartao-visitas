@@ -30,7 +30,7 @@ function ImportPage() {
   const [result, setResult] = useState<{ created: number; failed: { line: number; message: string }[] } | null>(null);
 
   useEffect(() => {
-    if (!permLoading && !can("dashboard.create")) {
+    if (!permLoading && !can("importar.view")) {
       toast.error("Você não tem permissão para importar colaboradores");
       navigate({ to: "/cartao/dashboard", replace: true });
     }
