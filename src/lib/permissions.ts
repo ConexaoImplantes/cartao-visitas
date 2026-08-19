@@ -5,6 +5,7 @@ export type PermissionKey =
   | "dashboard.delete"
   | "dashboard.toggle_status"
   | "dashboard.download_qr"
+  | "dashboard.download_card"
   | "dashboard.view_qr"
   | "dashboard.view_link"
   | "dashboard.share"
@@ -37,6 +38,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "dashboard.view_link", label: "Abrir Link Tree" },
       { key: "dashboard.view_qr", label: "Visualizar QR Code" },
       { key: "dashboard.download_qr", label: "Baixar QR Code" },
+      { key: "dashboard.download_card", label: "Baixar cartão para impressão" },
       { key: "dashboard.share", label: "Compartilhar com o colaborador" },
     ],
   },
