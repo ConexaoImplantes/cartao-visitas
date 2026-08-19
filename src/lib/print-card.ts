@@ -375,3 +375,12 @@ export async function downloadPrintCardsBatch(items: PrintCardInput[], bgs: Prin
   const bytes = await buildPrintCardsPdf(items, bgs);
   downloadPdf(bytes, `cartoes-impressao-${items.length}.pdf`);
 }
+
+/** Gera o PDF real e abre em nova aba para conferência antes da impressão. */
+export async function openPrintCardPdf(items: PrintCardInput[], bgs: PrintBackgrounds = {}) {
+  const bytes = await buildPrintCardsPdf(items, bgs);
+  const blob = new Blob([bytes as unknown as BlobPart], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
