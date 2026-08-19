@@ -145,15 +145,24 @@ export async function buildPrintCardsPdf(
       height: mm(PAGE_H),
       color: rgb(1, 1, 1),
     });
-    // Background covers trim + bleed
+    // Bleed filler: enlarged copy so the sangria area is never white,
+    // drawn *behind* the real art.
     page.drawImage(bg, {
       x: mm(MARKS),
       y: mm(MARKS),
       width: mm(TRIM_W + 2 * BLEED),
       height: mm(TRIM_H + 2 * BLEED),
     });
+    // Real artwork at exact trim size: gold bands stay fully inside the cut.
+    page.drawImage(bg, {
+      x: mm(OX),
+      y: mm(OY),
+      width: mm(TRIM_W),
+      height: mm(TRIM_H),
+    });
     return page;
   };
+
 
   const drawMarks = (page: any, label: string) => {
     const k = rgb(0, 0, 0);
