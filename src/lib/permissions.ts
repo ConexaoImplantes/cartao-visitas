@@ -60,6 +60,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     ],
   },
   {
+    route: "foto-perfil",
+    label: "Foto de Perfil (1080x1080)",
+    description: "Criação da arte institucional de foto de perfil dos colaboradores.",
+    permissions: [
+      { key: "foto_perfil.view", label: "Acessar a rota" },
+      { key: "foto_perfil.edit", label: "Enviar foto e ajustar enquadramento" },
+      { key: "foto_perfil.download", label: "Baixar / compartilhar a arte" },
+    ],
+  },
+  {
     route: "assinatura",
     label: "Assinatura de E-mail",
     description: "Geração e download das assinaturas em PNG.",
