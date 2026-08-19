@@ -86,6 +86,7 @@ export type Database = {
           foto_recortada_url: string | null
           foto_url: string | null
           id: string
+          kit_manual: Json
           nome: string
           nome_cartao: string | null
           slug: string
@@ -103,6 +104,7 @@ export type Database = {
           foto_recortada_url?: string | null
           foto_url?: string | null
           id?: string
+          kit_manual?: Json
           nome: string
           nome_cartao?: string | null
           slug: string
@@ -120,6 +122,7 @@ export type Database = {
           foto_recortada_url?: string | null
           foto_url?: string | null
           id?: string
+          kit_manual?: Json
           nome?: string
           nome_cartao?: string | null
           slug?: string
