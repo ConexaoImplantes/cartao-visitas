@@ -192,14 +192,17 @@ export async function buildKitFiles(
   const files: KitFile[] = [];
 
   onProgress?.("Gerando foto de perfil...");
-  if (c.foto_recortada_url) {
+  if (c.foto_recortada_url || c.foto_url) {
+    const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
+    const saved = normalizeFrame(c.foto_perfil_ajuste);
     const photo = await profilePhotoBlob({
-      personUrl: c.foto_recortada_url,
+      personUrl: c.foto_recortada_url ?? c.foto_url,
       bgUrl: opts.profileBgUrl || null,
-      frame: normalizeFrame(c.foto_perfil_ajuste),
+      frame: linktreeOnly ? { ...saved, mode: "estatico" } : saved,
     });
     files.push({ name: `foto-perfil-${base}.png`, blob: photo });
   }
+
 
   onProgress?.("Gerando assinatura de e-mail...");
   const signature = await renderSignaturePng(

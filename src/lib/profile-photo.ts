@@ -25,15 +25,25 @@ export const DEFAULT_FRAME = {
   x: 0,
   /** Deslocamento vertical em px (positivo = baixo). */
   y: 0,
+  /** Modo de composição padrão. */
+  mode: "camadas",
 } as const;
 
-export type ProfileFrame = { zoom: number; x: number; y: number };
+
+/**
+ * `camadas` = fundo + pessoa recortada + moldura dourada.
+ * `estatico` = apenas a foto preenchendo o quadrado 1080x1080.
+ */
+export type ProfileMode = "camadas" | "estatico";
+
+export type ProfileFrame = { zoom: number; x: number; y: number; mode: ProfileMode };
 
 export const FRAME_LIMITS = {
   zoom: { min: 0.6, max: 1.8, step: 0.01 },
   x: { min: -400, max: 400, step: 2 },
   y: { min: -1000, max: 1000, step: 2 },
 } as const;
+
 
 /** Base de composição: pessoa ancorada na base, alinhada à direita do círculo. */
 const BASE_HEIGHT = 0.94; // fração do lado
@@ -58,7 +68,9 @@ export function normalizeFrame(input: unknown): ProfileFrame {
     zoom: clamp(f.zoom, DEFAULT_FRAME.zoom, FRAME_LIMITS.zoom.min, FRAME_LIMITS.zoom.max),
     x: clamp(f.x, DEFAULT_FRAME.x, FRAME_LIMITS.x.min, FRAME_LIMITS.x.max),
     y: clamp(f.y, DEFAULT_FRAME.y, FRAME_LIMITS.y.min, FRAME_LIMITS.y.max),
+    mode: f.mode === "estatico" ? "estatico" : "camadas",
   };
+
 }
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -107,12 +119,22 @@ export async function composeProfilePhoto(
   ctx.imageSmoothingQuality = "high";
 
   const scale = size / PROFILE_SIZE;
+  const frame = normalizeFrame(input.frame);
+
+  // Modo estático: apenas a foto preenchendo todo o quadrado (cover crop).
+  if (frame.mode === "estatico" && input.personUrl) {
+    const person = await loadImage(input.personUrl);
+    const min = Math.min(person.width, person.height);
+    const sx = (person.width - min) / 2;
+    const sy = (person.height - min) / 2;
+    ctx.drawImage(person, sx, sy, min, min, 0, 0, size, size);
+    return canvas;
+  }
 
   const bg = await loadImage(input.bgUrl || DEFAULT_PROFILE_BACKGROUNDS.baseUrl);
   ctx.drawImage(bg, 0, 0, size, size);
 
   if (input.personUrl) {
-    const frame = normalizeFrame(input.frame);
     const person = await loadImage(input.personUrl);
     const h = PROFILE_SIZE * BASE_HEIGHT * frame.zoom;
     const w = (person.width / person.height) * h;
@@ -124,6 +146,7 @@ export async function composeProfilePhoto(
   // Camada 1 (topo): moldura dourada — sempre acima da foto e do fundo.
   const overlay = await getGoldOverlay();
   if (overlay) ctx.drawImage(overlay, 0, 0, size, size);
+
 
   return canvas;
 }

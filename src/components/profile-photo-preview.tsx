@@ -36,7 +36,7 @@ export function ProfilePhotoPreview({
     return () => {
       cancelled = true;
     };
-  }, [personUrl, bgUrl, frame?.zoom, frame?.x, frame?.y, size]);
+  }, [personUrl, bgUrl, frame?.zoom, frame?.x, frame?.y, frame?.mode, size]);
 
   return (
     <div

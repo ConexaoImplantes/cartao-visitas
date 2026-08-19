@@ -124,20 +124,23 @@ function FotoPerfilPage() {
 
   useEffect(() => {
     if (!active) return;
-    // Sem recorte salvo? Reaproveita a foto já definida no Link Tree.
+    // Sem recorte salvo? Reaproveita a foto já definida no Link Tree (modo estático).
+    const linktreeOnly = !active.foto_recortada_url && !!active.foto_url;
     setPerson(active.foto_recortada_url ?? active.foto_url ?? null);
-    setUsingLinktree(!active.foto_recortada_url && !!active.foto_url);
-    setFrame(normalizeFrame(active.foto_perfil_ajuste));
+    setUsingLinktree(linktreeOnly);
+    const saved = normalizeFrame(active.foto_perfil_ajuste);
+    setFrame(linktreeOnly ? { ...saved, mode: "estatico" } : saved);
   }, [active?.id]);
 
-  /** Carrega a foto atual do Link Tree como base da arte. */
+  /** Carrega a foto atual do Link Tree como imagem estática 1080x1080. */
   function handleUseLinktreePhoto() {
     if (!active?.foto_url) return;
     setPerson(active.foto_url);
     setUsingLinktree(true);
-    setFrame({ ...DEFAULT_FRAME });
-    toast.success("Foto do Link Tree carregada");
+    setFrame({ ...DEFAULT_FRAME, mode: "estatico" });
+    toast.success("Foto do Link Tree carregada (imagem estática 1080×1080)");
   }
+
 
   /** Remove o fundo da foto que está carregada no editor. */
   async function handleRemoveBgCurrent() {
@@ -291,11 +294,14 @@ function FotoPerfilPage() {
       const JSZip = (await import("jszip")).default;
       const zip = new JSZip();
       for (const c of items) {
+        const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
+        const saved = normalizeFrame(c.foto_perfil_ajuste);
         const blob = await profilePhotoBlob({
-          personUrl: c.foto_recortada_url ?? null,
+          personUrl: c.foto_recortada_url ?? c.foto_url ?? null,
           bgUrl,
-          frame: normalizeFrame(c.foto_perfil_ajuste),
+          frame: linktreeOnly ? { ...saved, mode: "estatico" } : saved,
         });
+
         zip.file(profileFileName(c.nome_cartao || c.nome), blob);
       }
       const out = await zip.generateAsync({ type: "blob" });
@@ -501,12 +507,12 @@ function FotoPerfilPage() {
                         </Button>
                       )}
                     </div>
-                    {usingLinktree && (
-                      <p className="text-xs text-[color:var(--text-muted)]">
-                        Usando a foto já definida no Link Tree. Você pode mantê-la e apenas salvar,
-                        ou recriar a arte enviando uma nova foto.
-                      </p>
-                    )}
+                    <p className="text-xs text-[color:var(--text-muted)]">
+                      {frame.mode === "estatico"
+                        ? "Modo estático: a foto do Link Tree é usada como imagem 1080×1080, preenchendo todo o espaço, sem moldura e sem fundo."
+                        : "Modo em camadas: fundo + foto sem fundo + moldura dourada, com zoom e posicionamento."}
+                    </p>
+
                     <input
                       ref={fileRef}
                       type="file"
@@ -533,41 +539,44 @@ function FotoPerfilPage() {
                     </p>
                   </div>
 
-                  <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
-                    <FrameSlider
-                      label="Zoom"
-                      value={frame.zoom}
-                      limits={FRAME_LIMITS.zoom}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v * 100)}%`}
-                      onChange={(v) => setFrame((f) => ({ ...f, zoom: v }))}
-                    />
-                    <FrameSlider
-                      label="Posição horizontal"
-                      value={frame.x}
-                      limits={FRAME_LIMITS.x}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v)} px`}
-                      onChange={(v) => setFrame((f) => ({ ...f, x: v }))}
-                    />
-                    <FrameSlider
-                      label="Posição vertical"
-                      value={frame.y}
-                      limits={FRAME_LIMITS.y}
-                      disabled={!canEdit || !person}
-                      format={(v) => `${Math.round(v)} px`}
-                      onChange={(v) => setFrame((f) => ({ ...f, y: v }))}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={!canEdit}
-                      onClick={() => setFrame({ ...DEFAULT_FRAME })}
-                    >
-                      <RotateCcw className="size-4" />
-                      Restaurar enquadramento padrão
-                    </Button>
-                  </div>
+                  {frame.mode === "camadas" && (
+                    <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
+                      <FrameSlider
+                        label="Zoom"
+                        value={frame.zoom}
+                        limits={FRAME_LIMITS.zoom}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v * 100)}%`}
+                        onChange={(v) => setFrame((f) => ({ ...f, zoom: v }))}
+                      />
+                      <FrameSlider
+                        label="Posição horizontal"
+                        value={frame.x}
+                        limits={FRAME_LIMITS.x}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v)} px`}
+                        onChange={(v) => setFrame((f) => ({ ...f, x: v }))}
+                      />
+                      <FrameSlider
+                        label="Posição vertical"
+                        value={frame.y}
+                        limits={FRAME_LIMITS.y}
+                        disabled={!canEdit || !person}
+                        format={(v) => `${Math.round(v)} px`}
+                        onChange={(v) => setFrame((f) => ({ ...f, y: v }))}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={!canEdit}
+                        onClick={() => setFrame({ ...DEFAULT_FRAME })}
+                      >
+                        <RotateCcw className="size-4" />
+                        Restaurar enquadramento padrão
+                      </Button>
+                    </div>
+                  )}
+
                 </div>
               </div>
 
