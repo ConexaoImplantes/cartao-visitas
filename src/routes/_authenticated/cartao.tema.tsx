@@ -384,6 +384,20 @@ export function ThemePage() {
               />
             </TabsContent>
 
+            <TabsContent value="foto-perfil" className="space-y-4 pt-5">
+              <p className="text-sm text-[color:var(--text-muted)]">
+                Arte de fundo da foto de perfil (1080x1080&nbsp;px). Em branco, o
+                sistema usa a arte padrão da Conexão.
+              </p>
+              <ArtUploader
+                label="Fundo da foto de perfil"
+                aspect="1/1"
+                maxSize={1080}
+                url={theme.fotoPerfil.bgUrl}
+                onChange={(v) => patch("fotoPerfil", { ...theme.fotoPerfil, bgUrl: v })}
+              />
+            </TabsContent>
+
             <TabsContent value="institucional" className="space-y-4 pt-5">
               <LogoUploader
                 url={theme.institucional.logoUrl}
