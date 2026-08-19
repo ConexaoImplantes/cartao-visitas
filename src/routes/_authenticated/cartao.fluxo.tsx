@@ -116,6 +116,59 @@ function FluxoPage() {
     }
   }
 
+  /** Marca/desmarca manualmente uma etapa de um colaborador. */
+  async function toggleManual(c: Collaborator, key: KitStepKey, value: boolean) {
+    const next = { ...manualSteps(c), [key]: value };
+    setRows((prev) =>
+      (prev ?? []).map((r) => (r.id === c.id ? ({ ...r, kit_manual: next } as Collaborator) : r)),
+    );
+    const { error } = await supabase
+      .from("collaborators")
+      .update({ kit_manual: next })
+      .eq("id", c.id);
+    if (error) {
+      toast.error("Não foi possível salvar a marcação", { description: error.message });
+      setRows((prev) =>
+        (prev ?? []).map((r) =>
+          r.id === c.id ? ({ ...r, kit_manual: manualSteps(c) } as Collaborator) : r,
+        ),
+      );
+    }
+  }
+
+  /** Aplica a marcação manual em lote para todos os colaboradores. */
+  async function applyBatchManual(value: boolean) {
+    const keys = (Object.keys(batchSteps) as KitStepKey[]).filter((k) => batchSteps[k]);
+    if (keys.length === 0 || !rows) {
+      toast.error("Selecione ao menos uma etapa");
+      return;
+    }
+    setMarkBusy(true);
+    try {
+      let ok = 0;
+      for (const c of rows) {
+        const next = { ...manualSteps(c) };
+        keys.forEach((k) => (next[k] = value));
+        const { error } = await supabase
+          .from("collaborators")
+          .update({ kit_manual: next })
+          .eq("id", c.id);
+        if (!error) {
+          ok += 1;
+          c.kit_manual = next;
+        }
+      }
+      setRows((prev) => (prev ? [...prev] : prev));
+      toast.success(
+        value
+          ? `${ok} colaboradores com etapas marcadas como concluídas`
+          : `Marcações removidas de ${ok} colaboradores`,
+      );
+    } finally {
+      setMarkBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
