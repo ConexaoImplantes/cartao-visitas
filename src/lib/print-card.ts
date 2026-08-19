@@ -5,7 +5,6 @@ import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
 import fontBoldAsset from "@/assets/OpenSans-Bold.ttf.asset.json";
 import fontItalicAsset from "@/assets/OpenSans-Italic.ttf.asset.json";
 import { buildCardUrl } from "./qr";
-import { getCachedSettings } from "./settings";
 
 /** Millimetre -> PDF point. */
 const MM = 72 / 25.4;
@@ -31,6 +30,24 @@ export interface PrintCardInput {
 export interface PrintBackgrounds {
   frenteUrl?: string;
   versoUrl?: string;
+  site?: string;
+}
+
+/** Loads print artwork + site from the global theme (falls back to defaults). */
+export async function loadPrintOptions(): Promise<PrintBackgrounds> {
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { normalizeTheme } = await import("./types");
+  const { data } = await supabase
+    .from("theme_config")
+    .select("config")
+    .eq("id", "global")
+    .maybeSingle();
+  const theme = normalizeTheme(data?.config);
+  return {
+    frenteUrl: theme.impressao.frenteUrl || undefined,
+    versoUrl: theme.impressao.versoUrl || undefined,
+    site: theme.institucional.site || undefined,
+  };
 }
 
 function mm(v: number) {
