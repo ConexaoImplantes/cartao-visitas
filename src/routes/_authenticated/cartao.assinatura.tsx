@@ -71,7 +71,7 @@ function AssinaturaPage() {
   const canEdit = can("dashboard.edit");
 
   useEffect(() => {
-    if (!permLoading && !can("dashboard.view")) {
+    if (!permLoading && !can("assinatura.view")) {
       toast.error("Você não tem permissão para acessar esta área");
       navigate({ to: "/cartao/tema", replace: true });
     }

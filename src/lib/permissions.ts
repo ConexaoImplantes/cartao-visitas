@@ -9,6 +9,11 @@ export type PermissionKey =
   | "dashboard.view_qr"
   | "dashboard.view_link"
   | "dashboard.share"
+  | "cartao_fisico.view"
+  | "cartao_fisico.download"
+  | "assinatura.view"
+  | "assinatura.download"
+  | "importar.view"
   | "tema.view"
   | "tema.edit";
 
@@ -41,6 +46,30 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "dashboard.download_card", label: "Baixar cartão para impressão" },
       { key: "dashboard.share", label: "Compartilhar com o colaborador" },
     ],
+  },
+  {
+    route: "cartao-fisico",
+    label: "Cartão de Visitas (impressão)",
+    description: "Geração e download do cartão físico em PDF.",
+    permissions: [
+      { key: "cartao_fisico.view", label: "Acessar a rota" },
+      { key: "cartao_fisico.download", label: "Baixar PDF do cartão" },
+    ],
+  },
+  {
+    route: "assinatura",
+    label: "Assinatura de E-mail",
+    description: "Geração e download das assinaturas em PNG.",
+    permissions: [
+      { key: "assinatura.view", label: "Acessar a rota" },
+      { key: "assinatura.download", label: "Baixar assinatura" },
+    ],
+  },
+  {
+    route: "importar",
+    label: "Importação em massa (CSV)",
+    description: "Criação de Link Trees a partir de planilha.",
+    permissions: [{ key: "importar.view", label: "Acessar a rota" }],
   },
   {
     route: "tema",
