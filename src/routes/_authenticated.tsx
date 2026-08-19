@@ -112,7 +112,6 @@ function AuthLayout() {
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium text-[color:var(--text-muted)] transition-colors hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-main)] lg:hidden"
                   >
                     <MoreHorizontal className="size-4" />
-                    <span className="hidden whitespace-nowrap sm:inline">Mais</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
