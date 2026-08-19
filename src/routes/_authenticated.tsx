@@ -101,7 +101,7 @@ function AuthLayout() {
               <NavLink key={n.to} n={n} showLabel />
             ))}
             {secondaryNav.map((n) => (
-              <NavLink key={n.to} n={n} showLabel />
+              <NavLink key={n.to} n={n} showLabel extraClassName="hidden lg:flex" />
             ))}
             {secondaryNav.length > 0 && (
               <DropdownMenu>
