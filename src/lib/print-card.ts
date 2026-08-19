@@ -319,8 +319,8 @@ export async function buildPrintCardsPdf(
       color: rgb(1, 1, 1),
     });
 
-    // 3. Cargo — Open Sans Itálico 7pt #C59937
-    const cargoSize = fitSize(c.cargo, fontItalic, CARD_LAYOUT.cargo.size, maxTextW);
+    // 3. Cargo — Open Sans Itálico 7pt #C59937 (tamanho fixo, regra inegociável)
+    const cargoSize = CARD_LAYOUT.cargo.size;
     const cargoPos = pt(textX, CARD_LAYOUT.cargo.baseline);
     const gold = rgbHex(CARD_LAYOUT.cargo.color);
     front.drawText(c.cargo, {
