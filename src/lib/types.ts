@@ -150,6 +150,7 @@ export const DEFAULT_THEME: ThemeConfig = {
     },
     socialIconSize: 20,
   },
+  impressao: { frenteUrl: "", versoUrl: "" },
 };
 
 export const FONT_OPTIONS = [
