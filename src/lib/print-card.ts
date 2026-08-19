@@ -355,6 +355,50 @@ export async function buildPrintCardsPdf(
     const nome = (c.nome_cartao || c.nome).trim();
     const front = newPage(bgFront);
 
+    if (isAntigo) {
+      const L = CARD_LAYOUT_ANTIGO;
+      const drawA = (
+        text: string,
+        x: number,
+        baseline: number,
+        size: number,
+        hex: string,
+        opacity = 1,
+      ) => {
+        if (!text) return;
+        const col = rgbHex(hex);
+        const p = pt(x, baseline);
+        front.drawText(text, {
+          x: p.x,
+          y: p.y,
+          size,
+          font: fontFrutiger,
+          color: rgb(col.r, col.g, col.b),
+          opacity,
+        });
+      };
+      drawA(nome, L.textX, L.nome.baseline, L.nome.size, L.nome.color);
+      drawA(c.cargo, L.textX, L.cargo.baseline, L.cargo.size, L.cargo.color);
+      drawA(c.email ?? "", L.textX, L.email.baseline, L.email.size, L.email.color, L.email.opacity);
+      drawA(site, L.textX, L.site.baseline, L.site.size, L.site.color, L.site.opacity);
+      drawA(
+        formatPhoneAntigo(c.whatsapp),
+        L.celular.x,
+        L.celular.baseline,
+        L.celular.size,
+        L.celular.color,
+        L.celular.opacity,
+      );
+
+      drawMarks(front, `${nome} — frente`);
+      drawProofBar(front);
+
+      const backA = newPage(bgBack);
+      drawMarks(backA, `${nome} — verso`);
+      drawProofBar(backA);
+      continue;
+    }
+
     // 1. QR Code
     const qr = await pdf.embedPng(await qrPngBytes(c.slug));
     const qrSize = CARD_LAYOUT.qr.size;
@@ -433,6 +477,7 @@ export async function buildPrintCardsPdf(
     drawMarks(back, `${nome} — verso`);
     drawProofBar(back);
   }
+
 
   return pdf.save();
 }
