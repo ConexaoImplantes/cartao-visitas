@@ -277,6 +277,13 @@ function DashboardPage() {
                             </Link>
                           </IconBtn>
                         )}
+                        {can("foto_perfil.view") && (
+                          <IconBtn title="Ver / editar foto de perfil" asChild>
+                            <Link to="/cartao/foto-perfil" search={{ id: c.id }}>
+                              <UserRound className="size-4" />
+                            </Link>
+                          </IconBtn>
+                        )}
                         {can("dashboard.download_card") && (
                           <IconBtn
                             title="Baixar cartão para impressão (PDF)"
