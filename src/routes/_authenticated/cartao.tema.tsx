@@ -274,6 +274,51 @@ export function ThemePage() {
                 url={theme.impressao.versoUrl}
                 onChange={(v) => patch("impressao", { ...theme.impressao, versoUrl: v })}
               />
+
+              <div className="space-y-4 border-t border-[color:var(--border-strong)] pt-4">
+                <p className="text-sm font-medium text-[color:var(--text-main)]">
+                  Bloco logo + site (frente)
+                </p>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label>Espaçamento do topo</Label>
+                    <span className="text-xs text-[color:var(--text-muted)]">
+                      {theme.impressao.marcaTop.toFixed(1)} mm
+                    </span>
+                  </div>
+                  <Slider
+                    min={MARCA_LIMITS.top.min}
+                    max={MARCA_LIMITS.top.max}
+                    step={MARCA_LIMITS.top.step}
+                    value={[theme.impressao.marcaTop]}
+                    onValueChange={([v]) =>
+                      patch("impressao", { ...theme.impressao, marcaTop: v })
+                    }
+                  />
+                  <p className="text-xs text-[color:var(--text-muted)]">
+                    Distância entre o topo do cartão e o bloco com logo e endereço do site.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label>Altura do logo</Label>
+                    <span className="text-xs text-[color:var(--text-muted)]">
+                      {theme.impressao.marcaLogoAltura.toFixed(1)} mm
+                    </span>
+                  </div>
+                  <Slider
+                    min={MARCA_LIMITS.logoHeight.min}
+                    max={MARCA_LIMITS.logoHeight.max}
+                    step={MARCA_LIMITS.logoHeight.step}
+                    value={[theme.impressao.marcaLogoAltura]}
+                    onValueChange={([v]) =>
+                      patch("impressao", { ...theme.impressao, marcaLogoAltura: v })
+                    }
+                  />
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="institucional" className="space-y-4 pt-5">
