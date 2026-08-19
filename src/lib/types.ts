@@ -86,6 +86,10 @@ export interface ThemeConfig {
   impressao: {
     frenteUrl: string;
     versoUrl: string;
+    /** Distância (mm) do topo do cartão até o bloco logo + site */
+    marcaTop: number;
+    /** Altura (mm) do logo na frente do cartão */
+    marcaLogoAltura: number;
   };
 }
 
