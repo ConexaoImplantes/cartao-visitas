@@ -1,6 +1,6 @@
 import bgFrontAsset from "@/assets/bg-f-cv.png.asset.json";
 import bgBackAsset from "@/assets/bg-v-cv.png.asset.json";
-import bgAntigoFrontAsset from "@/assets/bg-cv-antigo-f.png.asset.json";
+import bgAntigoFrontAsset from "@/assets/bg-cv-modelo-antigo-f.png.asset.json";
 import bgAntigoBackAsset from "@/assets/bg-cv-antigo-v.png.asset.json";
 import logoAsset from "@/assets/logo-horizontal-branco.png.asset.json";
 import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
