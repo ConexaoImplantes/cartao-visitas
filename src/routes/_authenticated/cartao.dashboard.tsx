@@ -356,7 +356,7 @@ function ActionsMenu({
   printingId,
 }: {
   c: Collaborator;
-  can: (permission: string) => boolean;
+  can: (permission: PermissionKey) => boolean;
   onEdit: () => void;
   onShare: () => void;
   onDelete: () => void;
