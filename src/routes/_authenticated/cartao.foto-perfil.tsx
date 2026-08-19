@@ -507,12 +507,12 @@ function FotoPerfilPage() {
                         </Button>
                       )}
                     </div>
-                    {usingLinktree && (
-                      <p className="text-xs text-[color:var(--text-muted)]">
-                        Usando a foto já definida no Link Tree. Você pode mantê-la e apenas salvar,
-                        ou recriar a arte enviando uma nova foto.
-                      </p>
-                    )}
+                    <p className="text-xs text-[color:var(--text-muted)]">
+                      {frame.mode === "estatico"
+                        ? "Modo estático: a foto do Link Tree é usada como imagem 1080×1080, preenchendo todo o espaço, sem moldura e sem fundo."
+                        : "Modo em camadas: fundo + foto sem fundo + moldura dourada, com zoom e posicionamento."}
+                    </p>
+
                     <input
                       ref={fileRef}
                       type="file"
