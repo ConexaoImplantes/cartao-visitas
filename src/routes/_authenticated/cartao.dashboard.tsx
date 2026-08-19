@@ -317,11 +317,6 @@ function DashboardPage() {
                             </a>
                           </IconBtn>
                         )}
-                        {can("dashboard.edit") && (
-                          <IconBtn title="Editar" onClick={() => { setEditing(c); setModalOpen(true); }}>
-                            <Pencil className="size-4" />
-                          </IconBtn>
-                        )}
                         {can("dashboard.view") && (
                           <IconBtn title="Ver / editar arte do cartão físico" asChild>
                             <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
