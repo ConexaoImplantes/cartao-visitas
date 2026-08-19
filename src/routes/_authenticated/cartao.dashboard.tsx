@@ -387,20 +387,6 @@ function ActionsMenu({
             </Link>
           </DropdownMenuItem>
         )}
-        {can("dashboard.view") && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
-                <CreditCard className="size-4" /> Cartão físico
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/cartao/assinatura" search={{ id: c.id }}>
-                <Mail className="size-4" /> Assinatura
-              </Link>
-            </DropdownMenuItem>
-          </>
-        )}
         {can("foto_perfil.view") && (
           <DropdownMenuItem asChild>
             <Link to="/cartao/foto-perfil" search={{ id: c.id }}>
@@ -408,16 +394,26 @@ function ActionsMenu({
             </Link>
           </DropdownMenuItem>
         )}
-        {can("dashboard.download_card") && (
-          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onPrint(); }} disabled={printingId === c.id}>
-            {printingId === c.id ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />} Imprimir cartão
-          </DropdownMenuItem>
+        {can("dashboard.view") && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/assinatura" search={{ id: c.id }}>
+                <Mail className="size-4" /> Assinatura
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
+                <CreditCard className="size-4" /> Cartão físico
+              </Link>
+            </DropdownMenuItem>
+          </>
         )}
         {can("dashboard.share") && (
           <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onShare(); }}>
             <Share2 className="size-4" /> Compartilhar
           </DropdownMenuItem>
         )}
+
         <DropdownMenuSeparator />
         {can("dashboard.delete") && (
           <DropdownMenuItem
