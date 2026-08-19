@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Pencil,
 } from "lucide-react";
+import { decodeTelefone, formatPhoneDisplay, maskNumberOnly } from "@/lib/types";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -197,13 +198,21 @@ function DashboardPage() {
               <thead className="hidden text-left text-[10px] uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
                 <tr className="border-b border-[color:var(--border-strong)]">
                   <th className="p-2 md:p-3">Colaborador</th>
+                  <th className="p-2 md:p-3">Contato</th>
                   <th className="p-2 md:p-3">Métricas</th>
                   <th className="p-2 md:p-3">Status</th>
                   <th className="p-2 text-right md:p-3">Ações</th>
                 </tr>
               </thead>
               <tbody className="block md:table-row-group">
-                {rows.map((c) => (
+                {rows.map((c) => {
+                  const tel = decodeTelefone(c.telefone_fixo);
+                  const telLabel =
+                    tel.kind === "ramal"
+                      ? `Ramal ${maskNumberOnly(tel.ramal) || tel.ramal}`
+                      : formatPhoneDisplay(c.telefone_fixo);
+                  const phoneDisplay = telLabel || formatPhoneDisplay(c.whatsapp) || "—";
+                  return (
                   <tr
                     key={c.id}
                     className="mb-3 block rounded-xl border border-[color:var(--border-strong)] p-3 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
@@ -224,9 +233,16 @@ function DashboardPage() {
                           <div className="line-clamp-1 text-[11px] text-[color:var(--text-muted)]">
                             {c.cargo}
                           </div>
-                          <div className="line-clamp-2 break-all text-[11px] text-[color:var(--text-muted)]">
-                            {c.email}
-                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="block p-2 md:table-cell md:p-3" data-label="Contato">
+                      <div className="min-w-0">
+                        <div className="line-clamp-2 break-all text-[11px] text-[color:var(--text-main)]">
+                          {c.email}
+                        </div>
+                        <div className="line-clamp-1 text-[11px] text-[color:var(--text-muted)]">
+                          {phoneDisplay}
                         </div>
                       </div>
                     </td>
@@ -271,7 +287,7 @@ function DashboardPage() {
                       />
                     </td>
                   </tr>
-                ))}
+                );})}
               </tbody>
             </table>
           </div>
