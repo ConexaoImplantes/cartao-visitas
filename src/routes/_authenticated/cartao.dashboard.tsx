@@ -42,11 +42,6 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
-import {
-  downloadPrintCard,
-  loadPrintOptions,
-  type PrintBackgrounds,
-} from "@/lib/print-card";
 
 const PERIODS: Array<{ label: string; days: number | null }> = [
   { label: "7 dias", days: 7 },
