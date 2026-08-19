@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Loader2, Share2, Printer, CreditCard, Mail, UserRound } from "lucide-react";
+import { Plus, Trash2, Loader2, Share2, Printer, CreditCard, Mail, UserRound, ListChecks } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -262,7 +262,14 @@ function DashboardPage() {
                       </div>
                     </td>
                     <td className="block p-0 md:table-cell md:p-4" data-label="Ações">
-                      <div className="grid grid-cols-6 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
+                      <div className="grid grid-cols-7 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
+                        {can("fluxo.view") && (
+                          <IconBtn title="Fluxo do colaborador / kit completo" asChild>
+                            <Link to="/cartao/fluxo">
+                              <ListChecks className="size-4" />
+                            </Link>
+                          </IconBtn>
+                        )}
                         {can("dashboard.view") && (
                           <IconBtn title="Ver / editar arte do cartão físico" asChild>
                             <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
