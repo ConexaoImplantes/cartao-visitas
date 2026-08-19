@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
+import { Route as AuthenticatedCartaoFotoPerfilRouteImport } from './routes/_authenticated/cartao.foto-perfil'
 import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_authenticated/cartao.dashboard'
 import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_authenticated/cartao.configuracoes'
 import { Route as AuthenticatedCartaoCartaoFisicoRouteImport } from './routes/_authenticated/cartao.cartao-fisico'
@@ -57,6 +58,12 @@ const AuthenticatedCartaoImportarRoute =
     path: '/cartao/importar',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCartaoFotoPerfilRoute =
+  AuthenticatedCartaoFotoPerfilRouteImport.update({
+    id: '/cartao/foto-perfil',
+    path: '/cartao/foto-perfil',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCartaoDashboardRoute =
   AuthenticatedCartaoDashboardRouteImport.update({
     id: '/cartao/dashboard',
@@ -90,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/_authenticated/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
   '/_authenticated/cartao/dashboard': typeof AuthenticatedCartaoDashboardRoute
+  '/_authenticated/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/_authenticated/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
+    | '/cartao/foto-perfil'
     | '/cartao/importar'
     | '/cartao/tema'
     | '/cartao/usuarios'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
     | '/cartao/dashboard'
+    | '/cartao/foto-perfil'
     | '/cartao/importar'
     | '/cartao/tema'
     | '/cartao/usuarios'
@@ -155,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cartao/cartao-fisico'
     | '/_authenticated/cartao/configuracoes'
     | '/_authenticated/cartao/dashboard'
+    | '/_authenticated/cartao/foto-perfil'
     | '/_authenticated/cartao/importar'
     | '/_authenticated/cartao/tema'
     | '/_authenticated/cartao/usuarios'
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoImportarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cartao/foto-perfil': {
+      id: '/_authenticated/cartao/foto-perfil'
+      path: '/cartao/foto-perfil'
+      fullPath: '/cartao/foto-perfil'
+      preLoaderRoute: typeof AuthenticatedCartaoFotoPerfilRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/cartao/dashboard': {
       id: '/_authenticated/cartao/dashboard'
       path: '/cartao/dashboard'
@@ -254,6 +274,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCartaoCartaoFisicoRoute: typeof AuthenticatedCartaoCartaoFisicoRoute
   AuthenticatedCartaoConfiguracoesRoute: typeof AuthenticatedCartaoConfiguracoesRoute
   AuthenticatedCartaoDashboardRoute: typeof AuthenticatedCartaoDashboardRoute
+  AuthenticatedCartaoFotoPerfilRoute: typeof AuthenticatedCartaoFotoPerfilRoute
   AuthenticatedCartaoImportarRoute: typeof AuthenticatedCartaoImportarRoute
   AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
   AuthenticatedCartaoUsuariosRoute: typeof AuthenticatedCartaoUsuariosRoute
@@ -264,6 +285,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCartaoCartaoFisicoRoute: AuthenticatedCartaoCartaoFisicoRoute,
   AuthenticatedCartaoConfiguracoesRoute: AuthenticatedCartaoConfiguracoesRoute,
   AuthenticatedCartaoDashboardRoute: AuthenticatedCartaoDashboardRoute,
+  AuthenticatedCartaoFotoPerfilRoute: AuthenticatedCartaoFotoPerfilRoute,
   AuthenticatedCartaoImportarRoute: AuthenticatedCartaoImportarRoute,
   AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
   AuthenticatedCartaoUsuariosRoute: AuthenticatedCartaoUsuariosRoute,
