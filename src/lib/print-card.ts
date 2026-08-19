@@ -190,7 +190,7 @@ export async function buildPrintCardsPdf(
       "#000000", "#404040", "#808080", "#bfbfbf",
       "#00ffff", "#ff00ff", "#ffff00", "#ff0000", "#00ff00", "#0000ff",
     ];
-    const w = mm(4);
+    const w = mm(3.2);
     const h = mm(3.2);
     const startX = mm(MARKS);
     const y = mm(2.2);
@@ -211,7 +211,7 @@ export async function buildPrintCardsPdf(
       {
         x: startX + swatches.length * w + mm(2),
         y: y + mm(1.1),
-        size: 4.5,
+        size: 4,
         font: fontRegular,
         color: rgb(0.4, 0.4, 0.4),
       },
@@ -295,6 +295,15 @@ export async function buildPrintCardsPdf(
     drawProofBar(front);
 
     const back = newPage(bgBack);
+    // Verso: logo horizontal centralizado
+    const backLogoW = 46;
+    const backLogoH = (logo.height / logo.width) * backLogoW;
+    back.drawImage(logo, {
+      x: mm(OX + (TRIM_W - backLogoW) / 2),
+      y: mm(OY + (TRIM_H - backLogoH) / 2),
+      width: mm(backLogoW),
+      height: mm(backLogoH),
+    });
     drawMarks(back, `${nome} — verso`);
     drawProofBar(back);
   }
