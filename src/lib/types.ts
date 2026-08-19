@@ -84,13 +84,19 @@ export interface ThemeConfig {
   };
   /** Artes do cartão de visitas impresso (90x48mm). Vazio = arte padrão. */
   impressao: {
+    /** Modelo pré-definido do cartão: "novo" (padrão) ou "antigo". */
+    modelo: "novo" | "antigo";
     frenteUrl: string;
     versoUrl: string;
+    /** Artes do modelo antigo (vazio = arte padrão do modelo antigo) */
+    antigoFrenteUrl: string;
+    antigoVersoUrl: string;
     /** Distância (mm) do topo do cartão até o bloco logo + site */
     marcaTop: number;
     /** Altura (mm) do logo na frente do cartão */
     marcaLogoAltura: number;
   };
+
   /** Arte de fundo da assinatura de e-mail (150x50mm). Vazio = arte padrão. */
   assinatura: {
     bgUrl: string;
@@ -158,7 +164,16 @@ export const DEFAULT_THEME: ThemeConfig = {
     },
     socialIconSize: 20,
   },
-  impressao: { frenteUrl: "", versoUrl: "", marcaTop: 29.2, marcaLogoAltura: 2.6 },
+  impressao: {
+    modelo: "novo",
+    frenteUrl: "",
+    versoUrl: "",
+    antigoFrenteUrl: "",
+    antigoVersoUrl: "",
+    marcaTop: 29.2,
+    marcaLogoAltura: 2.6,
+  },
+
   assinatura: { bgUrl: "" },
 };
 

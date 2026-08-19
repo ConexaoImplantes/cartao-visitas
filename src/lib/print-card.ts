@@ -1,10 +1,14 @@
 import bgFrontAsset from "@/assets/bg-f-cv.png.asset.json";
 import bgBackAsset from "@/assets/bg-v-cv.png.asset.json";
+import bgAntigoFrontAsset from "@/assets/bg-cv-antigo-f.png.asset.json";
+import bgAntigoBackAsset from "@/assets/bg-cv-antigo-v.png.asset.json";
 import logoAsset from "@/assets/logo-horizontal-branco.png.asset.json";
 import fontRegularAsset from "@/assets/OpenSans-Regular.ttf.asset.json";
 import fontBoldAsset from "@/assets/OpenSans-Bold.ttf.asset.json";
 import fontItalicAsset from "@/assets/OpenSans-Italic.ttf.asset.json";
+import fontFrutigerAsset from "@/assets/FrutigerLTStd-LightCn.otf.asset.json";
 import { buildCardUrl } from "./qr";
+
 
 /** Millimetre -> PDF point. */
 const MM = 72 / 25.4;
@@ -60,28 +64,78 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
   };
 }
 
+/**
+ * Layout do MODELO ANTIGO (arte com logo à esquerda e dados à direita).
+ * Todas as medidas em mm a partir do canto superior esquerdo do corte.
+ */
+export const CARD_LAYOUT_ANTIGO = {
+  textX: 32.7,
+  nome: { baseline: 18.6, size: 12, color: "#004a8f" },
+  cargo: { baseline: 22.2, size: 8, color: "#659ad2" },
+  email: { baseline: 30.2, size: 7, color: "#000000", opacity: 0.7 },
+  site: { baseline: 33.2, size: 7, color: "#000000", opacity: 0.7 },
+  /** o rótulo "Tel.:" já faz parte da arte de fundo */
+  celular: { x: 36.9, baseline: 36.2, size: 7, color: "#000000", opacity: 0.7 },
+} as const;
+
 /** Default artwork bundled with the app (used when the theme has no upload). */
 export const DEFAULT_PRINT_ASSETS = {
   frenteUrl: bgFrontAsset.url as string,
   versoUrl: bgBackAsset.url as string,
   logoUrl: logoAsset.url as string,
+  antigoFrenteUrl: bgAntigoFrontAsset.url as string,
+  antigoVersoUrl: bgAntigoBackAsset.url as string,
+  frutigerUrl: fontFrutigerAsset.url as string,
 };
+
+export type CardModelo = "novo" | "antigo";
 
 export interface PrintCardInput {
   nome: string;
   nome_cartao?: string | null;
   cargo: string;
   slug: string;
+  /** usados apenas no modelo antigo */
+  whatsapp?: string | null;
+  email?: string | null;
 }
 
 export interface PrintBackgrounds {
+  modelo?: CardModelo;
   frenteUrl?: string;
   versoUrl?: string;
+  antigoFrenteUrl?: string;
+  antigoVersoUrl?: string;
   site?: string;
   /** distance (mm) from the card top to the top of the logo + site block */
   marcaTop?: number;
   /** logo height (mm) on the front card */
   marcaLogoAltura?: number;
+}
+
+/** Telefone no padrão do modelo antigo: 55 (11) 98877-6655 */
+export function formatPhoneAntigo(raw: string | null | undefined): string {
+  const d = (raw ?? "").includes("|")
+    ? raw!.split("|")
+    : [null];
+  let ddi = "", ddd = "", number = "";
+  if (d.length === 3) {
+    ddi = (d[0] ?? "").replace(/\D/g, "");
+    ddd = (d[1] ?? "").replace(/\D/g, "");
+    number = (d[2] ?? "").replace(/\D/g, "");
+  } else {
+    const all = (raw ?? "").replace(/\D/g, "");
+    if (!all) return "";
+    number = all.slice(-9);
+    ddd = all.slice(-11, -9);
+    ddi = all.slice(0, Math.max(0, all.length - 11));
+  }
+  if (!number) return "";
+  const n =
+    number.length > 8
+      ? `${number.slice(0, 5)}-${number.slice(5)}`
+      : `${number.slice(0, number.length - 4)}-${number.slice(-4)}`;
+  return [ddi, ddd ? `(${ddd})` : "", n].filter(Boolean).join(" ");
 }
 
 /** Loads print artwork + site from the global theme (falls back to defaults). */
@@ -95,13 +149,17 @@ export async function loadPrintOptions(): Promise<PrintBackgrounds> {
     .maybeSingle();
   const theme = normalizeTheme(data?.config);
   return {
+    modelo: theme.impressao.modelo,
     frenteUrl: theme.impressao.frenteUrl || undefined,
     versoUrl: theme.impressao.versoUrl || undefined,
+    antigoFrenteUrl: theme.impressao.antigoFrenteUrl || undefined,
+    antigoVersoUrl: theme.impressao.antigoVersoUrl || undefined,
     site: theme.institucional.site || undefined,
     marcaTop: theme.impressao.marcaTop,
     marcaLogoAltura: theme.impressao.marcaLogoAltura,
   };
 }
+
 
 function mm(v: number) {
   return v * MM;
@@ -165,18 +223,31 @@ export async function buildPrintCardsPdf(
   pdf.setTitle("Cartões de visita — Conexão Digital Implant");
   pdf.setCreator("Link Tree Corporativo");
 
-  const [bold, italic, regular, frontBytes, backBytes, logoBytes] = await Promise.all([
+  const isAntigo = backgrounds.modelo === "antigo";
+
+  const [bold, italic, regular, frutiger, frontBytes, backBytes, logoBytes] = await Promise.all([
     fetchBytes(fontBoldAsset.url),
     fetchBytes(fontItalicAsset.url),
     fetchBytes(fontRegularAsset.url),
-    fetchBytes(backgrounds.frenteUrl || bgFrontAsset.url),
-    fetchBytes(backgrounds.versoUrl || bgBackAsset.url),
+    fetchBytes(fontFrutigerAsset.url),
+    fetchBytes(
+      isAntigo
+        ? backgrounds.antigoFrenteUrl || bgAntigoFrontAsset.url
+        : backgrounds.frenteUrl || bgFrontAsset.url,
+    ),
+    fetchBytes(
+      isAntigo
+        ? backgrounds.antigoVersoUrl || bgAntigoBackAsset.url
+        : backgrounds.versoUrl || bgBackAsset.url,
+    ),
     fetchBytes(logoAsset.url),
   ]);
 
   const fontBold = await pdf.embedFont(bold, { subset: true });
   const fontItalic = await pdf.embedFont(italic, { subset: true });
   const fontRegular = await pdf.embedFont(regular, { subset: true });
+  const fontFrutiger = await pdf.embedFont(frutiger, { subset: true });
+
 
   const embedImage = async (b: Uint8Array) =>
     isJpeg(b) ? pdf.embedJpg(b) : pdf.embedPng(b);
@@ -284,6 +355,50 @@ export async function buildPrintCardsPdf(
     const nome = (c.nome_cartao || c.nome).trim();
     const front = newPage(bgFront);
 
+    if (isAntigo) {
+      const L = CARD_LAYOUT_ANTIGO;
+      const drawA = (
+        text: string,
+        x: number,
+        baseline: number,
+        size: number,
+        hex: string,
+        opacity = 1,
+      ) => {
+        if (!text) return;
+        const col = rgbHex(hex);
+        const p = pt(x, baseline);
+        front.drawText(text, {
+          x: p.x,
+          y: p.y,
+          size,
+          font: fontFrutiger,
+          color: rgb(col.r, col.g, col.b),
+          opacity,
+        });
+      };
+      drawA(nome, L.textX, L.nome.baseline, L.nome.size, L.nome.color);
+      drawA(c.cargo, L.textX, L.cargo.baseline, L.cargo.size, L.cargo.color);
+      drawA(c.email ?? "", L.textX, L.email.baseline, L.email.size, L.email.color, L.email.opacity);
+      drawA(site, L.textX, L.site.baseline, L.site.size, L.site.color, L.site.opacity);
+      drawA(
+        formatPhoneAntigo(c.whatsapp),
+        L.celular.x,
+        L.celular.baseline,
+        L.celular.size,
+        L.celular.color,
+        L.celular.opacity,
+      );
+
+      drawMarks(front, `${nome} — frente`);
+      drawProofBar(front);
+
+      const backA = newPage(bgBack);
+      drawMarks(backA, `${nome} — verso`);
+      drawProofBar(backA);
+      continue;
+    }
+
     // 1. QR Code
     const qr = await pdf.embedPng(await qrPngBytes(c.slug));
     const qrSize = CARD_LAYOUT.qr.size;
@@ -362,6 +477,7 @@ export async function buildPrintCardsPdf(
     drawMarks(back, `${nome} — verso`);
     drawProofBar(back);
   }
+
 
   return pdf.save();
 }
