@@ -332,6 +332,8 @@ export function ThemePage() {
               </p>
               <ArtUploader
                 label="Fundo da assinatura"
+                aspect="150/50"
+                maxSize={1772}
                 url={theme.assinatura.bgUrl}
                 onChange={(v) => patch("assinatura", { ...theme.assinatura, bgUrl: v })}
               />
@@ -615,10 +617,14 @@ function ArtUploader({
   label,
   url,
   onChange,
+  aspect = "90/48",
+  maxSize = 1400,
 }: {
   label: string;
   url: string;
   onChange: (v: string) => void;
+  aspect?: string;
+  maxSize?: number;
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -628,7 +634,7 @@ function ArtUploader({
     if (!f) return;
     setBusy(true);
     try {
-      onChange(await compressImageContain(f, 1400));
+      onChange(await compressImageContain(f, maxSize));
     } catch {
       toast.error("Falha ao carregar a imagem");
     } finally {
@@ -640,7 +646,7 @@ function ArtUploader({
     if (!link.trim()) return;
     setBusy(true);
     try {
-      onChange(await imageLinkToDataUrl(link, 1400));
+      onChange(await imageLinkToDataUrl(link, maxSize));
       setLink("");
       toast.success("Arte importada do link");
     } catch (e) {
@@ -694,13 +700,17 @@ function ArtUploader({
         <img
           src={url || ""}
           alt={label}
-          className="aspect-[90/48] w-full object-cover"
-          style={{ display: url ? "block" : "none" }}
+          className="w-full object-cover"
+          style={{ aspectRatio: aspect, display: url ? "block" : "none" }}
         />
         {!url && (
-          <div className="grid aspect-[90/48] w-full place-items-center text-xs text-[color:var(--text-muted)]">
+          <div
+            className="grid w-full place-items-center text-xs text-[color:var(--text-muted)]"
+            style={{ aspectRatio: aspect }}
+          >
             Arte padrão
           </div>
+
         )}
       </div>
     </div>
