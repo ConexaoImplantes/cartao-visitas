@@ -201,6 +201,7 @@ export type Database = {
           clicks: number
           collaborator_id: string
           email: number
+          kit_views: number
           rede_social: number
           telefone: number
           views: number
