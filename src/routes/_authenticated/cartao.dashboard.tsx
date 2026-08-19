@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Pencil, QrCode, Trash2, Loader2, Download, Share2, Printer } from "lucide-react";
+import { Plus, ExternalLink, Pencil, Trash2, Loader2, Share2, Printer } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
-import { downloadQrPng, buildCardUrl, generateQrDataUrl } from "@/lib/qr";
+import { buildCardUrl } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -50,12 +49,12 @@ function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Collaborator | null>(null);
   const [toDelete, setToDelete] = useState<Collaborator | null>(null);
-  const [qrView, setQrView] = useState<{ c: Collaborator; dataUrl: string | null } | null>(null);
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [printing, setPrinting] = useState(false);
+  const [printingId, setPrintingId] = useState<string | null>(null);
 
   async function printOptions(): Promise<PrintBackgrounds> {
     try {
@@ -66,14 +65,14 @@ function DashboardPage() {
   }
 
   async function handlePrintOne(c: Collaborator) {
-    setPrinting(true);
+    setPrintingId(c.id);
     try {
       await downloadPrintCard(c, await printOptions());
       toast.success("Cartão gerado para impressão");
     } catch (e: any) {
       toast.error("Falha ao gerar o cartão", { description: e?.message });
     } finally {
-      setPrinting(false);
+      setPrintingId(null);
     }
   }
 
@@ -105,18 +104,6 @@ function DashboardPage() {
       navigate({ to: "/cartao/tema", replace: true });
     }
   }, [permLoading, can, navigate]);
-
-  async function openQrView(c: Collaborator) {
-    setQrView({ c, dataUrl: null });
-    try {
-      const dataUrl = await generateQrDataUrl(c.slug);
-      setQrView({ c, dataUrl });
-    } catch {
-      toast.error("Falha ao gerar QR Code");
-      setQrView(null);
-    }
-  }
-
 
   async function load() {
     const { data, error } = await supabase
@@ -335,22 +322,17 @@ function DashboardPage() {
                             <Pencil className="size-4" />
                           </IconBtn>
                         )}
-                        {can("dashboard.view_qr") && (
-                          <IconBtn title="Visualizar QR Code" onClick={() => openQrView(c)}>
-                            <QrCode className="size-4" />
-                          </IconBtn>
-                        )}
-                        {can("dashboard.download_qr") && (
-                          <IconBtn title="Baixar QR Code" onClick={() => downloadQrPng(c.slug, c.nome)}>
-                            <Download className="size-4" />
-                          </IconBtn>
-                        )}
                         {can("dashboard.download_card") && (
                           <IconBtn
                             title="Baixar cartão para impressão (PDF)"
                             onClick={() => handlePrintOne(c)}
+                            disabled={printingId === c.id}
                           >
-                            <Printer className="size-4" />
+                            {printingId === c.id ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <Printer className="size-4" />
+                            )}
                           </IconBtn>
                         )}
                         {can("dashboard.share") && (
@@ -382,8 +364,6 @@ function DashboardPage() {
 
       <ShareDialog collaborator={sharing} onOpenChange={(o) => !o && setSharing(null)} />
 
-
-
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -401,32 +381,6 @@ function DashboardPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={!!qrView} onOpenChange={(o) => !o && setQrView(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>QR Code — {qrView?.c.nome}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-2">
-            {qrView?.dataUrl ? (
-              <img src={qrView.dataUrl} alt={`QR Code ${qrView.c.nome}`} className="size-64 rounded-lg bg-white p-3" />
-            ) : (
-              <div className="flex size-64 items-center justify-center rounded-lg bg-[color:var(--surface-hover)]">
-                <Loader2 className="size-6 animate-spin text-[color:var(--text-muted)]" />
-              </div>
-            )}
-            <p className="break-all text-center text-xs text-[color:var(--text-muted)]">
-              {qrView && buildCardUrl(qrView.c.slug)}
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => qrView && downloadQrPng(qrView.c.slug, qrView.c.nome)}
-              disabled={!qrView?.dataUrl}
-            >
-              <Download className="size-4" /> Baixar PNG
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
 
   );
@@ -447,12 +401,14 @@ function IconBtn({
   title,
   danger,
   asChild,
+  disabled,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   title: string;
   danger?: boolean;
   asChild?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <Button
@@ -461,6 +417,7 @@ function IconBtn({
       size="icon"
       title={title}
       onClick={onClick}
+      disabled={disabled}
       className={danger ? "text-[color:var(--error)] hover:bg-[color:var(--error)]/10 hover:text-[color:var(--error)]" : "text-[color:var(--text-muted)] hover:text-[color:var(--text-main)]"}
     >
       {children}
