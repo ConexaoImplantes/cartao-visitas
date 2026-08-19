@@ -100,9 +100,13 @@ function AuthLayout() {
             {primaryNav.map((n) => (
               <NavLink key={n.to} n={n} showLabel />
             ))}
-            {secondaryNav.map((n) => (
-              <NavLink key={n.to} n={n} showLabel extraClassName="hidden lg:flex" />
-            ))}
+            {secondaryNav.length > 0 && (
+              <div className="hidden items-center gap-0.5 md:gap-1 lg:flex">
+                {secondaryNav.map((n) => (
+                  <NavLink key={n.to} n={n} showLabel />
+                ))}
+              </div>
+            )}
             {secondaryNav.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
