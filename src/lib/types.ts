@@ -91,6 +91,10 @@ export interface ThemeConfig {
     /** Altura (mm) do logo na frente do cartão */
     marcaLogoAltura: number;
   };
+  /** Arte de fundo da assinatura de e-mail (150x50mm). Vazio = arte padrão. */
+  assinatura: {
+    bgUrl: string;
+  };
 }
 
 export const BLOB_POSITIONS: { value: BlobPosition; label: string }[] = [
