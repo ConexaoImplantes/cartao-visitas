@@ -62,6 +62,20 @@ export async function trackView(collaboratorId: string, slug: string) {
   await trackEvent({ collaboratorId, slug, type: "view" });
 }
 
+/** Registra o acesso do colaborador à página do kit (1x por sessão). */
+export async function trackKitView(collaboratorId: string, slug: string) {
+  const key = `kev:${slug}`;
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    }
+  } catch {
+    /* modo privado pode bloquear */
+  }
+  await trackEvent({ collaboratorId, slug, type: "kit_view" });
+}
+
 export function trackClick(
   collaboratorId: string,
   slug: string,
