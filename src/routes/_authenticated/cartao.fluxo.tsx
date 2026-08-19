@@ -245,10 +245,20 @@ function FluxoPage() {
                         </div>
                       </div>
                       <Button asChild variant="ghost" size="sm">
-                        <Link to={step.route} search={{ id: selected.id }}>
-                          {st.done ? "Revisar" : "Concluir"}
-                          <ArrowRight className="size-4" />
-                        </Link>
+                        {step.key === "linktree" ? (
+                          <Link to="/cartao/dashboard">
+                            {st.done ? "Revisar" : "Concluir"}
+                            <ArrowRight className="size-4" />
+                          </Link>
+                        ) : (
+                          <Link
+                            to={step.route as "/cartao/foto-perfil"}
+                            search={{ id: selected.id }}
+                          >
+                            {st.done ? "Revisar" : "Concluir"}
+                            <ArrowRight className="size-4" />
+                          </Link>
+                        )}
                       </Button>
                     </li>
                   );
