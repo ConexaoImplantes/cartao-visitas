@@ -164,7 +164,16 @@ export const DEFAULT_THEME: ThemeConfig = {
     },
     socialIconSize: 20,
   },
-  impressao: { frenteUrl: "", versoUrl: "", marcaTop: 29.2, marcaLogoAltura: 2.6 },
+  impressao: {
+    modelo: "novo",
+    frenteUrl: "",
+    versoUrl: "",
+    antigoFrenteUrl: "",
+    antigoVersoUrl: "",
+    marcaTop: 29.2,
+    marcaLogoAltura: 2.6,
+  },
+
   assinatura: { bgUrl: "" },
 };
 
