@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Package, ArrowRight, CircleDashed } from "lucide-react";
+import { Check, Loader2, Package, ArrowRight, CircleDashed, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
   downloadKitZipBatch,
   type KitOptions,
 } from "@/lib/kit";
+import { buildKitUrl } from "@/lib/qr";
 
 export const Route = createFileRoute("/_authenticated/cartao/fluxo")({
   head: () => ({
