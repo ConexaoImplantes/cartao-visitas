@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, ExternalLink, Trash2, Loader2, Share2, Printer, CreditCard, Mail } from "lucide-react";
+import { Plus, Trash2, Loader2, Share2, Printer, CreditCard, Mail } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
-import { buildCardUrl } from "@/lib/qr";
+
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 import {
   downloadPrintCard,
@@ -262,14 +262,7 @@ function DashboardPage() {
                       </div>
                     </td>
                     <td className="block p-0 md:table-cell md:p-4" data-label="Ações">
-                      <div className="grid grid-cols-6 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
-                        {can("dashboard.view_link") && (
-                          <IconBtn title="Visualizar Link Tree" asChild>
-                            <a href={buildCardUrl(c.slug)} target="_blank" rel="noreferrer">
-                              <ExternalLink className="size-4" />
-                            </a>
-                          </IconBtn>
-                        )}
+                      <div className="grid grid-cols-5 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
                         {can("dashboard.view") && (
                           <IconBtn title="Ver / editar arte do cartão físico" asChild>
                             <Link to="/cartao/cartao-fisico" search={{ id: c.id }}>
