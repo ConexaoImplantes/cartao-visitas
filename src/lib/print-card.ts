@@ -31,12 +31,34 @@ export const CARD_LAYOUT = {
   textX: 37.3,
   /** baseline distance from top */
   nome: { baseline: 21.4, size: 11, color: "#ffffff" },
-  cargo: { baseline: 24.6, size: 7, color: "#c59937" },
-  /** logo bottom edge distance from top */
-  logo: { bottom: 29.6, height: 3.4 },
-  site: { baseline: 27.8, size: 4.5, color: "#6a7070", gap: 3.5 },
+  cargo: { baseline: 25.4, size: 7, color: "#c59937" },
+  /** logo + site block: top edge distance from top (default) and logo height */
+  marca: { top: 29.2, logoHeight: 2.6 },
+  site: { size: 4.5, color: "#6a7070", gap: 3.2 },
   backLogoWidth: 46,
 } as const;
+
+/** Allowed range (mm) for the user-configurable brand block. */
+export const MARCA_LIMITS = {
+  top: { min: 26, max: 38, step: 0.2 },
+  logoHeight: { min: 1.6, max: 6, step: 0.1 },
+} as const;
+
+/**
+ * Geometry of the "logo + site" block. The site baseline is derived so the
+ * text is optically centred on the logo (both horizontally aligned).
+ */
+export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
+  const top = topMm ?? CARD_LAYOUT.marca.top;
+  const logoHeight = logoHeightMm ?? CARD_LAYOUT.marca.logoHeight;
+  /** cap-height of the site text (mm), used to centre it on the logo */
+  const siteCap = CARD_LAYOUT.site.size * (25.4 / 72) * 0.72;
+  return {
+    logoTop: top,
+    logoHeight,
+    siteBaseline: top + logoHeight / 2 + siteCap / 2,
+  };
+}
 
 /** Default artwork bundled with the app (used when the theme has no upload). */
 export const DEFAULT_PRINT_ASSETS = {
@@ -56,6 +78,10 @@ export interface PrintBackgrounds {
   frenteUrl?: string;
   versoUrl?: string;
   site?: string;
+  /** distance (mm) from the card top to the top of the logo + site block */
+  marcaTop?: number;
+  /** logo height (mm) on the front card */
+  marcaLogoAltura?: number;
 }
 
 /** Loads print artwork + site from the global theme (falls back to defaults). */
@@ -72,6 +98,8 @@ export async function loadPrintOptions(): Promise<PrintBackgrounds> {
     frenteUrl: theme.impressao.frenteUrl || undefined,
     versoUrl: theme.impressao.versoUrl || undefined,
     site: theme.institucional.site || undefined,
+    marcaTop: theme.impressao.marcaTop,
+    marcaLogoAltura: theme.impressao.marcaLogoAltura,
   };
 }
 
@@ -303,10 +331,11 @@ export async function buildPrintCardsPdf(
       color: rgb(gold.r, gold.g, gold.b),
     });
 
-    // 4. Logo horizontal
-    const logoH = CARD_LAYOUT.logo.height;
+    // 4. Logo horizontal (bloco marca: logo + site alinhados horizontalmente)
+    const marca = marcaGeometry(backgrounds.marcaTop, backgrounds.marcaLogoAltura);
+    const logoH = marca.logoHeight;
     const logoW = (logo.width / logo.height) * logoH;
-    const logoPos = pt(textX, CARD_LAYOUT.logo.bottom);
+    const logoPos = pt(textX, marca.logoTop + logoH);
     front.drawImage(logo, {
       x: logoPos.x,
       y: logoPos.y,
@@ -316,7 +345,7 @@ export async function buildPrintCardsPdf(
 
     // 5. Site — Open Sans Itálico 4,5pt #6A7070
     const siteColor = rgbHex(CARD_LAYOUT.site.color);
-    const sitePos = pt(textX + logoW + CARD_LAYOUT.site.gap, CARD_LAYOUT.site.baseline);
+    const sitePos = pt(textX + logoW + CARD_LAYOUT.site.gap, marca.siteBaseline);
     front.drawText(site, {
       x: sitePos.x,
       y: sitePos.y,

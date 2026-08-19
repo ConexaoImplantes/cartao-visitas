@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   CARD_LAYOUT,
   CARD_TRIM,
   DEFAULT_PRINT_ASSETS,
+  marcaGeometry,
   type PrintCardInput,
 } from "@/lib/print-card";
 import { buildCardUrl } from "@/lib/qr";
@@ -36,6 +37,10 @@ export interface PrintCardPreviewProps {
   frenteUrl?: string;
   versoUrl?: string;
   site?: string;
+  /** distance (mm) from the card top to the top of the logo + site block */
+  marcaTop?: number;
+  /** logo height (mm) */
+  marcaLogoAltura?: number;
   /** Pixels per millimetre (preview resolution). */
   scale?: number;
   side?: "frente" | "verso";
@@ -46,9 +51,12 @@ export function PrintCardPreview({
   frenteUrl,
   versoUrl,
   site,
+  marcaTop,
+  marcaLogoAltura,
   scale = 5,
   side = "frente",
 }: PrintCardPreviewProps) {
+  const marca = marcaGeometry(marcaTop, marcaLogoAltura);
   const [qr, setQr] = useState<string | null>(null);
   const [, setFontsReady] = useState(false);
 
@@ -137,7 +145,7 @@ export function PrintCardPreview({
             )}
           </div>
 
-          {/* Nome */}
+          {/* Nome (reduz para caber, como no PDF) */}
           <div
             className="absolute whitespace-nowrap font-bold"
             style={{
@@ -148,7 +156,9 @@ export function PrintCardPreview({
               color: CARD_LAYOUT.nome.color,
             }}
           >
-            {nome}
+            <FitText maxWidthPx={(CARD_TRIM.w - CARD_LAYOUT.textX - 5) * scale}>
+              {nome}
+            </FitText>
           </div>
 
           {/* Cargo */}
@@ -165,29 +175,31 @@ export function PrintCardPreview({
             {card.cargo}
           </div>
 
-          {/* Logo + site */}
-          <img
-            src={DEFAULT_PRINT_ASSETS.logoUrl}
-            alt="Logo"
-            className="absolute"
+          {/* Bloco marca: logo + site alinhados horizontalmente */}
+          <div
+            className="absolute flex items-center"
             style={{
               left: px(CARD_LAYOUT.textX),
-              top: px(CARD_LAYOUT.logo.bottom - CARD_LAYOUT.logo.height),
-              height: px(CARD_LAYOUT.logo.height),
-              width: "auto",
-            }}
-          />
-          <div
-            className="absolute whitespace-nowrap italic"
-            style={{
-              left: px(CARD_LAYOUT.textX + CARD_LAYOUT.logo.height * 5.1 + CARD_LAYOUT.site.gap),
-              top: px(baselineTop(CARD_LAYOUT.site.baseline, CARD_LAYOUT.site.size)),
-              fontSize: px(CARD_LAYOUT.site.size * PT),
-              lineHeight: 1,
-              color: CARD_LAYOUT.site.color,
+              top: px(marca.logoTop),
+              height: px(marca.logoHeight),
+              gap: px(CARD_LAYOUT.site.gap),
             }}
           >
-            {siteText}
+            <img
+              src={DEFAULT_PRINT_ASSETS.logoUrl}
+              alt="Logo"
+              style={{ height: px(marca.logoHeight), width: "auto" }}
+            />
+            <span
+              className="whitespace-nowrap italic"
+              style={{
+                fontSize: px(CARD_LAYOUT.site.size * PT),
+                lineHeight: 1,
+                color: CARD_LAYOUT.site.color,
+              }}
+            >
+              {siteText}
+            </span>
           </div>
         </>
       ) : (
@@ -199,5 +211,29 @@ export function PrintCardPreview({
         />
       )}
     </div>
+  );
+}
+
+/** Shrinks its text horizontally until it fits maxWidthPx (mirrors the PDF fitSize). */
+function FitText({ children, maxWidthPx }: { children: string; maxWidthPx: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const natural = el.scrollWidth / (scale || 1);
+    const next = natural > maxWidthPx ? Math.max(0.45, maxWidthPx / natural) : 1;
+    if (Math.abs(next - scale) > 0.01) setScale(next);
+  }, [children, maxWidthPx, scale]);
+
+  return (
+    <span
+      ref={ref}
+      className="inline-block origin-left whitespace-nowrap"
+      style={{ transform: `scale(${scale})` }}
+    >
+      {children}
+    </span>
   );
 }
