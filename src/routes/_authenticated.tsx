@@ -55,21 +55,21 @@ function AuthLayout() {
 
   const primaryNav: NavItem[] = [
     ...(can("dashboard.view") ? [{ to: "/cartao/dashboard", label: "Dashboard", icon: LayoutDashboard }] : []),
-    ...(can("cartao_fisico.view") ? [{ to: "/cartao/cartao-fisico", label: "Cartão", icon: Printer }] : []),
-    ...(can("assinatura.view") ? [{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] : []),
-    ...(can("foto_perfil.view") ? [{ to: "/cartao/foto-perfil", label: "Perfil", icon: UserRound }] : []),
+    ...(can("importar.view") ? [{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] : []),
     ...(can("fluxo.view") ? [{ to: "/cartao/fluxo", label: "Fluxo", icon: ListChecks }] : []),
+    ...(can("foto_perfil.view") ? [{ to: "/cartao/foto-perfil", label: "Foto", icon: UserRound }] : []),
+    ...(can("assinatura.view") ? [{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] : []),
+    ...(can("cartao_fisico.view") ? [{ to: "/cartao/cartao-fisico", label: "Cartão", icon: Printer }] : []),
   ];
 
   const secondaryNav: NavItem[] = [
-    ...(can("importar.view") ? [{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] : []),
-    ...(can("tema.view") ? [{ to: "/cartao/tema", label: "Tema", icon: Palette }] : []),
     ...(isSuperAdmin
       ? [
           { to: "/cartao/usuarios", label: "Usuários", icon: Users },
           { to: "/cartao/configuracoes", label: "Config", icon: Settings },
         ]
       : []),
+    ...(can("tema.view") ? [{ to: "/cartao/tema", label: "Tema", icon: Palette }] : []),
   ];
 
   function NavLink({ n, showLabel }: { n: NavItem; showLabel?: boolean }) {
