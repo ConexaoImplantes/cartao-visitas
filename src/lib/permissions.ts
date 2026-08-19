@@ -18,6 +18,7 @@ export type PermissionKey =
   | "assinatura.download"
   | "fluxo.view"
   | "fluxo.download_kit"
+  | "fluxo.marcar_etapas"
   | "importar.view"
   | "tema.view"
   | "tema.edit";
