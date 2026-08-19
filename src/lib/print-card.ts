@@ -517,11 +517,15 @@ export async function downloadPrintCardsBatch(items: PrintCardInput[], bgs: Prin
   downloadPdf(bytes, `cartoes-impressao-${items.length}.pdf`);
 }
 
-/** Gera o PDF real e abre em nova aba para conferência antes da impressão. */
-export async function openPrintCardPdf(items: PrintCardInput[], bgs: PrintBackgrounds = {}) {
+/**
+ * Gera o PDF real e devolve um object URL para conferência DENTRO da
+ * plataforma (modal). Quem chama é responsável por revogar a URL.
+ */
+export async function createPrintCardPdfUrl(
+  items: PrintCardInput[],
+  bgs: PrintBackgrounds = {},
+): Promise<string> {
   const bytes = await buildPrintCardsPdf(items, bgs);
   const blob = new Blob([bytes as unknown as BlobPart], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  window.open(url, "_blank", "noopener");
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  return URL.createObjectURL(blob);
 }

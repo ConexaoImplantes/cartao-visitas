@@ -12,12 +12,13 @@ import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import { decodePhone, encodePhone } from "@/lib/types";
 import { EmailSignaturePreview } from "@/components/email-signature-preview";
+import { ArtViewerDialog, EMPTY_ART_VIEWER, type ArtViewerState } from "@/components/art-viewer-dialog";
 import { slugify, validateSlug } from "@/lib/slug";
 import {
   downloadSignaturePng,
   downloadSignaturesBatch,
   loadSignatureOptions,
-  openSignaturePng,
+  createSignaturePngUrl,
   type SignatureOptions,
 } from "@/lib/email-signature";
 
@@ -67,6 +68,7 @@ function AssinaturaPage() {
   });
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<"one" | "batch" | "view" | null>(null);
+  const [viewer, setViewer] = useState<ArtViewerState>(EMPTY_ART_VIEWER);
 
   const canEdit = can("dashboard.edit");
 
@@ -209,9 +211,20 @@ function AssinaturaPage() {
   async function handleView() {
     if (!previewCard) return;
     setBusy("view");
+    setViewer({
+      open: true,
+      title: `Assinatura de e-mail — ${previewCard.nome}`,
+      description: "Arte final em tamanho real (PNG).",
+      url: null,
+      kind: "image",
+      loading: true,
+      filename: `assinatura-${previewCard.slug || "colaborador"}.png`,
+    });
     try {
-      await openSignaturePng(previewCard, opts);
+      const url = await createSignaturePngUrl(previewCard, opts);
+      setViewer((v) => ({ ...v, url, loading: false }));
     } catch (e: any) {
+      setViewer(EMPTY_ART_VIEWER);
       toast.error("Falha ao gerar a arte", { description: e?.message });
     } finally {
       setBusy(null);
@@ -470,6 +483,11 @@ function AssinaturaPage() {
           )}
         </section>
       </div>
+
+      <ArtViewerDialog
+        state={viewer}
+        onOpenChange={(o) => setViewer((v) => (o ? { ...v, open: true } : EMPTY_ART_VIEWER))}
+      />
     </div>
   );
 }
