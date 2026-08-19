@@ -25,7 +25,10 @@ export const DEFAULT_FRAME = {
   x: 0,
   /** Deslocamento vertical em px (positivo = baixo). */
   y: 0,
+  /** Modo de composição padrão. */
+  mode: "camadas",
 } as const;
+
 
 /**
  * `camadas` = fundo + pessoa recortada + moldura dourada.
