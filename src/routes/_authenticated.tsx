@@ -92,7 +92,7 @@ function AuthLayout() {
                   }`}
                 >
                   <n.icon className="size-4" />
-                  <span className="hidden whitespace-nowrap 2xl:inline">{n.label}</span>
+                  <span className="hidden whitespace-nowrap xl:inline">{n.label}</span>
                 </Link>
               );
             })}
