@@ -129,6 +129,7 @@ export function ThemePage() {
               <TabsTrigger value="institucional">Instituição</TabsTrigger>
               <TabsTrigger value="impressao">Impressão</TabsTrigger>
               <TabsTrigger value="assinatura">Assinatura</TabsTrigger>
+              <TabsTrigger value="foto-perfil">Perfil</TabsTrigger>
             </TabsList>
 
             {/* ============================= BACKGROUND ============================= */}
@@ -381,6 +382,20 @@ export function ThemePage() {
                 maxSize={1772}
                 url={theme.assinatura.bgUrl}
                 onChange={(v) => patch("assinatura", { ...theme.assinatura, bgUrl: v })}
+              />
+            </TabsContent>
+
+            <TabsContent value="foto-perfil" className="space-y-4 pt-5">
+              <p className="text-sm text-[color:var(--text-muted)]">
+                Arte de fundo da foto de perfil (1080x1080&nbsp;px). Em branco, o
+                sistema usa a arte padrão da Conexão.
+              </p>
+              <ArtUploader
+                label="Fundo da foto de perfil"
+                aspect="1/1"
+                maxSize={1080}
+                url={theme.fotoPerfil.bgUrl}
+                onChange={(v) => patch("fotoPerfil", { ...theme.fotoPerfil, bgUrl: v })}
               />
             </TabsContent>
 

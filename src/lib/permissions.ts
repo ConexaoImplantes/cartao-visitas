@@ -11,6 +11,9 @@ export type PermissionKey =
   | "dashboard.share"
   | "cartao_fisico.view"
   | "cartao_fisico.download"
+  | "foto_perfil.view"
+  | "foto_perfil.edit"
+  | "foto_perfil.download"
   | "assinatura.view"
   | "assinatura.download"
   | "importar.view"
@@ -54,6 +57,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: [
       { key: "cartao_fisico.view", label: "Acessar a rota" },
       { key: "cartao_fisico.download", label: "Baixar PDF do cartão" },
+    ],
+  },
+  {
+    route: "foto-perfil",
+    label: "Foto de Perfil (1080x1080)",
+    description: "Criação da arte institucional de foto de perfil dos colaboradores.",
+    permissions: [
+      { key: "foto_perfil.view", label: "Acessar a rota" },
+      { key: "foto_perfil.edit", label: "Enviar foto e ajustar enquadramento" },
+      { key: "foto_perfil.download", label: "Baixar / compartilhar a arte" },
     ],
   },
   {

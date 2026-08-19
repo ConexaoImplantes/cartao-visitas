@@ -82,6 +82,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           email: string
+          foto_perfil_ajuste: Json
+          foto_recortada_url: string | null
           foto_url: string | null
           id: string
           nome: string
@@ -97,6 +99,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email: string
+          foto_perfil_ajuste?: Json
+          foto_recortada_url?: string | null
           foto_url?: string | null
           id?: string
           nome: string
@@ -112,6 +116,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email?: string
+          foto_perfil_ajuste?: Json
+          foto_recortada_url?: string | null
           foto_url?: string | null
           id?: string
           nome?: string

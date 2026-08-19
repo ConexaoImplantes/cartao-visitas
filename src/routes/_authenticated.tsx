@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,6 +50,9 @@ function AuthLayout() {
       : ([] as const)),
     ...(can("assinatura.view")
       ? ([{ to: "/cartao/assinatura", label: "Assinatura", icon: Mail }] as const)
+      : ([] as const)),
+    ...(can("foto_perfil.view")
+      ? ([{ to: "/cartao/foto-perfil", label: "Perfil", icon: UserRound }] as const)
       : ([] as const)),
     ...(can("importar.view")
       ? ([{ to: "/cartao/importar", label: "Importar", icon: UploadCloud }] as const)

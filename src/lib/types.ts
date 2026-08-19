@@ -11,6 +11,10 @@ export interface Collaborator {
   whatsapp: string;
   telefone_fixo: string | null;
   foto_url: string | null;
+  /** PNG (sem fundo) do colaborador, usado na arte de foto de perfil. */
+  foto_recortada_url?: string | null;
+  /** Ajustes de enquadramento da foto de perfil ({ zoom, x, y }). */
+  foto_perfil_ajuste?: unknown;
   status: CollaboratorStatus;
   created_at: string;
   updated_at: string;
@@ -101,6 +105,11 @@ export interface ThemeConfig {
   assinatura: {
     bgUrl: string;
   };
+
+  /** Arte de fundo da foto de perfil (1080x1080px). Vazio = arte padrão. */
+  fotoPerfil: {
+    bgUrl: string;
+  };
 }
 
 export const BLOB_POSITIONS: { value: BlobPosition; label: string }[] = [
@@ -175,6 +184,8 @@ export const DEFAULT_THEME: ThemeConfig = {
   },
 
   assinatura: { bgUrl: "" },
+
+  fotoPerfil: { bgUrl: "" },
 };
 
 export const FONT_OPTIONS = [
@@ -210,6 +221,7 @@ export function normalizeTheme(input: unknown): ThemeConfig {
     },
     impressao: { ...DEFAULT_THEME.impressao, ...(t.impressao ?? {}) },
     assinatura: { ...DEFAULT_THEME.assinatura, ...(t.assinatura ?? {}) },
+    fotoPerfil: { ...DEFAULT_THEME.fotoPerfil, ...(t.fotoPerfil ?? {}) },
   };
 }
 
