@@ -50,9 +50,20 @@ export const KIT_STEPS: KitStepDef[] = [
 ];
 
 export interface KitStatus {
-  steps: Record<KitStepKey, { done: boolean; reason?: string }>;
+  steps: Record<KitStepKey, { done: boolean; reason?: string; manual?: boolean }>;
   completed: number;
   ready: boolean;
+}
+
+/** Etapas marcadas manualmente como concluídas pelo admin. */
+export function manualSteps(c: Collaborator): Record<KitStepKey, boolean> {
+  const raw = (c.kit_manual ?? {}) as Record<string, unknown>;
+  return {
+    foto: raw.foto === true,
+    linktree: raw.linktree === true,
+    assinatura: raw.assinatura === true,
+    cartao: raw.cartao === true,
+  };
 }
 
 export interface KitOptions {
