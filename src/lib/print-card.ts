@@ -280,13 +280,6 @@ export async function buildPrintCardsPdf(
     );
   };
 
-  /** Shrink the size until the text fits maxWidth. */
-  const fitSize = (text: string, font: any, size: number, maxWidthMm: number) => {
-    let s = size;
-    while (s > 5 && font.widthOfTextAtSize(text, s) > mm(maxWidthMm)) s -= 0.25;
-    return s;
-  };
-
   for (const c of items) {
     const nome = (c.nome_cartao || c.nome).trim();
     const front = newPage(bgFront);

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CARD_LAYOUT,
   CARD_TRIM,
@@ -209,29 +209,5 @@ export function PrintCardPreview({
         />
       )}
     </div>
-  );
-}
-
-/** Shrinks its text horizontally until it fits maxWidthPx (mirrors the PDF fitSize). */
-function FitText({ children, maxWidthPx }: { children: string; maxWidthPx: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const natural = el.scrollWidth / (scale || 1);
-    const next = natural > maxWidthPx ? Math.max(0.45, maxWidthPx / natural) : 1;
-    if (Math.abs(next - scale) > 0.01) setScale(next);
-  }, [children, maxWidthPx, scale]);
-
-  return (
-    <span
-      ref={ref}
-      className="inline-block origin-left whitespace-nowrap"
-      style={{ transform: `scale(${scale})` }}
-    >
-      {children}
-    </span>
   );
 }
