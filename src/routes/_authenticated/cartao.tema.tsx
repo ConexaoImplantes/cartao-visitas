@@ -118,11 +118,12 @@ export function ThemePage() {
         {/* Editor */}
         <div className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5">
           <Tabs defaultValue="background">
-            <TabsList className="grid w-full grid-cols-4 bg-[color:var(--surface-hover)]">
+            <TabsList className="grid w-full grid-cols-5 bg-[color:var(--surface-hover)]">
               <TabsTrigger value="background">Fundo</TabsTrigger>
               <TabsTrigger value="icons">Ícones</TabsTrigger>
               <TabsTrigger value="typography">Tipografia</TabsTrigger>
               <TabsTrigger value="institucional">Instituição</TabsTrigger>
+              <TabsTrigger value="impressao">Impressão</TabsTrigger>
             </TabsList>
 
             {/* ============================= BACKGROUND ============================= */}
@@ -256,6 +257,23 @@ export function ThemePage() {
             </TabsContent>
 
             {/* ============================= INSTITUCIONAL ============================= */}
+            <TabsContent value="impressao" className="space-y-4 pt-5">
+              <p className="text-sm text-[color:var(--text-muted)]">
+                Artes do cartão de visitas impresso (90x48&nbsp;mm). Envie imagens na proporção
+                90x48 (ideal 1063x567&nbsp;px). Em branco, o sistema usa a arte padrão da Conexão.
+              </p>
+              <ArtUploader
+                label="Arte da frente"
+                url={theme.impressao.frenteUrl}
+                onChange={(v) => patch("impressao", { ...theme.impressao, frenteUrl: v })}
+              />
+              <ArtUploader
+                label="Arte do verso"
+                url={theme.impressao.versoUrl}
+                onChange={(v) => patch("impressao", { ...theme.impressao, versoUrl: v })}
+              />
+            </TabsContent>
+
             <TabsContent value="institucional" className="space-y-4 pt-5">
               <LogoUploader
                 url={theme.institucional.logoUrl}
@@ -524,6 +542,71 @@ function LogoUploader({
           <input type="range" min={16} max={160} value={height}
             onChange={(e) => onChange({ logoHeight: Number(e.target.value) })} className="w-full" />
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+function ArtUploader({
+  label,
+  url,
+  onChange,
+}: {
+  label: string;
+  url: string;
+  onChange: (v: string) => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handleFile(f?: File | null) {
+    if (!f) return;
+    setBusy(true);
+    try {
+      onChange(await compressImageContain(f, 1400));
+    } catch {
+      toast.error("Falha ao carregar a imagem");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-[color:var(--border-strong)] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <Label className="text-base">{label}</Label>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => ref.current?.click()} disabled={busy}>
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+            Enviar
+          </Button>
+          {url && (
+            <Button variant="ghost" size="sm" onClick={() => onChange("")}>
+              <Trash2 className="size-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+      <input
+        ref={ref}
+        type="file"
+        accept="image/png,image/jpeg"
+        className="hidden"
+        onChange={(e) => handleFile(e.target.files?.[0])}
+      />
+      <div className="mt-3 overflow-hidden rounded-md border border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]">
+        <img
+          src={url || ""}
+          alt={label}
+          className="aspect-[90/48] w-full object-cover"
+          style={{ display: url ? "block" : "none" }}
+        />
+        {!url && (
+          <div className="grid aspect-[90/48] w-full place-items-center text-xs text-[color:var(--text-muted)]">
+            Arte padrão
+          </div>
+        )}
       </div>
     </div>
   );

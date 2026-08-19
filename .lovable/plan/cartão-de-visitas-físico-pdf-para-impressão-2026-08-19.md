@@ -34,6 +34,7 @@ Verso: arte `bg-v-cv.png` (logo centralizado), sem dados variáveis.
 - Migração: coluna `nome_cartao text` em `collaborators`; permissão `dashboard.download_card` adicionada em `src/lib/permissions.ts` e concedida aos usuários que já possuem `dashboard.download_qr`.
 - Botão no dashboard reaproveita o padrão `IconBtn`, com estado de carregamento enquanto o PDF é montado.
 
-## Fora do escopo
+## Incluir no escopo
 
-- Impressão em lote (vários colaboradores num único PDF) — pode ser um passo seguinte se desejar.
+- Impressão em lote (vários colaboradores num único PDF)
+- Possibilidade de escolha de background diferente tanto para fente quato para o verso para impressão via upload (tamanho 90x48mm) ou link da imagem

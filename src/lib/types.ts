@@ -4,6 +4,8 @@ export interface Collaborator {
   id: string;
   slug: string;
   nome: string;
+  /** Nome curto usado apenas na arte do cartão impresso. */
+  nome_cartao?: string | null;
   cargo: string;
   email: string;
   whatsapp: string;
@@ -80,6 +82,11 @@ export interface ThemeConfig {
     };
     socialIconSize: number;
   };
+  /** Artes do cartão de visitas impresso (90x48mm). Vazio = arte padrão. */
+  impressao: {
+    frenteUrl: string;
+    versoUrl: string;
+  };
 }
 
 export const BLOB_POSITIONS: { value: BlobPosition; label: string }[] = [
@@ -143,6 +150,7 @@ export const DEFAULT_THEME: ThemeConfig = {
     },
     socialIconSize: 20,
   },
+  impressao: { frenteUrl: "", versoUrl: "" },
 };
 
 export const FONT_OPTIONS = [
@@ -176,6 +184,7 @@ export function normalizeTheme(input: unknown): ThemeConfig {
         ...((t.institucional as any)?.socialColors ?? {}),
       },
     },
+    impressao: { ...DEFAULT_THEME.impressao, ...(t.impressao ?? {}) },
   };
 }
 
