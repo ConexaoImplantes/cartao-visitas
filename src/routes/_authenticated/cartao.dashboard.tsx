@@ -105,18 +105,6 @@ function DashboardPage() {
     }
   }, [permLoading, can, navigate]);
 
-  async function openQrView(c: Collaborator) {
-    setQrView({ c, dataUrl: null });
-    try {
-      const dataUrl = await generateQrDataUrl(c.slug);
-      setQrView({ c, dataUrl });
-    } catch {
-      toast.error("Falha ao gerar QR Code");
-      setQrView(null);
-    }
-  }
-
-
   async function load() {
     const { data, error } = await supabase
       .from("collaborators")
