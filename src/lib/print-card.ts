@@ -69,14 +69,14 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
  * Todas as medidas em mm a partir do canto superior esquerdo do corte.
  */
 export const CARD_LAYOUT_ANTIGO = {
-  textX: 32.7,
+  textX: 40.0,
   nome: { baseline: 17.6, size: 12, color: "#004a8f" },
   cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
   email: { baseline: 25.0, size: 7, color: "#000000", opacity: 0.7 },
   site: { baseline: 27.5, size: 7, color: "#000000", opacity: 0.7 },
-  /** o rótulo "Tel.:" e o ícone do WhatsApp já fazem parte da arte de fundo;
-   *  o celular fica alinhado horizontalmente ao ícone verde */
-  celular: { x: 37.0, baseline: 30.5, size: 7, color: "#000000", opacity: 0.7 },
+  /** fundo novo traz o logo à esquerda e não possui rótulo de telefone;
+   *  renderizamos "Tel. DDI (DDD) número" alinhado aos demais dados */
+  celular: { baseline: 30.5, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
 
 
