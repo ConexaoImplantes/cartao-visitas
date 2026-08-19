@@ -4,16 +4,19 @@ import { Check, Loader2, Package, ArrowRight, CircleDashed, Link2 } from "lucide
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { usePermissions } from "@/hooks/use-permissions";
 import type { Collaborator } from "@/lib/types";
 import {
   KIT_STEPS,
   kitStatus,
+  manualSteps,
   loadKitOptions,
   downloadKitZip,
   downloadKitZipBatch,
   type KitOptions,
+  type KitStepKey,
 } from "@/lib/kit";
 import { buildKitUrl } from "@/lib/qr";
 
