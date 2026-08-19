@@ -73,6 +73,7 @@ function FotoPerfilPage() {
   const [bgUrl, setBgUrl] = useState("");
 
   const [person, setPerson] = useState<string | null>(null);
+  const [usingLinktree, setUsingLinktree] = useState(false);
   const [frame, setFrame] = useState<ProfileFrame>({ ...DEFAULT_FRAME });
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<"cut" | "one" | "batch" | "avatar" | "view" | null>(null);
