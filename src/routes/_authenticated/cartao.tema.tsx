@@ -128,6 +128,7 @@ export function ThemePage() {
               <TabsTrigger value="typography">Tipografia</TabsTrigger>
               <TabsTrigger value="institucional">Instituição</TabsTrigger>
               <TabsTrigger value="impressao">Impressão</TabsTrigger>
+              <TabsTrigger value="assinatura">Assinatura</TabsTrigger>
             </TabsList>
 
             {/* ============================= BACKGROUND ============================= */}
@@ -321,6 +322,19 @@ export function ThemePage() {
                   />
                 </div>
               </div>
+            </TabsContent>
+
+            {/* ============================= ASSINATURA ============================= */}
+            <TabsContent value="assinatura" className="space-y-4 pt-5">
+              <p className="text-sm text-[color:var(--text-muted)]">
+                Arte de fundo da assinatura de e-mail (150x50&nbsp;mm, ideal
+                1772x591&nbsp;px). Em branco, o sistema usa a arte padrão da Conexão.
+              </p>
+              <ArtUploader
+                label="Fundo da assinatura"
+                url={theme.assinatura.bgUrl}
+                onChange={(v) => patch("assinatura", { ...theme.assinatura, bgUrl: v })}
+              />
             </TabsContent>
 
             <TabsContent value="institucional" className="space-y-4 pt-5">
