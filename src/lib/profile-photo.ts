@@ -1,6 +1,7 @@
 import bgAsset from "@/assets/fp-bg.png.asset.json";
 import bgCleanAsset from "@/assets/fp-bg-clean.png.asset.json";
 import bgFotoAsset from "@/assets/bg-foto.png.asset.json";
+import douradoAsset from "@/assets/dourado-foto.png.asset.json";
 
 /** Arte da foto de perfil: 1080 x 1080 px. */
 export const PROFILE_SIZE = 1080;
