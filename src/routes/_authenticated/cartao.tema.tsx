@@ -704,9 +704,13 @@ function ArtUploader({
           style={{ aspectRatio: aspect, display: url ? "block" : "none" }}
         />
         {!url && (
-          <div className="grid w-full place-items-center" style={{ aspectRatio: aspect }} data-x=" text-xs text-[color:var(--text-muted)]">
+          <div
+            className="grid w-full place-items-center text-xs text-[color:var(--text-muted)]"
+            style={{ aspectRatio: aspect }}
+          >
             Arte padrão
           </div>
+
         )}
       </div>
     </div>
