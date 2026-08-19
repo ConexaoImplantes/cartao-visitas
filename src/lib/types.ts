@@ -154,7 +154,7 @@ export const DEFAULT_THEME: ThemeConfig = {
     },
     socialIconSize: 20,
   },
-  impressao: { frenteUrl: "", versoUrl: "" },
+  impressao: { frenteUrl: "", versoUrl: "", marcaTop: 29.2, marcaLogoAltura: 2.6 },
 };
 
 export const FONT_OPTIONS = [
