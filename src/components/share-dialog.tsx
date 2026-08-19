@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Collaborator } from "@/lib/types";
 import { phoneDigits } from "@/lib/types";
-import { buildCardUrl, generateQrDataUrl, downloadQrPng } from "@/lib/qr";
+import { buildCardUrl, buildKitUrl, generateQrDataUrl, downloadQrPng } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
 
 export function ShareDialog({
@@ -19,13 +19,16 @@ export function ShareDialog({
 }) {
   const [qr, setQr] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedKit, setCopiedKit] = useState(false);
   const [stats, setStats] = useState<CardStats | null>(null);
 
   const url = collaborator ? buildCardUrl(collaborator.slug) : "";
+  const kitUrl = collaborator ? buildKitUrl(collaborator.slug) : "";
 
   useEffect(() => {
     setQr(null);
     setCopied(false);
+    setCopiedKit(false);
     setStats(null);
     if (!collaborator) return;
     let mounted = true;
@@ -52,7 +55,21 @@ export function ShareDialog({
   }
 
   function message() {
-    return `Olá, ${collaborator?.nome ?? ""}! Este é o seu cartão de visitas digital (Link Tree Corporativo): ${url}`;
+    return (
+      `Olá, ${collaborator?.nome ?? ""}! Este é o seu cartão de visitas digital (Link Tree Corporativo): ${url}` +
+      `\n\nE aqui está o seu kit digital completo (foto de perfil, assinatura de e-mail, cartão de visitas e manual de uso): ${kitUrl}`
+    );
+  }
+
+  async function copyKit() {
+    try {
+      await navigator.clipboard.writeText(kitUrl);
+      setCopiedKit(true);
+      toast.success("Link do kit copiado");
+      setTimeout(() => setCopiedKit(false), 2000);
+    } catch {
+      toast.error("Não foi possível copiar o link");
+    }
   }
 
   function shareWhatsApp() {
@@ -97,6 +114,23 @@ export function ShareDialog({
             <Button variant="outline" size="icon" title="Copiar link" onClick={copyLink}>
               {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             </Button>
+          </div>
+
+          <div className="w-full space-y-1.5">
+            <p className="text-xs font-medium text-[color:var(--text-muted)]">
+              Kit digital do colaborador (artes + manual)
+            </p>
+            <div className="flex w-full gap-2">
+              <Input
+                readOnly
+                value={kitUrl}
+                className="text-xs"
+                onFocus={(e) => e.currentTarget.select()}
+              />
+              <Button variant="outline" size="icon" title="Copiar link do kit" onClick={copyKit}>
+                {copiedKit ? <Check className="size-4" /> : <Copy className="size-4" />}
+              </Button>
+            </div>
           </div>
 
           <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3">

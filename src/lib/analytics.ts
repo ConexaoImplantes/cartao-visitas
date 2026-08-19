@@ -1,6 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type CardEventType = "view" | "whatsapp" | "email" | "telefone" | "rede_social";
+export type CardEventType =
+  | "view"
+  | "whatsapp"
+  | "email"
+  | "telefone"
+  | "rede_social"
+  | "kit_view";
 
 export interface CardStats {
   collaborator_id: string;
@@ -10,6 +16,7 @@ export interface CardStats {
   email: number;
   telefone: number;
   rede_social: number;
+  kit_views?: number;
 }
 
 function deviceKind(): string {
@@ -53,6 +60,20 @@ export async function trackView(collaboratorId: string, slug: string) {
     /* modo privado pode bloquear */
   }
   await trackEvent({ collaboratorId, slug, type: "view" });
+}
+
+/** Registra o acesso do colaborador à página do kit (1x por sessão). */
+export async function trackKitView(collaboratorId: string, slug: string) {
+  const key = `kev:${slug}`;
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    }
+  } catch {
+    /* modo privado pode bloquear */
+  }
+  await trackEvent({ collaboratorId, slug, type: "kit_view" });
 }
 
 export function trackClick(

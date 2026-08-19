@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SlugKitRouteImport } from './routes/$slug.kit'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SlugKitRoute = SlugKitRouteImport.update({
+  id: '/kit',
+  path: '/kit',
+  getParentRoute: () => SlugRoute,
 } as any)
 const AuthenticatedCartaoUsuariosRoute =
   AuthenticatedCartaoUsuariosRouteImport.update({
@@ -98,8 +104,9 @@ const AuthenticatedCartaoAssinaturaRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRoute
+  '/$slug': typeof SlugRouteWithChildren
   '/login': typeof LoginRoute
+  '/$slug/kit': typeof SlugKitRoute
   '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -112,8 +119,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRoute
+  '/$slug': typeof SlugRouteWithChildren
   '/login': typeof LoginRoute
+  '/$slug/kit': typeof SlugKitRoute
   '/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -127,9 +135,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$slug': typeof SlugRoute
+  '/$slug': typeof SlugRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/$slug/kit': typeof SlugKitRoute
   '/_authenticated/cartao/assinatura': typeof AuthenticatedCartaoAssinaturaRoute
   '/_authenticated/cartao/cartao-fisico': typeof AuthenticatedCartaoCartaoFisicoRoute
   '/_authenticated/cartao/configuracoes': typeof AuthenticatedCartaoConfiguracoesRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/$slug/kit'
     | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug'
     | '/login'
+    | '/$slug/kit'
     | '/cartao/assinatura'
     | '/cartao/cartao-fisico'
     | '/cartao/configuracoes'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/$slug'
     | '/_authenticated'
     | '/login'
+    | '/$slug/kit'
     | '/_authenticated/cartao/assinatura'
     | '/_authenticated/cartao/cartao-fisico'
     | '/_authenticated/cartao/configuracoes'
@@ -188,7 +200,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SlugRoute: typeof SlugRoute
+  SlugRoute: typeof SlugRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -222,6 +234,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$slug/kit': {
+      id: '/$slug/kit'
+      path: '/kit'
+      fullPath: '/$slug/kit'
+      preLoaderRoute: typeof SlugKitRouteImport
+      parentRoute: typeof SlugRoute
     }
     '/_authenticated/cartao/usuarios': {
       id: '/_authenticated/cartao/usuarios'
@@ -289,6 +308,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SlugRouteChildren {
+  SlugKitRoute: typeof SlugKitRoute
+}
+
+const SlugRouteChildren: SlugRouteChildren = {
+  SlugKitRoute: SlugKitRoute,
+}
+
+const SlugRouteWithChildren = SlugRoute._addFileChildren(SlugRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedCartaoAssinaturaRoute: typeof AuthenticatedCartaoAssinaturaRoute
   AuthenticatedCartaoCartaoFisicoRoute: typeof AuthenticatedCartaoCartaoFisicoRoute
@@ -319,7 +348,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SlugRoute: SlugRoute,
+  SlugRoute: SlugRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
 }

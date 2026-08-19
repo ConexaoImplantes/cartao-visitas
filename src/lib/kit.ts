@@ -1,6 +1,6 @@
 import type { Collaborator } from "./types";
 import { normalizeTheme } from "./types";
-import { buildCardUrl } from "./qr";
+import { buildCardUrl, buildKitUrl } from "./qr";
 import { buildGuidePdf } from "./kit-guide";
 import { buildPrintCardsPdf, type PrintBackgrounds } from "./print-card";
 import { renderSignaturePng, type SignatureOptions } from "./email-signature";
@@ -224,6 +224,7 @@ export async function buildKitFiles(
     email: c.email,
     slug: c.slug,
     modelo: opts.print.modelo,
+    kitUrl: buildKitUrl(c.slug),
   });
   files.push({
     name: `COMO-USAR-${base}.pdf`,

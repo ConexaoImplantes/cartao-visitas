@@ -37,8 +37,7 @@ Nova seção acrescentada ao PDF já existente, contendo:
 - Uso obrigatório da arte oficial, sem filtros, molduras, recortes ou alterações de cor.
 - Proibição de editar textos, trocar fontes ou combinar as artes com outras marcas.
 - Onde cada material deve ser aplicado e onde não deve.
-- Orientação sobre atualização: mudanças de cargo, telefone ou e-mail devem ser solicitadas ao Marketing, que regenera os materiais.
-- Contato do time responsável.
+- Orientação sobre atualização: mudanças de cargo, telefone ou e-mail devem ser solicitadas ao Gestor, para atualização dos materiais.
 
 ## Detalhes técnicos
 

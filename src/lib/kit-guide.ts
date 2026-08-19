@@ -18,6 +18,8 @@ export interface GuideInput {
   slug: string;
   /** Modelo escolhido do cartão de visitas. */
   modelo?: "novo" | "antigo";
+  /** Página pública onde o colaborador rebaixa os materiais. */
+  kitUrl?: string;
 }
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
@@ -92,6 +94,19 @@ function sections(c: GuideInput, url: string): Section[] {
         "O arquivo tem 2 páginas: página 1 = frente, página 2 = verso.",
         "O PDF é entregue em RGB. Peça à gráfica a conversão para CMYK / perfil de impressão no pré-impressão.",
         "Sugestão de acabamento: papel couché 300 g com laminação fosca.",
+      ],
+    },
+    {
+      title: "5. Regras e bom uso dos materiais",
+      intro: "As artes são material oficial da marca Conexão Implantes.",
+      steps: [
+        "Use sempre a arte oficial, exatamente como recebida: sem filtros, molduras, sombras, recortes ou alteração de cores.",
+        "Não edite textos, não troque fontes e não reposicione elementos das artes.",
+        "Não combine os materiais com outras marcas, logotipos, promoções ou conteúdos de terceiros.",
+        "Não use as artes em perfis pessoais, em conteúdos político-partidários ou em qualquer contexto que não seja profissional.",
+        "Não altere o QR Code nem o link: eles são exclusivos e usados para medir o desempenho do seu cartão digital.",
+        "Ao mudar de cargo, telefone ou e-mail, solicite ao seu gestor a atualização dos materiais — não edite por conta própria.",
+        `Precisa dos arquivos de novo? Acesse a qualquer momento: ${c.kitUrl ?? url}`,
       ],
     },
   ];
@@ -228,13 +243,16 @@ export async function buildGuidePdf(c: GuideInput): Promise<Uint8Array> {
       color: rgb(NAVY.r, NAVY.g, NAVY.b),
     });
   }
-  page.drawText(c.email || "", {
-    x: MARGIN + qrSize + 34,
-    y: y - 76,
-    size: 9,
-    font: regular,
-    color: rgb(MUTED.r, MUTED.g, MUTED.b),
-  });
+  page.drawText(
+    c.kitUrl ? `Kit digital: ${c.kitUrl}` : c.email || "",
+    {
+      x: MARGIN + qrSize + 34,
+      y: y - 76,
+      size: 9,
+      font: regular,
+      color: rgb(MUTED.r, MUTED.g, MUTED.b),
+    },
+  );
 
   y = y - qrSize - 52;
 
