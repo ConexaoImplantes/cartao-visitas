@@ -72,11 +72,11 @@ export const CARD_LAYOUT_ANTIGO = {
   textX: 32.7,
   nome: { baseline: 17.6, size: 12, color: "#004a8f" },
   cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
-  email: { baseline: 26.0, size: 7, color: "#000000", opacity: 0.7 },
-  site: { baseline: 29.2, size: 7, color: "#000000", opacity: 0.7 },
+  email: { baseline: 27.0, size: 7, color: "#000000", opacity: 0.7 },
+  site: { baseline: 31.5, size: 7, color: "#000000", opacity: 0.7 },
   /** o rótulo "Tel.:" e o ícone do WhatsApp já fazem parte da arte de fundo;
    *  o celular fica alinhado horizontalmente ao ícone verde */
-  celular: { x: 37.0, baseline: 33.7, size: 7, color: "#000000", opacity: 0.7 },
+  celular: { x: 37.0, baseline: 36.5, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
 
 
