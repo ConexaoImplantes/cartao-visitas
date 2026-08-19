@@ -265,9 +265,21 @@ function DashboardPage() {
           <div className="flex items-center justify-center p-12 text-[color:var(--text-muted)]">
             <Loader2 className="mr-2 size-4 animate-spin" /> Carregando...
           </div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <div className="p-12 text-center text-[color:var(--text-muted)]">
-            Nenhum colaborador cadastrado ainda. Clique em <strong>Novo</strong> para começar.
+            {hasActiveFilters ? (
+              <>
+                Nenhum colaborador encontrado para os filtros selecionados.{" "}
+                <button
+                  onClick={() => { setQuery(""); setStatusFilter("todos"); setSort("recentes"); }}
+                  className="underline hover:text-[color:var(--text-main)]"
+                >
+                  Limpar filtros
+                </button>
+              </>
+            ) : (
+              <>Nenhum colaborador cadastrado ainda. Clique em <strong>Novo</strong> para começar.</>
+            )}
           </div>
         ) : (
           <div className="w-full">
@@ -282,7 +294,7 @@ function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="block md:table-row-group">
-                {rows.map((c) => {
+                {filteredRows.map((c) => {
                   const tel = decodeTelefone(c.telefone_fixo);
                   const telLabel =
                     tel.kind === "ramal"
