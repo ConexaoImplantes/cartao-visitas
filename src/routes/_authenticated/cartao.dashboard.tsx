@@ -228,9 +228,9 @@ function DashboardPage() {
             Nenhum colaborador cadastrado ainda. Clique em <strong>Novo</strong> para começar.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)]">
+          <div className="w-full">
+            <table className="w-full text-sm md:table">
+              <thead className="hidden text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
                 <tr className="border-b border-[color:var(--border-strong)]">
                   {can("dashboard.download_card") && (
                     <th className="w-10 p-4">
@@ -251,11 +251,14 @@ function DashboardPage() {
                   <th className="p-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="block md:table-row-group">
                 {rows.map((c) => (
-                  <tr key={c.id} className="border-b border-[color:var(--border-strong)] last:border-0 hover:bg-[color:var(--surface-hover)]/50">
+                  <tr
+                    key={c.id}
+                    className="mb-4 block rounded-xl border border-[color:var(--border-strong)] p-4 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
+                  >
                     {can("dashboard.download_card") && (
-                      <td className="p-4">
+                      <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Selecionar">
                         <Checkbox
                           checked={selected.has(c.id)}
                           onCheckedChange={() => toggleSelected(c.id)}
@@ -263,7 +266,7 @@ function DashboardPage() {
                         />
                       </td>
                     )}
-                    <td className="p-4">
+                    <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Colaborador">
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
                           {c.foto_url ? (
@@ -275,12 +278,13 @@ function DashboardPage() {
                         <div className="min-w-0">
                           <div className="truncate font-medium text-[color:var(--text-main)]">{c.nome}</div>
                           <div className="truncate text-xs text-[color:var(--text-muted)] md:hidden">{c.cargo}</div>
+                          <div className="truncate text-xs text-[color:var(--text-muted)] lg:hidden">{c.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] md:table-cell">{c.cargo}</td>
                     <td className="hidden p-4 text-[color:var(--text-muted)] lg:table-cell">{c.email}</td>
-                    <td className="whitespace-nowrap p-4 text-xs text-[color:var(--text-muted)]">
+                    <td className="block p-0 pb-3 pt-1 text-xs text-[color:var(--text-muted)] md:table-cell md:whitespace-nowrap md:p-4" data-label="Métricas">
                       <span className="font-semibold text-[color:var(--text-main)]">
                         {Number(stats[c.id]?.views ?? 0)}
                       </span>{" "}
@@ -290,7 +294,7 @@ function DashboardPage() {
                       </span>{" "}
                       cliques
                     </td>
-                    <td className="p-4">
+                    <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Status">
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={c.status === "ativo"}
@@ -308,8 +312,8 @@ function DashboardPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="block p-0 md:table-cell md:p-4" data-label="Ações">
+                      <div className="grid grid-cols-5 gap-1 sm:flex sm:items-center sm:justify-end sm:gap-1 md:gap-1">
                         {can("dashboard.view_link") && (
                           <IconBtn title="Visualizar Link Tree" asChild>
                             <a href={buildCardUrl(c.slug)} target="_blank" rel="noreferrer">
