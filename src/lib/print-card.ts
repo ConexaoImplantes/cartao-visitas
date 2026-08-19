@@ -70,13 +70,15 @@ export function marcaGeometry(topMm?: number, logoHeightMm?: number) {
  */
 export const CARD_LAYOUT_ANTIGO = {
   textX: 32.7,
-  nome: { baseline: 18.6, size: 12, color: "#004a8f" },
-  cargo: { baseline: 22.2, size: 8, color: "#659ad2" },
-  email: { baseline: 30.2, size: 7, color: "#000000", opacity: 0.7 },
-  site: { baseline: 33.2, size: 7, color: "#000000", opacity: 0.7 },
-  /** o rótulo "Tel.:" já faz parte da arte de fundo */
-  celular: { x: 36.9, baseline: 36.2, size: 7, color: "#000000", opacity: 0.7 },
+  nome: { baseline: 17.6, size: 12, color: "#004a8f" },
+  cargo: { baseline: 21.2, size: 8, color: "#659ad2" },
+  email: { baseline: 26.0, size: 7, color: "#000000", opacity: 0.7 },
+  site: { baseline: 29.2, size: 7, color: "#000000", opacity: 0.7 },
+  /** o rótulo "Tel.:" e o ícone do WhatsApp já fazem parte da arte de fundo;
+   *  o celular fica alinhado horizontalmente ao ícone verde */
+  celular: { x: 61.5, baseline: 33.7, size: 7, color: "#000000", opacity: 0.7 },
 } as const;
+
 
 /** Default artwork bundled with the app (used when the theme has no upload). */
 export const DEFAULT_PRINT_ASSETS = {
