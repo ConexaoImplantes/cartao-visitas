@@ -98,6 +98,8 @@ export async function loadPrintOptions(): Promise<PrintBackgrounds> {
     frenteUrl: theme.impressao.frenteUrl || undefined,
     versoUrl: theme.impressao.versoUrl || undefined,
     site: theme.institucional.site || undefined,
+    marcaTop: theme.impressao.marcaTop,
+    marcaLogoAltura: theme.impressao.marcaLogoAltura,
   };
 }
 
