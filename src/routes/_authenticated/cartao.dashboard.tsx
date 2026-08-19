@@ -5,7 +5,6 @@ import {
   Trash2,
   Loader2,
   Share2,
-  Printer,
   CreditCard,
   Mail,
   UserRound,
@@ -274,8 +273,6 @@ function DashboardPage() {
                         }}
                         onShare={() => setSharing(c)}
                         onDelete={() => setToDelete(c)}
-                        onPrint={() => handlePrintOne(c)}
-                        printingId={printingId}
                       />
                     </td>
                   </tr>
@@ -332,16 +329,12 @@ function ActionsMenu({
   onEdit,
   onShare,
   onDelete,
-  onPrint,
-  printingId,
 }: {
   c: Collaborator;
   can: (permission: PermissionKey) => boolean;
   onEdit: () => void;
   onShare: () => void;
   onDelete: () => void;
-  onPrint: () => void;
-  printingId: string | null;
 }) {
   return (
     <DropdownMenu>
