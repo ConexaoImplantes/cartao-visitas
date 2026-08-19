@@ -124,20 +124,23 @@ function FotoPerfilPage() {
 
   useEffect(() => {
     if (!active) return;
-    // Sem recorte salvo? Reaproveita a foto já definida no Link Tree.
+    // Sem recorte salvo? Reaproveita a foto já definida no Link Tree (modo estático).
+    const linktreeOnly = !active.foto_recortada_url && !!active.foto_url;
     setPerson(active.foto_recortada_url ?? active.foto_url ?? null);
-    setUsingLinktree(!active.foto_recortada_url && !!active.foto_url);
-    setFrame(normalizeFrame(active.foto_perfil_ajuste));
+    setUsingLinktree(linktreeOnly);
+    const saved = normalizeFrame(active.foto_perfil_ajuste);
+    setFrame(linktreeOnly ? { ...saved, mode: "estatico" } : saved);
   }, [active?.id]);
 
-  /** Carrega a foto atual do Link Tree como base da arte. */
+  /** Carrega a foto atual do Link Tree como imagem estática 1080x1080. */
   function handleUseLinktreePhoto() {
     if (!active?.foto_url) return;
     setPerson(active.foto_url);
     setUsingLinktree(true);
-    setFrame({ ...DEFAULT_FRAME });
-    toast.success("Foto do Link Tree carregada");
+    setFrame({ ...DEFAULT_FRAME, mode: "estatico" });
+    toast.success("Foto do Link Tree carregada (imagem estática 1080×1080)");
   }
+
 
   /** Remove o fundo da foto que está carregada no editor. */
   async function handleRemoveBgCurrent() {
