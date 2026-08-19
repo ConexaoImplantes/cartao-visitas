@@ -22,10 +22,8 @@ import { CollaboratorModal } from "@/components/collaborator-modal";
 import { ShareDialog } from "@/components/share-dialog";
 import { buildCardUrl } from "@/lib/qr";
 import { fetchCardStats, type CardStats } from "@/lib/analytics";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   downloadPrintCard,
-  downloadPrintCardsBatch,
   loadPrintOptions,
   type PrintBackgrounds,
 } from "@/lib/print-card";
@@ -52,7 +50,6 @@ function DashboardPage() {
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [period, setPeriod] = useState<number | null>(30);
   const [stats, setStats] = useState<Record<string, CardStats>>({});
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [printing, setPrinting] = useState(false);
   const [printingId, setPrintingId] = useState<string | null>(null);
 
@@ -76,27 +73,6 @@ function DashboardPage() {
     }
   }
 
-  async function handlePrintBatch() {
-    const items = (rows ?? []).filter((r) => selected.has(r.id));
-    if (!items.length) return;
-    setPrinting(true);
-    try {
-      await downloadPrintCardsBatch(items, await printOptions());
-      toast.success(`${items.length} cartões gerados para impressão`);
-    } catch (e: any) {
-      toast.error("Falha ao gerar os cartões", { description: e?.message });
-    } finally {
-      setPrinting(false);
-    }
-  }
-
-  function toggleSelected(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
 
   useEffect(() => {
     if (!permLoading && !can("dashboard.view")) {
@@ -171,13 +147,6 @@ function DashboardPage() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-        {can("dashboard.download_card") && selected.size > 0 && (
-          <Button variant="outline" onClick={handlePrintBatch} disabled={printing}>
-            {printing ? <Loader2 className="size-4 animate-spin" /> : <Printer className="size-4" />}
-            <span className="hidden sm:inline">Baixar {selected.size} cartões</span>
-            <span className="sm:hidden">{selected.size}</span>
-          </Button>
-        )}
         {can("dashboard.create") && (
           <Button
             onClick={() => { setEditing(null); setModalOpen(true); }}
@@ -232,17 +201,6 @@ function DashboardPage() {
             <table className="w-full text-sm md:table">
               <thead className="hidden text-left text-xs uppercase tracking-wide text-[color:var(--text-muted)] md:table-header-group">
                 <tr className="border-b border-[color:var(--border-strong)]">
-                  {can("dashboard.download_card") && (
-                    <th className="w-10 p-4">
-                      <Checkbox
-                        checked={!!rows.length && selected.size === rows.length}
-                        onCheckedChange={(v) =>
-                          setSelected(v ? new Set(rows.map((r) => r.id)) : new Set())
-                        }
-                        aria-label="Selecionar todos"
-                      />
-                    </th>
-                  )}
                   <th className="p-4">Colaborador</th>
                   <th className="hidden p-4 md:table-cell">Cargo</th>
                   <th className="hidden p-4 lg:table-cell">E-mail</th>
@@ -257,15 +215,6 @@ function DashboardPage() {
                     key={c.id}
                     className="mb-4 block rounded-xl border border-[color:var(--border-strong)] p-4 last:mb-0 hover:bg-[color:var(--surface-hover)]/50 md:mb-0 md:table-row md:border-b md:border-[color:var(--border-strong)] md:p-0 md:last:border-0"
                   >
-                    {can("dashboard.download_card") && (
-                      <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Selecionar">
-                        <Checkbox
-                          checked={selected.has(c.id)}
-                          onCheckedChange={() => toggleSelected(c.id)}
-                          aria-label={`Selecionar ${c.nome}`}
-                        />
-                      </td>
-                    )}
                     <td className="block p-0 pb-3 md:table-cell md:p-4" data-label="Colaborador">
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
