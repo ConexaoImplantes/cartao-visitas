@@ -30,7 +30,7 @@ export type ProfileFrame = { zoom: number; x: number; y: number };
 export const FRAME_LIMITS = {
   zoom: { min: 0.6, max: 1.8, step: 0.01 },
   x: { min: -400, max: 400, step: 2 },
-  y: { min: -400, max: 400, step: 2 },
+  y: { min: -1000, max: 1000, step: 2 },
 } as const;
 
 /** Base de composição: pessoa ancorada na base, alinhada à direita do círculo. */
@@ -63,6 +63,59 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(new Error("Não foi possível carregar a imagem"));
     img.src = src;
   });
+}
+
+/**
+ * Gera (e memoriza) a camada dourada da arte padrão: os pixels em que o fundo
+ * padrão difere da variante limpa (moldura dourada + logo). Essa camada é
+ * desenhada por cima da pessoa, deixando a foto na camada de baixo.
+ */
+let goldOverlayPromise: Promise<HTMLCanvasElement | null> | null = null;
+
+async function getGoldOverlay(): Promise<HTMLCanvasElement | null> {
+  if (!goldOverlayPromise) {
+    goldOverlayPromise = (async () => {
+      try {
+        const [bg, clean] = await Promise.all([
+          loadImage(DEFAULT_PROFILE_BACKGROUNDS.bgUrl),
+          loadImage(DEFAULT_PROFILE_BACKGROUNDS.cleanUrl),
+        ]);
+        const s = PROFILE_SIZE;
+        const mk = (img: HTMLImageElement) => {
+          const c = document.createElement("canvas");
+          c.width = s;
+          c.height = s;
+          const cx = c.getContext("2d", { willReadFrequently: true })!;
+          cx.drawImage(img, 0, 0, s, s);
+          return cx.getImageData(0, 0, s, s);
+        };
+        const a = mk(bg);
+        const b = mk(clean);
+        const out = document.createElement("canvas");
+        out.width = s;
+        out.height = s;
+        const octx = out.getContext("2d")!;
+        const od = octx.createImageData(s, s);
+        for (let i = 0; i < a.data.length; i += 4) {
+          const d = Math.max(
+            Math.abs(a.data[i] - b.data[i]),
+            Math.abs(a.data[i + 1] - b.data[i + 1]),
+            Math.abs(a.data[i + 2] - b.data[i + 2]),
+            Math.abs(a.data[i + 3] - b.data[i + 3]),
+          );
+          od.data[i] = a.data[i];
+          od.data[i + 1] = a.data[i + 1];
+          od.data[i + 2] = a.data[i + 2];
+          od.data[i + 3] = d <= 8 ? 0 : Math.min(255, Math.round((d / 40) * 255));
+        }
+        octx.putImageData(od, 0, 0);
+        return out;
+      } catch {
+        return null;
+      }
+    })();
+  }
+  return goldOverlayPromise;
 }
 
 export interface ProfileComposeInput {
@@ -98,6 +151,12 @@ export async function composeProfilePhoto(
     const x = BASE_CENTER_X + frame.x - w / 2;
     const y = PROFILE_SIZE - h + frame.y;
     ctx.drawImage(person, x * scale, y * scale, w * scale, h * scale);
+
+    // Moldura dourada (e logo) por cima da pessoa — só na arte padrão.
+    if (!input.bgUrl) {
+      const overlay = await getGoldOverlay();
+      if (overlay) ctx.drawImage(overlay, 0, 0, size, size);
+    }
   }
 
   return canvas;
