@@ -95,7 +95,7 @@ function AuthLayout() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]/95 backdrop-blur">
         <div className="mx-auto flex w-full items-center gap-4 px-4 py-3 sm:px-6 lg:gap-6">
-          <img src={logoUrl} alt="Conexão" className="h-8 w-auto shrink-0" />
+          <img src={logoUrl} alt="Conexão" className="h-6 w-auto shrink-0" />
           <nav className="flex flex-1 flex-nowrap items-center justify-start gap-0.5 overflow-hidden md:gap-1">
             {primaryNav.map((n) => (
               <NavLink key={n.to} n={n} showLabel />
