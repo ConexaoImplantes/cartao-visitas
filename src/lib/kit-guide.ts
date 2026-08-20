@@ -20,6 +20,9 @@ export interface GuideInput {
   modelo?: "novo" | "antigo";
   /** Página pública onde o colaborador rebaixa os materiais. */
   kitUrl?: string;
+  /** Quando true, a foto de perfil foi dispensada e sai do manual. */
+  semFoto?: boolean;
+
 }
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
