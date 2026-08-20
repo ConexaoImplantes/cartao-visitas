@@ -21,7 +21,9 @@ export type PermissionKey =
   | "fluxo.marcar_etapas"
   | "importar.view"
   | "tema.view"
-  | "tema.edit";
+  | "tema.edit"
+  | "tutoriais.view"
+  | "tutoriais.manage";
 
 export interface PermissionDef {
   key: PermissionKey;
