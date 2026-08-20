@@ -1,0 +1,292 @@
+[
+  {
+    "id": "visao-geral",
+    "titulo": "Visão geral e navegação",
+    "descricao": "Conheça o menu da plataforma e onde fica cada material do colaborador.",
+    "area": "Introdução",
+    "rota": "/cartao/dashboard",
+    "passos": [
+      {
+        "titulo": "Menu principal",
+        "texto": "O menu superior reúne todas as áreas. Os ícones seguem a ordem do fluxo de produção dos materiais.",
+        "rota": "/cartao/dashboard",
+        "alvo": "header nav"
+      },
+      {
+        "titulo": "Sua identificação",
+        "texto": "À direita aparece o e-mail logado, o perfil (Admin ou Super Admin) e o botão Sair.",
+        "rota": "/cartao/dashboard",
+        "alvo": "header .text-right"
+      },
+      {
+        "titulo": "Área de trabalho",
+        "texto": "O conteúdo da rota selecionada é exibido abaixo do cabeçalho.",
+        "rota": "/cartao/dashboard",
+        "alvo": "main"
+      }
+    ]
+  },
+  {
+    "id": "criar-colaborador",
+    "titulo": "Criar um colaborador (Link Tree)",
+    "descricao": "Cadastre um novo colaborador e gere o Link Tree corporativo dele.",
+    "area": "Dashboard",
+    "permissao": "dashboard.create",
+    "rota": "/cartao/dashboard",
+    "passos": [
+      {
+        "titulo": "Abrir o formulário",
+        "texto": "No Dashboard, clique em Novo colaborador para abrir o cadastro.",
+        "rota": "/cartao/dashboard",
+        "alvo": "button:has-text('Novo')"
+      },
+      {
+        "titulo": "Preencher os dados",
+        "texto": "Informe nome, cargo, e-mail, WhatsApp (DDI, DDD e número) e telefone ou ramal. A foto é opcional.",
+        "rota": "/cartao/dashboard",
+        "clique": "button:has-text('Novo')",
+        "alvo": "[role='dialog']"
+      },
+      {
+        "titulo": "Salvar",
+        "texto": "Ao salvar, o sistema cria automaticamente o endereço amigável (slug) do Link Tree a partir do nome.",
+        "rota": "/cartao/dashboard",
+        "clique": "button:has-text('Novo')",
+        "alvo": "[role='dialog'] button:has-text('Salvar')"
+      }
+    ]
+  },
+  {
+    "id": "dashboard-lista",
+    "titulo": "Dashboard: busca, filtros e ações",
+    "descricao": "Encontre colaboradores rapidamente e use as ações de cada linha.",
+    "area": "Dashboard",
+    "permissao": "dashboard.view",
+    "rota": "/cartao/dashboard",
+    "passos": [
+      {
+        "titulo": "Buscar por nome",
+        "texto": "Digite parte do nome para filtrar a lista instantaneamente.",
+        "rota": "/cartao/dashboard",
+        "alvo": "input[placeholder*='usc' i], input[type='search']"
+      },
+      {
+        "titulo": "Filtrar e ordenar",
+        "texto": "Use os seletores de status e de ordenação (A-Z, Z-A, mais recentes) para organizar a lista.",
+        "rota": "/cartao/dashboard",
+        "alvo": "[data-slot='select-trigger']"
+      },
+      {
+        "titulo": "Ações do colaborador",
+        "texto": "No botão Mais de cada linha estão: Editar, Fluxo/Kit, Foto de perfil, Assinatura, Cartão físico, Compartilhar e Excluir.",
+        "rota": "/cartao/dashboard",
+        "alvo": "table tbody tr:first-child"
+      }
+    ]
+  },
+  {
+    "id": "fluxo-kit",
+    "titulo": "Fluxo guiado e Kit do colaborador",
+    "descricao": "Acompanhe as etapas de produção e baixe o kit completo em ZIP.",
+    "area": "Fluxo",
+    "permissao": "fluxo.view",
+    "rota": "/cartao/fluxo",
+    "passos": [
+      {
+        "titulo": "Etapas do fluxo",
+        "texto": "A ordem é: Foto de perfil, Link Tree, Assinatura de e-mail e Cartão de visitas.",
+        "rota": "/cartao/fluxo",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Marcar como já incluso",
+        "texto": "Se o material já existe fora da plataforma, marque a etapa manualmente — individualmente ou em lote.",
+        "rota": "/cartao/fluxo",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Baixar o kit",
+        "texto": "Com as etapas concluídas, baixe o ZIP com manual em PDF, foto de perfil, assinatura, cartão em PDF e QR Code.",
+        "rota": "/cartao/fluxo",
+        "alvo": "button:has-text('Kit')"
+      }
+    ]
+  },
+  {
+    "id": "foto-perfil",
+    "titulo": "Foto de perfil corporativa",
+    "descricao": "Use a foto do Link Tree ou monte a arte institucional em camadas.",
+    "area": "Foto de perfil",
+    "permissao": "foto_perfil.view",
+    "rota": "/cartao/foto-perfil",
+    "passos": [
+      {
+        "titulo": "Escolher o colaborador",
+        "texto": "Selecione o colaborador para carregar a foto já existente no Link Tree, quando houver.",
+        "rota": "/cartao/foto-perfil",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Usar a foto do Link Tree",
+        "texto": "Neste modo a imagem é usada estática em 1080x1080, sem moldura e sem fundo institucional.",
+        "rota": "/cartao/foto-perfil",
+        "alvo": "button:has-text('Link')"
+      },
+      {
+        "titulo": "Modo em camadas",
+        "texto": "Ao enviar uma nova foto com remoção de fundo, a arte é montada em camadas: fundo, foto e moldura dourada por cima.",
+        "rota": "/cartao/foto-perfil",
+        "alvo": "main"
+      }
+    ]
+  },
+  {
+    "id": "assinatura",
+    "titulo": "Assinatura de e-mail",
+    "descricao": "Gere e baixe a assinatura em PNG (150x50 mm, 300 dpi).",
+    "area": "Assinatura",
+    "permissao": "assinatura.view",
+    "rota": "/cartao/assinatura",
+    "passos": [
+      {
+        "titulo": "Pré-visualizar",
+        "texto": "A assinatura é montada com nome, cargo, celular e e-mail sobre a arte institucional.",
+        "rota": "/cartao/assinatura",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Baixar",
+        "texto": "Baixe o PNG em alta resolução e insira como imagem na assinatura do seu cliente de e-mail.",
+        "rota": "/cartao/assinatura",
+        "alvo": "button:has-text('Baixar')"
+      }
+    ]
+  },
+  {
+    "id": "cartao-fisico",
+    "titulo": "Cartão de visitas para impressão",
+    "descricao": "Escolha o modelo e gere o PDF com sangria e marcas de corte.",
+    "area": "Cartão",
+    "permissao": "cartao_fisico.view",
+    "rota": "/cartao/cartao-fisico",
+    "passos": [
+      {
+        "titulo": "Escolher o modelo",
+        "texto": "Selecione entre o modelo Novo e o modelo Antigo. A escolha fica salva para o colaborador.",
+        "rota": "/cartao/cartao-fisico",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Conferir a prova",
+        "texto": "A pré-visualização mostra frente e verso em 90x48 mm, com QR Code e respiro adequados.",
+        "rota": "/cartao/cartao-fisico",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Gerar o PDF",
+        "texto": "O PDF sai pronto para gráfica, com 3 mm de sangria e marcas de corte.",
+        "rota": "/cartao/cartao-fisico",
+        "alvo": "button:has-text('PDF')"
+      }
+    ]
+  },
+  {
+    "id": "importar-csv",
+    "titulo": "Importação em massa por CSV",
+    "descricao": "Crie dezenas de Link Trees a partir de uma planilha.",
+    "area": "Importação",
+    "permissao": "importar.view",
+    "rota": "/cartao/importar",
+    "passos": [
+      {
+        "titulo": "Enviar a planilha",
+        "texto": "Envie o arquivo CSV com os dados dos colaboradores.",
+        "rota": "/cartao/importar",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Mapear as colunas",
+        "texto": "Indique qual coluna corresponde a cada campo (nome, cargo, e-mail, WhatsApp, telefone).",
+        "rota": "/cartao/importar",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Processar",
+        "texto": "A importação é feita em lotes, com relatório de sucessos e erros ao final.",
+        "rota": "/cartao/importar",
+        "alvo": "main"
+      }
+    ]
+  },
+  {
+    "id": "tema",
+    "titulo": "Tema e personalização",
+    "descricao": "Ajuste fundo, ícones, tipografia, dados institucionais e artes.",
+    "area": "Tema",
+    "permissao": "tema.view",
+    "rota": "/cartao/tema",
+    "passos": [
+      {
+        "titulo": "Abas de personalização",
+        "texto": "Fundo, Ícones, Tipografia, Instituição, Impressão, Assinatura e Perfil ficam separados em abas.",
+        "rota": "/cartao/tema",
+        "alvo": "[role='tablist']"
+      },
+      {
+        "titulo": "Fundo do Link Tree",
+        "texto": "Escolha entre cor sólida, gradiente de 2 ou 3 cores e adicione blobs decorativos.",
+        "rota": "/cartao/tema",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Salvar",
+        "texto": "As alterações valem para todos os Link Trees após salvar.",
+        "rota": "/cartao/tema",
+        "alvo": "button:has-text('Salvar')"
+      }
+    ]
+  },
+  {
+    "id": "usuarios-permissoes",
+    "titulo": "Usuários e permissões",
+    "descricao": "Libere rotas e ações para cada administrador (exclusivo Super Admin).",
+    "area": "Usuários",
+    "soSuperAdmin": true,
+    "rota": "/cartao/usuarios",
+    "passos": [
+      {
+        "titulo": "Lista de usuários",
+        "texto": "Cada usuário tem seu conjunto de permissões por rota.",
+        "rota": "/cartao/usuarios",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Marcar permissões",
+        "texto": "Ative apenas o que o usuário precisa. Rotas sem permissão não aparecem no menu dele.",
+        "rota": "/cartao/usuarios",
+        "alvo": "main"
+      }
+    ]
+  },
+  {
+    "id": "kit-publico",
+    "titulo": "Kit público do colaborador",
+    "descricao": "O que o colaborador vê na página pública do kit dele.",
+    "area": "Kit",
+    "rota": "/cartao/dashboard",
+    "passos": [
+      {
+        "titulo": "Compartilhar",
+        "texto": "No Dashboard, use Compartilhar para enviar ao colaborador o Link Tree, o QR Code e o link do kit.",
+        "rota": "/cartao/dashboard",
+        "alvo": "main"
+      },
+      {
+        "titulo": "Página do kit",
+        "texto": "Em /nome-do-colaborador/kit ele visualiza e baixa foto de perfil, assinatura, cartão em PDF, o ZIP completo e o manual.",
+        "rota": "/cartao/dashboard",
+        "alvo": "main"
+      }
+    ]
+  }
+]
