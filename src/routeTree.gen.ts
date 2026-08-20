@@ -25,6 +25,7 @@ import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_
 import { Route as AuthenticatedCartaoCartaoFisicoRouteImport } from './routes/_authenticated/cartao.cartao-fisico'
 import { Route as AuthenticatedCartaoAssinaturaRouteImport } from './routes/_authenticated/cartao.assinatura'
 import { Route as AuthenticatedCartaoTutoriaisIndexRouteImport } from './routes/_authenticated/cartao.tutoriais.index'
+import { Route as AuthenticatedCartaoTutoriaisIdRouteImport } from './routes/_authenticated/cartao.tutoriais.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -115,6 +116,12 @@ const AuthenticatedCartaoTutoriaisIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCartaoTutoriaisRoute,
   } as any)
+const AuthenticatedCartaoTutoriaisIdRoute =
+  AuthenticatedCartaoTutoriaisIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedCartaoTutoriaisRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRouteWithChildren
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
   '/cartao/tutoriais/': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRoutesByTo {
@@ -147,6 +155,7 @@ export interface FileRoutesByTo {
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
   '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRoutesById {
@@ -166,6 +175,7 @@ export interface FileRoutesById {
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/_authenticated/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRouteWithChildren
   '/_authenticated/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/_authenticated/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
   '/_authenticated/cartao/tutoriais/': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRouteTypes {
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/cartao/tema'
     | '/cartao/tutoriais'
     | '/cartao/usuarios'
+    | '/cartao/tutoriais/$id'
     | '/cartao/tutoriais/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/cartao/importar'
     | '/cartao/tema'
     | '/cartao/usuarios'
+    | '/cartao/tutoriais/$id'
     | '/cartao/tutoriais'
   id:
     | '__root__'
@@ -219,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cartao/tema'
     | '/_authenticated/cartao/tutoriais'
     | '/_authenticated/cartao/usuarios'
+    | '/_authenticated/cartao/tutoriais/$id'
     | '/_authenticated/cartao/tutoriais/'
   fileRoutesById: FileRoutesById
 }
@@ -344,15 +357,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoTutoriaisIndexRouteImport
       parentRoute: typeof AuthenticatedCartaoTutoriaisRoute
     }
+    '/_authenticated/cartao/tutoriais/$id': {
+      id: '/_authenticated/cartao/tutoriais/$id'
+      path: '/$id'
+      fullPath: '/cartao/tutoriais/$id'
+      preLoaderRoute: typeof AuthenticatedCartaoTutoriaisIdRouteImport
+      parentRoute: typeof AuthenticatedCartaoTutoriaisRoute
+    }
   }
 }
 
 interface AuthenticatedCartaoTutoriaisRouteChildren {
+  AuthenticatedCartaoTutoriaisIdRoute: typeof AuthenticatedCartaoTutoriaisIdRoute
   AuthenticatedCartaoTutoriaisIndexRoute: typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 
 const AuthenticatedCartaoTutoriaisRouteChildren: AuthenticatedCartaoTutoriaisRouteChildren =
   {
+    AuthenticatedCartaoTutoriaisIdRoute: AuthenticatedCartaoTutoriaisIdRoute,
     AuthenticatedCartaoTutoriaisIndexRoute:
       AuthenticatedCartaoTutoriaisIndexRoute,
   }
