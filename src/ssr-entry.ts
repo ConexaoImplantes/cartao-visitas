@@ -1,5 +1,7 @@
 import "./lib/error-capture";
 
+import serverEntry from "@tanstack/react-start/server-entry";
+
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
@@ -7,16 +9,14 @@ type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
 
-let serverEntryPromise: Promise<ServerEntry> | undefined;
-
-async function getServerEntry(): Promise<ServerEntry> {
-  if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => (m.default ?? m) as ServerEntry,
-    );
-  }
-  return serverEntryPromise;
+// NOTE: static import on purpose. A dynamic import() of the server entry makes rolldown
+// emit a second chunk with its own runtime copy, creating a circular import that fails at
+// startup in production with "TypeError: __exportAll is not a function".
+function getServerEntry(): ServerEntry {
+  const mod = serverEntry as unknown as { default?: ServerEntry };
+  return (mod?.default ?? serverEntry) as ServerEntry;
 }
+
 
 // h3 swallows in-handler throws into a normal 500 Response with body
 // {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
