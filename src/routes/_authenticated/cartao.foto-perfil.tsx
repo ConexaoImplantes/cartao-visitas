@@ -536,6 +536,21 @@ function FotoPerfilPage() {
                           Remover fundo desta foto
                         </Button>
                       )}
+                      {!!person && (
+                        <Button
+                          variant="ghost"
+                          disabled={!canEdit || busy !== null}
+                          onClick={handleRemoveBgRemote}
+                          title="Usa o serviço remove.bg (50 imagens grátis por mês, resolução de prévia)"
+                        >
+                          {busy === "cut-remote" ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Sparkles className="size-4" />
+                          )}
+                          Recorte alternativo
+                        </Button>
+                      )}
                     </div>
                     <p className="text-xs text-[color:var(--text-muted)]">
                       {frame.mode === "estatico"
