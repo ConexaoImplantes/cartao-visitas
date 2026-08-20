@@ -76,7 +76,10 @@ function FotoPerfilPage() {
   const [usingLinktree, setUsingLinktree] = useState(false);
   const [frame, setFrame] = useState<ProfileFrame>({ ...DEFAULT_FRAME });
   const [saving, setSaving] = useState(false);
-  const [busy, setBusy] = useState<"cut" | "one" | "batch" | "avatar" | "view" | null>(null);
+  const [busy, setBusy] = useState<
+    "cut" | "cut-remote" | "one" | "batch" | "avatar" | "view" | null
+  >(null);
+  const callRemoveBgRemote = useServerFn(removeBgRemote);
   const [progress, setProgress] = useState("");
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [viewer, setViewer] = useState<ArtViewerState>(EMPTY_ART_VIEWER);
