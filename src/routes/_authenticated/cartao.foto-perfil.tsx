@@ -162,6 +162,31 @@ function FotoPerfilPage() {
     }
   }
 
+  /** Fallback: recorte pelo serviço remove.bg (50 imagens grátis/mês, saída em prévia). */
+  async function handleRemoveBgRemote() {
+    if (!person) return;
+    setBusy("cut-remote");
+    setProgress("Enviando para o recorte alternativo...");
+    try {
+      const res = await callRemoveBgRemote({ data: { dataUrl: person } });
+      if (!res.ok) {
+        toast.error("Recorte alternativo indisponível", { description: res.error });
+        return;
+      }
+      setPerson(await trimAndResizePng(res.dataUrl));
+      setUsingLinktree(false);
+      setFrame({ ...DEFAULT_FRAME });
+      toast.success("Fundo removido pela remove.bg", {
+        description: "Resolução de prévia (plano gratuito). Ajuste o enquadramento e salve.",
+      });
+    } catch (e: any) {
+      toast.error("Falha no recorte alternativo", { description: e?.message });
+    } finally {
+      setBusy(null);
+      setProgress("");
+    }
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return rows ?? [];
