@@ -49,22 +49,49 @@ export const KIT_STEPS: KitStepDef[] = [
   },
 ];
 
+export interface KitStepState {
+  /** Etapa cumprida (automática ou marcada pelo admin). */
+  done: boolean;
+  /** O arquivo realmente pode ser gerado a partir dos dados existentes. */
+  deliverable: boolean;
+  /** Etapa dispensada para este colaborador: não entra no kit nem no total. */
+  skipped: boolean;
+  reason?: string;
+  manual?: boolean;
+}
+
 export interface KitStatus {
-  steps: Record<KitStepKey, { done: boolean; reason?: string; manual?: boolean }>;
+  steps: Record<KitStepKey, KitStepState>;
   completed: number;
+  /** Total de etapas exigidas (desconta as dispensadas). */
+  total: number;
   ready: boolean;
 }
 
 /** Etapas marcadas manualmente como concluídas pelo admin. */
 export function manualSteps(c: Collaborator): Record<KitStepKey, boolean> {
   const raw = (c.kit_manual ?? {}) as Record<string, unknown>;
+  const on = (v: unknown) => v === true;
   return {
-    foto: raw.foto === true,
-    linktree: raw.linktree === true,
-    assinatura: raw.assinatura === true,
-    cartao: raw.cartao === true,
+    foto: on(raw.foto),
+    linktree: on(raw.linktree),
+    assinatura: on(raw.assinatura),
+    cartao: on(raw.cartao),
   };
 }
+
+/** Etapas explicitamente dispensadas (hoje só a foto de perfil). */
+export function skippedSteps(c: Collaborator): Record<KitStepKey, boolean> {
+  const raw = (c.kit_manual ?? {}) as Record<string, unknown>;
+  const off = (v: unknown) => v === "dispensada";
+  return {
+    foto: off(raw.foto),
+    linktree: off(raw.linktree),
+    assinatura: off(raw.assinatura),
+    cartao: off(raw.cartao),
+  };
+}
+
 
 export interface KitOptions {
   print: PrintBackgrounds;
@@ -138,19 +165,55 @@ export function kitStatus(c: Collaborator, opts?: Partial<KitOptions>): KitStatu
             : "Escolha o modelo do cartão na rota Cartão.",
         };
 
-  const auto = { foto, linktree, assinatura, cartao } as KitStatus["steps"];
+  const auto: Record<KitStepKey, { done: boolean; reason?: string }> = {
+    foto,
+    linktree,
+    assinatura,
+    cartao,
+  };
   const manual = manualSteps(c);
+  const skipped = skippedSteps(c);
+  /** Materiais que dependem de arquivo binário não podem ser "marcados" como prontos. */
+  const hasPhotoAsset = has(c.foto_recortada_url) || has(c.foto_url);
+
   const steps = Object.fromEntries(
-    (Object.keys(auto) as KitStepKey[]).map((k) => [
-      k,
-      manual[k] && !auto[k].done
-        ? { done: true, manual: true, reason: "Marcado como concluído pelo administrador." }
-        : { ...auto[k], manual: manual[k] },
-    ]),
-  ) as KitStatus["steps"];
-  const completed = Object.values(steps).filter((s) => s.done).length;
-  return { steps, completed, ready: completed === KIT_STEPS.length };
+    (Object.keys(auto) as KitStepKey[]).map((k): [KitStepKey, KitStepState] => {
+      if (skipped[k]) {
+        return [
+          k,
+          {
+            done: true,
+            deliverable: false,
+            skipped: true,
+            reason: "Dispensada para este colaborador.",
+          },
+        ];
+      }
+      // A foto nunca fica pronta por marcação manual: depende do arquivo recortado.
+      const canMarkManually = k !== "foto";
+      const base =
+        canMarkManually && manual[k] && !auto[k].done
+          ? { done: true, reason: "Marcado como concluído pelo administrador." }
+          : auto[k];
+      const deliverable = k === "foto" ? hasPhotoAsset : base.done;
+      return [
+        k,
+        {
+          done: base.done,
+          deliverable,
+          skipped: false,
+          reason: base.reason,
+          manual: canMarkManually ? manual[k] : false,
+        },
+      ];
+    }),
+  ) as Record<KitStepKey, KitStepState>;
+
+  const required = (Object.keys(steps) as KitStepKey[]).filter((k) => !steps[k].skipped);
+  const completed = required.filter((k) => steps[k].done).length;
+  return { steps, completed, total: required.length, ready: completed === required.length };
 }
+
 
 export function kitBaseName(c: Collaborator) {
   return (
@@ -190,9 +253,10 @@ export async function buildKitFiles(
 ): Promise<KitFile[]> {
   const base = kitBaseName(c);
   const files: KitFile[] = [];
+  const semFoto = skippedSteps(c).foto;
 
-  onProgress?.("Gerando foto de perfil...");
-  if (c.foto_recortada_url || c.foto_url) {
+  if (!semFoto && (c.foto_recortada_url || c.foto_url)) {
+    onProgress?.("Gerando foto de perfil...");
     const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
     const saved = normalizeFrame(c.foto_perfil_ajuste);
     const photo = await profilePhotoBlob({
@@ -202,6 +266,7 @@ export async function buildKitFiles(
     });
     files.push({ name: `foto-perfil-${base}.png`, blob: photo });
   }
+
 
 
   onProgress?.("Gerando assinatura de e-mail...");
@@ -248,6 +313,8 @@ export async function buildKitFiles(
     slug: c.slug,
     modelo: opts.print.modelo,
     kitUrl: buildKitUrl(c.slug),
+    semFoto,
+
   });
   files.push({
     name: `COMO-USAR-${base}.pdf`,

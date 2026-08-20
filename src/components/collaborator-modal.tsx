@@ -3,11 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
 import { slugify, validateSlug } from "@/lib/slug";
 import { getCachedSettings } from "@/lib/settings";
@@ -43,7 +42,6 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
   const [slugTouched, setSlugTouched] = useState(false);
   const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
-  const [foto, setFoto] = useState<string | null>("");
   const [whats, setWhats] = useState<PhoneParts>(EMPTY_PHONE);
   const [telKind, setTelKind] = useState<TelefoneKind>("fixo");
   const [telFixo, setTelFixo] = useState<PhoneParts>(EMPTY_PHONE);
@@ -59,7 +57,6 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     setSlugTouched(!!collaborator || cfg.cadastro.slugMode === "manual");
     setCargo(collaborator?.cargo ?? "");
     setEmail(collaborator?.email ?? "");
-    setFoto(collaborator?.foto_url ?? "");
     const w = decodePhone(collaborator?.whatsapp);
     setWhats({
       ddi: w.ddi || cfg.cadastro.ddiPadrao || "55",
@@ -81,20 +78,6 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
     if (!slugTouched && getCachedSettings().cadastro.slugMode === "auto") setSlug(slugify(v));
   }
 
-
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (f.size > 8 * 1024 * 1024) {
-      toast.error("Imagem muito grande (máx 8MB)");
-      return;
-    }
-    try {
-      setFoto(await compressImage(f, 480, 0.82));
-    } catch {
-      toast.error("Falha ao processar imagem");
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -124,7 +107,6 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
       whatsapp: encodePhone(whats),
       telefone_fixo:
         encodeTelefone({ kind: telKind, phone: telFixo, ramal }) || null,
-      foto_url: foto || null,
       nome_cartao: nomeCartao.trim() || null,
     };
     const { error } = editing
@@ -157,26 +139,6 @@ export function CollaboratorModal({ open, onOpenChange, collaborator, onSaved }:
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[color:var(--border-strong)] bg-[color:var(--surface-hover)]">
-              {foto ? (
-                <img src={foto} alt="Preview" className="size-full object-cover" />
-              ) : (
-                <Upload className="size-6 text-[color:var(--text-muted)]" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <Label className="mb-1 block">Foto</Label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFile}
-                className="block w-full text-sm text-[color:var(--text-muted)] file:mr-3 file:rounded-md file:border-0 file:bg-[color:var(--surface-hover)] file:px-3 file:py-2 file:text-sm file:text-[color:var(--text-main)] file:cursor-pointer"
-              />
-              <p className="mt-1 text-xs text-[color:var(--text-muted)]">JPG/PNG até 8MB</p>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Nome completo">
               <Input value={nome} onChange={(e) => handleNome(e.target.value)} required />
