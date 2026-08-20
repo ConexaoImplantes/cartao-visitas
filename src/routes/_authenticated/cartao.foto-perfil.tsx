@@ -25,6 +25,8 @@ import { normalizeTheme, type Collaborator } from "@/lib/types";
 import { ProfilePhotoPreview } from "@/components/profile-photo-preview";
 import { ArtViewerDialog, EMPTY_ART_VIEWER, type ArtViewerState } from "@/components/art-viewer-dialog";
 import { ShareDialog } from "@/components/share-dialog";
+import { useServerFn } from "@tanstack/react-start";
+import { removeBgRemote } from "@/lib/remove-bg.functions";
 import { removeBackground, blobToDataUrl, trimAndResizePng } from "@/lib/background-removal";
 import {
   DEFAULT_FRAME,
@@ -76,7 +78,10 @@ function FotoPerfilPage() {
   const [usingLinktree, setUsingLinktree] = useState(false);
   const [frame, setFrame] = useState<ProfileFrame>({ ...DEFAULT_FRAME });
   const [saving, setSaving] = useState(false);
-  const [busy, setBusy] = useState<"cut" | "one" | "batch" | "avatar" | "view" | null>(null);
+  const [busy, setBusy] = useState<
+    "cut" | "cut-remote" | "one" | "batch" | "avatar" | "view" | null
+  >(null);
+  const callRemoveBgRemote = useServerFn(removeBgRemote);
   const [progress, setProgress] = useState("");
   const [sharing, setSharing] = useState<Collaborator | null>(null);
   const [viewer, setViewer] = useState<ArtViewerState>(EMPTY_ART_VIEWER);
@@ -156,6 +161,31 @@ function FotoPerfilPage() {
       toast.success("Fundo removido. Ajuste o enquadramento e salve.");
     } catch (e: any) {
       toast.error("Falha ao remover o fundo", { description: e?.message });
+    } finally {
+      setBusy(null);
+      setProgress("");
+    }
+  }
+
+  /** Fallback: recorte pelo serviço remove.bg (50 imagens grátis/mês, saída em prévia). */
+  async function handleRemoveBgRemote() {
+    if (!person) return;
+    setBusy("cut-remote");
+    setProgress("Enviando para o recorte alternativo...");
+    try {
+      const res = await callRemoveBgRemote({ data: { dataUrl: person } });
+      if (!res.ok) {
+        toast.error("Recorte alternativo indisponível", { description: res.error });
+        return;
+      }
+      setPerson(await trimAndResizePng(res.dataUrl));
+      setUsingLinktree(false);
+      setFrame({ ...DEFAULT_FRAME });
+      toast.success("Fundo removido pela remove.bg", {
+        description: "Resolução de prévia (plano gratuito). Ajuste o enquadramento e salve.",
+      });
+    } catch (e: any) {
+      toast.error("Falha no recorte alternativo", { description: e?.message });
     } finally {
       setBusy(null);
       setProgress("");
@@ -504,6 +534,21 @@ function FotoPerfilPage() {
                             <Sparkles className="size-4" />
                           )}
                           Remover fundo desta foto
+                        </Button>
+                      )}
+                      {!!person && (
+                        <Button
+                          variant="ghost"
+                          disabled={!canEdit || busy !== null}
+                          onClick={handleRemoveBgRemote}
+                          title="Usa o serviço remove.bg (50 imagens grátis por mês, resolução de prévia)"
+                        >
+                          {busy === "cut-remote" ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <Sparkles className="size-4" />
+                          )}
+                          Recorte alternativo
                         </Button>
                       )}
                     </div>
