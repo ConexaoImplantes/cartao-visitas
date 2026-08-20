@@ -70,6 +70,7 @@ function AuthLayout() {
         ]
       : []),
     ...(can("tema.view") ? [{ to: "/cartao/tema", label: "Tema", icon: Palette }] : []),
+    ...(can("tutoriais.view") ? [{ to: "/cartao/tutoriais", label: "Tutoriais", icon: BookOpen }] : []),
   ];
 
   function NavLink({ n, showLabel }: { n: NavItem; showLabel?: boolean }) {
