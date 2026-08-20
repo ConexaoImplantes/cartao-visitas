@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
 import { Route as SlugKitRouteImport } from './routes/$slug.kit'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
+import { Route as AuthenticatedCartaoTutoriaisRouteImport } from './routes/_authenticated/cartao.tutoriais'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
 import { Route as AuthenticatedCartaoFotoPerfilRouteImport } from './routes/_authenticated/cartao.foto-perfil'
@@ -23,6 +24,8 @@ import { Route as AuthenticatedCartaoDashboardRouteImport } from './routes/_auth
 import { Route as AuthenticatedCartaoConfiguracoesRouteImport } from './routes/_authenticated/cartao.configuracoes'
 import { Route as AuthenticatedCartaoCartaoFisicoRouteImport } from './routes/_authenticated/cartao.cartao-fisico'
 import { Route as AuthenticatedCartaoAssinaturaRouteImport } from './routes/_authenticated/cartao.assinatura'
+import { Route as AuthenticatedCartaoTutoriaisIndexRouteImport } from './routes/_authenticated/cartao.tutoriais.index'
+import { Route as AuthenticatedCartaoTutoriaisIdRouteImport } from './routes/_authenticated/cartao.tutoriais.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -52,6 +55,12 @@ const AuthenticatedCartaoUsuariosRoute =
   AuthenticatedCartaoUsuariosRouteImport.update({
     id: '/cartao/usuarios',
     path: '/cartao/usuarios',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCartaoTutoriaisRoute =
+  AuthenticatedCartaoTutoriaisRouteImport.update({
+    id: '/cartao/tutoriais',
+    path: '/cartao/tutoriais',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
@@ -101,6 +110,18 @@ const AuthenticatedCartaoAssinaturaRoute =
     path: '/cartao/assinatura',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCartaoTutoriaisIndexRoute =
+  AuthenticatedCartaoTutoriaisIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCartaoTutoriaisRoute,
+  } as any)
+const AuthenticatedCartaoTutoriaisIdRoute =
+  AuthenticatedCartaoTutoriaisIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedCartaoTutoriaisRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,7 +136,10 @@ export interface FileRoutesByFullPath {
   '/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRouteWithChildren
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
+  '/cartao/tutoriais/': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,6 +155,8 @@ export interface FileRoutesByTo {
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
+  '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,7 +173,10 @@ export interface FileRoutesById {
   '/_authenticated/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/_authenticated/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRouteWithChildren
   '/_authenticated/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
+  '/_authenticated/cartao/tutoriais/$id': typeof AuthenticatedCartaoTutoriaisIdRoute
+  '/_authenticated/cartao/tutoriais/': typeof AuthenticatedCartaoTutoriaisIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -164,7 +193,10 @@ export interface FileRouteTypes {
     | '/cartao/foto-perfil'
     | '/cartao/importar'
     | '/cartao/tema'
+    | '/cartao/tutoriais'
     | '/cartao/usuarios'
+    | '/cartao/tutoriais/$id'
+    | '/cartao/tutoriais/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,6 +212,8 @@ export interface FileRouteTypes {
     | '/cartao/importar'
     | '/cartao/tema'
     | '/cartao/usuarios'
+    | '/cartao/tutoriais/$id'
+    | '/cartao/tutoriais'
   id:
     | '__root__'
     | '/'
@@ -195,7 +229,10 @@ export interface FileRouteTypes {
     | '/_authenticated/cartao/foto-perfil'
     | '/_authenticated/cartao/importar'
     | '/_authenticated/cartao/tema'
+    | '/_authenticated/cartao/tutoriais'
     | '/_authenticated/cartao/usuarios'
+    | '/_authenticated/cartao/tutoriais/$id'
+    | '/_authenticated/cartao/tutoriais/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -248,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/cartao/usuarios'
       fullPath: '/cartao/usuarios'
       preLoaderRoute: typeof AuthenticatedCartaoUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cartao/tutoriais': {
+      id: '/_authenticated/cartao/tutoriais'
+      path: '/cartao/tutoriais'
+      fullPath: '/cartao/tutoriais'
+      preLoaderRoute: typeof AuthenticatedCartaoTutoriaisRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cartao/tema': {
@@ -306,8 +350,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCartaoAssinaturaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/cartao/tutoriais/': {
+      id: '/_authenticated/cartao/tutoriais/'
+      path: '/'
+      fullPath: '/cartao/tutoriais/'
+      preLoaderRoute: typeof AuthenticatedCartaoTutoriaisIndexRouteImport
+      parentRoute: typeof AuthenticatedCartaoTutoriaisRoute
+    }
+    '/_authenticated/cartao/tutoriais/$id': {
+      id: '/_authenticated/cartao/tutoriais/$id'
+      path: '/$id'
+      fullPath: '/cartao/tutoriais/$id'
+      preLoaderRoute: typeof AuthenticatedCartaoTutoriaisIdRouteImport
+      parentRoute: typeof AuthenticatedCartaoTutoriaisRoute
+    }
   }
 }
+
+interface AuthenticatedCartaoTutoriaisRouteChildren {
+  AuthenticatedCartaoTutoriaisIdRoute: typeof AuthenticatedCartaoTutoriaisIdRoute
+  AuthenticatedCartaoTutoriaisIndexRoute: typeof AuthenticatedCartaoTutoriaisIndexRoute
+}
+
+const AuthenticatedCartaoTutoriaisRouteChildren: AuthenticatedCartaoTutoriaisRouteChildren =
+  {
+    AuthenticatedCartaoTutoriaisIdRoute: AuthenticatedCartaoTutoriaisIdRoute,
+    AuthenticatedCartaoTutoriaisIndexRoute:
+      AuthenticatedCartaoTutoriaisIndexRoute,
+  }
+
+const AuthenticatedCartaoTutoriaisRouteWithChildren =
+  AuthenticatedCartaoTutoriaisRoute._addFileChildren(
+    AuthenticatedCartaoTutoriaisRouteChildren,
+  )
 
 interface AuthenticatedRouteChildren {
   AuthenticatedCartaoAssinaturaRoute: typeof AuthenticatedCartaoAssinaturaRoute
@@ -318,6 +393,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCartaoFotoPerfilRoute: typeof AuthenticatedCartaoFotoPerfilRoute
   AuthenticatedCartaoImportarRoute: typeof AuthenticatedCartaoImportarRoute
   AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
+  AuthenticatedCartaoTutoriaisRoute: typeof AuthenticatedCartaoTutoriaisRouteWithChildren
   AuthenticatedCartaoUsuariosRoute: typeof AuthenticatedCartaoUsuariosRoute
 }
 
@@ -330,6 +406,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCartaoFotoPerfilRoute: AuthenticatedCartaoFotoPerfilRoute,
   AuthenticatedCartaoImportarRoute: AuthenticatedCartaoImportarRoute,
   AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
+  AuthenticatedCartaoTutoriaisRoute:
+    AuthenticatedCartaoTutoriaisRouteWithChildren,
   AuthenticatedCartaoUsuariosRoute: AuthenticatedCartaoUsuariosRoute,
 }
 

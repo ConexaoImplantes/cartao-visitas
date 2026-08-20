@@ -21,7 +21,9 @@ export type PermissionKey =
   | "fluxo.marcar_etapas"
   | "importar.view"
   | "tema.view"
-  | "tema.edit";
+  | "tema.edit"
+  | "tutoriais.view"
+  | "tutoriais.manage";
 
 export interface PermissionDef {
   key: PermissionKey;
@@ -104,6 +106,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: [
       { key: "tema.view", label: "Visualizar tema" },
       { key: "tema.edit", label: "Editar e salvar tema" },
+    ],
+  },
+  {
+    route: "tutoriais",
+    label: "Tutoriais de uso",
+    description: "Biblioteca de tutoriais passo a passo da plataforma.",
+    permissions: [
+      { key: "tutoriais.view", label: "Acessar a biblioteca" },
+      { key: "tutoriais.manage", label: "Gerenciar tutoriais (curadoria)" },
     ],
   },
 ];
