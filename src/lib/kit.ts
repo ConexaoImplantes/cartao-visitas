@@ -49,22 +49,49 @@ export const KIT_STEPS: KitStepDef[] = [
   },
 ];
 
+export interface KitStepState {
+  /** Etapa cumprida (automática ou marcada pelo admin). */
+  done: boolean;
+  /** O arquivo realmente pode ser gerado a partir dos dados existentes. */
+  deliverable: boolean;
+  /** Etapa dispensada para este colaborador: não entra no kit nem no total. */
+  skipped: boolean;
+  reason?: string;
+  manual?: boolean;
+}
+
 export interface KitStatus {
-  steps: Record<KitStepKey, { done: boolean; reason?: string; manual?: boolean }>;
+  steps: Record<KitStepKey, KitStepState>;
   completed: number;
+  /** Total de etapas exigidas (desconta as dispensadas). */
+  total: number;
   ready: boolean;
 }
 
 /** Etapas marcadas manualmente como concluídas pelo admin. */
 export function manualSteps(c: Collaborator): Record<KitStepKey, boolean> {
   const raw = (c.kit_manual ?? {}) as Record<string, unknown>;
+  const on = (v: unknown) => v === true;
   return {
-    foto: raw.foto === true,
-    linktree: raw.linktree === true,
-    assinatura: raw.assinatura === true,
-    cartao: raw.cartao === true,
+    foto: on(raw.foto),
+    linktree: on(raw.linktree),
+    assinatura: on(raw.assinatura),
+    cartao: on(raw.cartao),
   };
 }
+
+/** Etapas explicitamente dispensadas (hoje só a foto de perfil). */
+export function skippedSteps(c: Collaborator): Record<KitStepKey, boolean> {
+  const raw = (c.kit_manual ?? {}) as Record<string, unknown>;
+  const off = (v: unknown) => v === "dispensada";
+  return {
+    foto: off(raw.foto),
+    linktree: off(raw.linktree),
+    assinatura: off(raw.assinatura),
+    cartao: off(raw.cartao),
+  };
+}
+
 
 export interface KitOptions {
   print: PrintBackgrounds;
