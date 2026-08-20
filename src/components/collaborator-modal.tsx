@@ -3,11 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { compressImage } from "@/lib/image-utils";
 import type { Collaborator } from "@/lib/types";
 import { slugify, validateSlug } from "@/lib/slug";
 import { getCachedSettings } from "@/lib/settings";
