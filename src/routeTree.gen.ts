@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SlugIndexRouteImport } from './routes/$slug.index'
 import { Route as SlugKitRouteImport } from './routes/$slug.kit'
 import { Route as AuthenticatedCartaoUsuariosRouteImport } from './routes/_authenticated/cartao.usuarios'
+import { Route as AuthenticatedCartaoTutoriaisRouteImport } from './routes/_authenticated/cartao.tutoriais'
 import { Route as AuthenticatedCartaoTemaRouteImport } from './routes/_authenticated/cartao.tema'
 import { Route as AuthenticatedCartaoImportarRouteImport } from './routes/_authenticated/cartao.importar'
 import { Route as AuthenticatedCartaoFotoPerfilRouteImport } from './routes/_authenticated/cartao.foto-perfil'
@@ -52,6 +53,12 @@ const AuthenticatedCartaoUsuariosRoute =
   AuthenticatedCartaoUsuariosRouteImport.update({
     id: '/cartao/usuarios',
     path: '/cartao/usuarios',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCartaoTutoriaisRoute =
+  AuthenticatedCartaoTutoriaisRouteImport.update({
+    id: '/cartao/tutoriais',
+    path: '/cartao/tutoriais',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedCartaoTemaRoute = AuthenticatedCartaoTemaRouteImport.update({
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRoutesByTo {
@@ -130,6 +138,7 @@ export interface FileRoutesByTo {
   '/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRoute
   '/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRoutesById {
@@ -147,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated/cartao/foto-perfil': typeof AuthenticatedCartaoFotoPerfilRoute
   '/_authenticated/cartao/importar': typeof AuthenticatedCartaoImportarRoute
   '/_authenticated/cartao/tema': typeof AuthenticatedCartaoTemaRoute
+  '/_authenticated/cartao/tutoriais': typeof AuthenticatedCartaoTutoriaisRoute
   '/_authenticated/cartao/usuarios': typeof AuthenticatedCartaoUsuariosRoute
 }
 export interface FileRouteTypes {
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/cartao/foto-perfil'
     | '/cartao/importar'
     | '/cartao/tema'
+    | '/cartao/tutoriais'
     | '/cartao/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/cartao/foto-perfil'
     | '/cartao/importar'
     | '/cartao/tema'
+    | '/cartao/tutoriais'
     | '/cartao/usuarios'
   id:
     | '__root__'
@@ -195,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cartao/foto-perfil'
     | '/_authenticated/cartao/importar'
     | '/_authenticated/cartao/tema'
+    | '/_authenticated/cartao/tutoriais'
     | '/_authenticated/cartao/usuarios'
   fileRoutesById: FileRoutesById
 }
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/cartao/usuarios'
       fullPath: '/cartao/usuarios'
       preLoaderRoute: typeof AuthenticatedCartaoUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cartao/tutoriais': {
+      id: '/_authenticated/cartao/tutoriais'
+      path: '/cartao/tutoriais'
+      fullPath: '/cartao/tutoriais'
+      preLoaderRoute: typeof AuthenticatedCartaoTutoriaisRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cartao/tema': {
@@ -318,6 +338,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCartaoFotoPerfilRoute: typeof AuthenticatedCartaoFotoPerfilRoute
   AuthenticatedCartaoImportarRoute: typeof AuthenticatedCartaoImportarRoute
   AuthenticatedCartaoTemaRoute: typeof AuthenticatedCartaoTemaRoute
+  AuthenticatedCartaoTutoriaisRoute: typeof AuthenticatedCartaoTutoriaisRoute
   AuthenticatedCartaoUsuariosRoute: typeof AuthenticatedCartaoUsuariosRoute
 }
 
@@ -330,6 +351,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCartaoFotoPerfilRoute: AuthenticatedCartaoFotoPerfilRoute,
   AuthenticatedCartaoImportarRoute: AuthenticatedCartaoImportarRoute,
   AuthenticatedCartaoTemaRoute: AuthenticatedCartaoTemaRoute,
+  AuthenticatedCartaoTutoriaisRoute: AuthenticatedCartaoTutoriaisRoute,
   AuthenticatedCartaoUsuariosRoute: AuthenticatedCartaoUsuariosRoute,
 }
 
