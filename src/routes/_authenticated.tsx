@@ -79,7 +79,7 @@ function AuthLayout() {
         key={n.to}
         to={n.to}
         title={n.label}
-        className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-colors md:gap-2 md:px-3 ${
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors md:gap-2 md:px-4 ${
           active
             ? "bg-[color:var(--surface-hover)] text-[color:var(--text-main)]"
             : "text-[color:var(--text-muted)] hover:bg-[color:var(--surface-hover)] hover:text-[color:var(--text-main)]"
