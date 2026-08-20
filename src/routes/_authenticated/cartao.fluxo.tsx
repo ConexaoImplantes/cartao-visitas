@@ -123,9 +123,19 @@ function FluxoPage() {
     }
   }
 
-  /** Marca/desmarca manualmente uma etapa de um colaborador. */
-  async function toggleManual(c: Collaborator, key: KitStepKey, value: boolean) {
-    const next = { ...manualSteps(c), [key]: value };
+  /** Marcações atuais (concluído manual ou dispensada) de um colaborador. */
+  function currentMarks(c: Collaborator): Record<KitStepKey, boolean | "dispensada"> {
+    const manual = manualSteps(c);
+    const skipped = skippedSteps(c);
+    return Object.fromEntries(
+      (Object.keys(manual) as KitStepKey[]).map((k) => [k, skipped[k] ? "dispensada" : manual[k]]),
+    ) as Record<KitStepKey, boolean | "dispensada">;
+  }
+
+  /** Marca/desmarca manualmente uma etapa ou dispensa-a para o colaborador. */
+  async function toggleManual(c: Collaborator, key: KitStepKey, value: boolean | "dispensada") {
+    const prevMarks = currentMarks(c);
+    const next = { ...prevMarks, [key]: value };
     setRows((prev) =>
       (prev ?? []).map((r) => (r.id === c.id ? ({ ...r, kit_manual: next } as Collaborator) : r)),
     );
@@ -137,11 +147,12 @@ function FluxoPage() {
       toast.error("Não foi possível salvar a marcação", { description: error.message });
       setRows((prev) =>
         (prev ?? []).map((r) =>
-          r.id === c.id ? ({ ...r, kit_manual: manualSteps(c) } as Collaborator) : r,
+          r.id === c.id ? ({ ...r, kit_manual: prevMarks } as Collaborator) : r,
         ),
       );
     }
   }
+
 
   /** Aplica a marcação manual em lote para todos os colaboradores. */
   async function applyBatchManual(value: boolean) {
