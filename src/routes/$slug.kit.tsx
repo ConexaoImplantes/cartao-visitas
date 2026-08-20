@@ -282,10 +282,10 @@ function KitPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-5 sm:px-6">
-          <img src={logoUrl} alt="Conexão Implantes" className="h-8 w-auto" />
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-4 sm:px-6">
+          <img src={logoUrl} alt="Conexão Implantes" className="h-6 w-auto" />
           <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-2xl font-bold text-[color:var(--text-main)]">
+            <h1 className="truncate font-display text-xl font-bold text-[color:var(--text-main)]">
               {c.nome}
             </h1>
             <p className="truncate text-sm text-[color:var(--text-muted)]">{c.cargo}</p>
