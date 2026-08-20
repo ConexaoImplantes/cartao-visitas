@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, type ComponentType } from "react";
-import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail, UserRound, ListChecks, MoreHorizontal } from "lucide-react";
+import { LogOut, LayoutDashboard, Palette, Users, UploadCloud, Settings, Printer, Mail, UserRound, ListChecks, MoreHorizontal, BookOpen } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { supabase } from "@/integrations/supabase/client";
