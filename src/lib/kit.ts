@@ -165,19 +165,55 @@ export function kitStatus(c: Collaborator, opts?: Partial<KitOptions>): KitStatu
             : "Escolha o modelo do cartão na rota Cartão.",
         };
 
-  const auto = { foto, linktree, assinatura, cartao } as KitStatus["steps"];
+  const auto: Record<KitStepKey, { done: boolean; reason?: string }> = {
+    foto,
+    linktree,
+    assinatura,
+    cartao,
+  };
   const manual = manualSteps(c);
+  const skipped = skippedSteps(c);
+  /** Materiais que dependem de arquivo binário não podem ser "marcados" como prontos. */
+  const hasPhotoAsset = has(c.foto_recortada_url) || has(c.foto_url);
+
   const steps = Object.fromEntries(
-    (Object.keys(auto) as KitStepKey[]).map((k) => [
-      k,
-      manual[k] && !auto[k].done
-        ? { done: true, manual: true, reason: "Marcado como concluído pelo administrador." }
-        : { ...auto[k], manual: manual[k] },
-    ]),
-  ) as KitStatus["steps"];
-  const completed = Object.values(steps).filter((s) => s.done).length;
-  return { steps, completed, ready: completed === KIT_STEPS.length };
+    (Object.keys(auto) as KitStepKey[]).map((k): [KitStepKey, KitStepState] => {
+      if (skipped[k]) {
+        return [
+          k,
+          {
+            done: true,
+            deliverable: false,
+            skipped: true,
+            reason: "Dispensada para este colaborador.",
+          },
+        ];
+      }
+      // A foto nunca fica pronta por marcação manual: depende do arquivo recortado.
+      const canMarkManually = k !== "foto";
+      const base =
+        canMarkManually && manual[k] && !auto[k].done
+          ? { done: true, reason: "Marcado como concluído pelo administrador." }
+          : auto[k];
+      const deliverable = k === "foto" ? hasPhotoAsset : base.done;
+      return [
+        k,
+        {
+          done: base.done,
+          deliverable,
+          skipped: false,
+          reason: base.reason,
+          manual: canMarkManually ? manual[k] : false,
+        },
+      ];
+    }),
+  ) as Record<KitStepKey, KitStepState>;
+
+  const required = (Object.keys(steps) as KitStepKey[]).filter((k) => !steps[k].skipped);
+  const completed = required.filter((k) => steps[k].done).length;
+  return { steps, completed, total: required.length, ready: completed === required.length };
 }
+
 
 export function kitBaseName(c: Collaborator) {
   return (
