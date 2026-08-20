@@ -108,6 +108,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "tema.edit", label: "Editar e salvar tema" },
     ],
   },
+  {
+    route: "tutoriais",
+    label: "Tutoriais de uso",
+    description: "Biblioteca de tutoriais passo a passo da plataforma.",
+    permissions: [
+      { key: "tutoriais.view", label: "Acessar a biblioteca" },
+      { key: "tutoriais.manage", label: "Gerenciar tutoriais (curadoria)" },
+    ],
+  },
 ];
 
 export const ALL_PERMISSIONS: PermissionKey[] = PERMISSION_GROUPS.flatMap((g) =>
