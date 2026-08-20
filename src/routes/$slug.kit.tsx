@@ -282,26 +282,30 @@ function KitPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-[color:var(--border-strong)] bg-[color:var(--surface)]">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-4 sm:px-6">
-          <img src={logoUrl} alt="Conexão Implantes" className="h-6 w-auto" />
-          <div className="min-w-0 flex-1">
+        <div className="mx-auto grid max-w-5xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-4 sm:px-6">
+          <div className="flex items-center justify-start">
+            <img src={logoUrl} alt="Conexão Implantes" className="h-6 w-auto" />
+          </div>
+          <div className="min-w-0 max-w-full text-center">
             <h1 className="truncate font-display text-xl font-bold text-[color:var(--text-main)]">
               {c.nome}
             </h1>
             <p className="truncate text-sm text-[color:var(--text-muted)]">{c.cargo}</p>
           </div>
-          <Button
-            onClick={handleZip}
-            disabled={busy === "zip" || !status.ready}
-            className="gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
-          >
-            {busy === "zip" ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Package className="size-4" />
-            )}
-            Baixar kit completo (ZIP)
-          </Button>
+          <div className="flex items-center justify-end">
+            <Button
+              onClick={handleZip}
+              disabled={busy === "zip" || !status.ready}
+              className="gradient-accent text-[color:var(--text-inverted)] hover:opacity-90"
+            >
+              {busy === "zip" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Package className="size-4" />
+              )}
+              Baixar kit completo (ZIP)
+            </Button>
+          </div>
         </div>
       </header>
 
