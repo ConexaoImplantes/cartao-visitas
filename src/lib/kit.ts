@@ -253,9 +253,10 @@ export async function buildKitFiles(
 ): Promise<KitFile[]> {
   const base = kitBaseName(c);
   const files: KitFile[] = [];
+  const semFoto = skippedSteps(c).foto;
 
-  onProgress?.("Gerando foto de perfil...");
-  if (c.foto_recortada_url || c.foto_url) {
+  if (!semFoto && (c.foto_recortada_url || c.foto_url)) {
+    onProgress?.("Gerando foto de perfil...");
     const linktreeOnly = !c.foto_recortada_url && !!c.foto_url;
     const saved = normalizeFrame(c.foto_perfil_ajuste);
     const photo = await profilePhotoBlob({
@@ -265,6 +266,7 @@ export async function buildKitFiles(
     });
     files.push({ name: `foto-perfil-${base}.png`, blob: photo });
   }
+
 
 
   onProgress?.("Gerando assinatura de e-mail...");
