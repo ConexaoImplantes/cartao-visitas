@@ -313,6 +313,8 @@ export async function buildKitFiles(
     slug: c.slug,
     modelo: opts.print.modelo,
     kitUrl: buildKitUrl(c.slug),
+    semFoto,
+
   });
   files.push({
     name: `COMO-USAR-${base}.pdf`,
