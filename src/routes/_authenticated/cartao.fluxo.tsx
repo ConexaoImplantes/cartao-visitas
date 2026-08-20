@@ -12,6 +12,7 @@ import {
   KIT_STEPS,
   kitStatus,
   manualSteps,
+  skippedSteps,
   loadKitOptions,
   downloadKitZip,
   downloadKitZipBatch,
