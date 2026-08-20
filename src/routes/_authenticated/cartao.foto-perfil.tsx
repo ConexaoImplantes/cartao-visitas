@@ -25,6 +25,8 @@ import { normalizeTheme, type Collaborator } from "@/lib/types";
 import { ProfilePhotoPreview } from "@/components/profile-photo-preview";
 import { ArtViewerDialog, EMPTY_ART_VIEWER, type ArtViewerState } from "@/components/art-viewer-dialog";
 import { ShareDialog } from "@/components/share-dialog";
+import { useServerFn } from "@tanstack/react-start";
+import { removeBgRemote } from "@/lib/remove-bg.functions";
 import { removeBackground, blobToDataUrl, trimAndResizePng } from "@/lib/background-removal";
 import {
   DEFAULT_FRAME,
