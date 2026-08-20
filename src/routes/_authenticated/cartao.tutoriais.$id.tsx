@@ -106,11 +106,11 @@ function TutorialDetalhe() {
                 onClick={() => setStep(i)}
                 className={`flex w-full items-start gap-3 rounded-md border p-3 text-left text-sm transition-colors ${
                   i === step
-                    ? "border-[color:var(--gold)] bg-[color:var(--surface-hover)]"
+                    ? "border-[color:var(--accent)] bg-[color:var(--surface-hover)]"
                     : "border-[color:var(--border-strong)] hover:bg-[color:var(--surface-hover)]"
                 }`}
               >
-                <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--gold)] text-xs font-semibold text-[color:var(--navy)]">
+                <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent)] text-xs font-semibold text-[color:var(--text-inverted)]">
                   {i + 1}
                 </span>
                 <span className="text-[color:var(--text-main)]">{p.titulo}</span>

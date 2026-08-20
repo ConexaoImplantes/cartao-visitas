@@ -72,7 +72,7 @@ function TutoriaisIndex() {
     <div className="space-y-6">
       <header className="space-y-2">
         <h1 className="flex items-center gap-2 text-2xl font-semibold text-[color:var(--text-main)]">
-          <BookOpen className="size-6 text-[color:var(--gold)]" />
+          <BookOpen className="size-6 text-[color:var(--accent)]" />
           Tutoriais de uso
         </h1>
         <p className="text-sm text-[color:var(--text-muted)]">
@@ -156,7 +156,7 @@ function TutorialCard({ tutorial, done }: { tutorial: Tutorial; done: boolean })
     <Link
       to="/cartao/tutoriais/$id"
       params={{ id: tutorial.id }}
-      className="group flex flex-col overflow-hidden rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition-colors hover:border-[color:var(--gold)]"
+      className="group flex flex-col overflow-hidden rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition-colors hover:border-[color:var(--accent)]"
     >
       <div className="relative aspect-video w-full overflow-hidden bg-[color:var(--surface-hover)]">
         {tutorial.capa ? (
@@ -172,7 +172,7 @@ function TutorialCard({ tutorial, done }: { tutorial: Tutorial; done: boolean })
           </div>
         )}
         {done && (
-          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-[color:var(--surface)]/90 px-2 py-1 text-xs font-medium text-[color:var(--gold)]">
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-[color:var(--surface)]/90 px-2 py-1 text-xs font-medium text-[color:var(--accent)]">
             <CheckCircle2 className="size-3.5" />
             Concluído
           </span>
