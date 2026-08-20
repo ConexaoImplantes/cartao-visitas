@@ -166,8 +166,9 @@ function FluxoPage() {
     try {
       let ok = 0;
       for (const c of rows) {
-        const next = { ...manualSteps(c) };
-        keys.forEach((k) => (next[k] = value));
+        const next = { ...currentMarks(c) };
+        // A foto nunca é "concluída" à mão: marcar em lote significa dispensá-la.
+        keys.forEach((k) => (next[k] = value ? (k === "foto" ? "dispensada" : true) : false));
         const { error } = await supabase
           .from("collaborators")
           .update({ kit_manual: next })
@@ -180,13 +181,14 @@ function FluxoPage() {
       setRows((prev) => (prev ? [...prev] : prev));
       toast.success(
         value
-          ? `${ok} colaboradores com etapas marcadas como concluídas`
+          ? `${ok} colaboradores atualizados`
           : `Marcações removidas de ${ok} colaboradores`,
       );
     } finally {
       setMarkBusy(false);
     }
   }
+
 
   return (
     <div className="space-y-6">
