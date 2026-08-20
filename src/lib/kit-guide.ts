@@ -56,9 +56,9 @@ interface Section {
 
 function sections(c: GuideInput, url: string): Section[] {
   const modelo = c.modelo === "antigo" ? "Antigo" : "Novo";
-  return [
+  const all: (Section | null)[] = [
     {
-      title: "1. Link Tree corporativo",
+      title: "Link Tree corporativo",
       intro: `Seu endereço exclusivo: ${url}`,
       steps: [
         "Use o link na bio do Instagram, do LinkedIn e do Facebook.",
@@ -67,18 +67,20 @@ function sections(c: GuideInput, url: string): Section[] {
         "Todos os contatos (WhatsApp, telefone, e-mail e redes) ficam atualizados automaticamente: nunca é preciso trocar o link.",
       ],
     },
+    c.semFoto
+      ? null
+      : {
+          title: "Foto de perfil (arquivo PNG 1080x1080)",
+          intro: "Arte institucional padronizada para os seus perfis profissionais.",
+          steps: [
+            "WhatsApp Business: Configurações > Perfil da empresa > toque na foto > Galeria > selecione a arte e mantenha o enquadramento sem cortes.",
+            "LinkedIn: clique na sua foto > Alterar foto > enviar o PNG > ajuste o zoom para 100% e salve.",
+            "Microsoft Teams / Google Workspace: perfil > alterar imagem > enviar o mesmo arquivo.",
+            "Não aplique filtros, molduras ou recortes adicionais: a arte já segue o padrão da marca.",
+          ],
+        },
     {
-      title: "2. Foto de perfil (arquivo PNG 1080x1080)",
-      intro: "Arte institucional padronizada para os seus perfis profissionais.",
-      steps: [
-        "WhatsApp Business: Configurações > Perfil da empresa > toque na foto > Galeria > selecione a arte e mantenha o enquadramento sem cortes.",
-        "LinkedIn: clique na sua foto > Alterar foto > enviar o PNG > ajuste o zoom para 100% e salve.",
-        "Microsoft Teams / Google Workspace: perfil > alterar imagem > enviar o mesmo arquivo.",
-        "Não aplique filtros, molduras ou recortes adicionais: a arte já segue o padrão da marca.",
-      ],
-    },
-    {
-      title: "3. Assinatura de e-mail (PNG 1772x591 px — 150x50 mm a 300 dpi)",
+      title: "Assinatura de e-mail (PNG 1772x591 px — 150x50 mm a 300 dpi)",
       intro: "Imagem única com nome, cargo, contatos e QR Code do seu Link Tree.",
       steps: [
         "Gmail: Configurações > Ver todas as configurações > Geral > Assinatura > Criar > ícone de imagem > Fazer upload do PNG.",
@@ -89,7 +91,7 @@ function sections(c: GuideInput, url: string): Section[] {
       ],
     },
     {
-      title: `4. Cartão de visitas impresso (modelo ${modelo})`,
+      title: `Cartão de visitas impresso (modelo ${modelo})`,
       intro: "PDF pronto para gráfica, com sangria e marcas de corte.",
       steps: [
         "Formato final 90x48 mm, com 3 mm de sangria em cada lado e marcas de corte nas quatro extremidades.",
@@ -100,7 +102,7 @@ function sections(c: GuideInput, url: string): Section[] {
       ],
     },
     {
-      title: "5. Regras e bom uso dos materiais",
+      title: "Regras e bom uso dos materiais",
       intro: "As artes são material oficial da marca Conexão Implantes.",
       steps: [
         "Use sempre a arte oficial, exatamente como recebida: sem filtros, molduras, sombras, recortes ou alteração de cores.",
@@ -113,7 +115,12 @@ function sections(c: GuideInput, url: string): Section[] {
       ],
     },
   ];
+
+  return all
+    .filter((s): s is Section => s !== null)
+    .map((s, i) => ({ ...s, title: `${i + 1}. ${s.title}` }));
 }
+
 
 /** Gera o PDF explicativo personalizado do colaborador. */
 export async function buildGuidePdf(c: GuideInput): Promise<Uint8Array> {
