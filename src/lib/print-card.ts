@@ -250,7 +250,8 @@ export async function buildPrintCardsPdf(
   const fontBold = await pdf.embedFont(bold, { subset: true });
   const fontItalic = await pdf.embedFont(italic, { subset: true });
   const fontRegular = await pdf.embedFont(regular, { subset: true });
-  const fontFrutiger = await pdf.embedFont(frutiger, { subset: true });
+  // CFF (OTF) subsetting crashes fontkit in the browser — embed the full font.
+  const fontFrutiger = await pdf.embedFont(frutiger, { subset: false });
 
 
   const embedImage = async (b: Uint8Array) =>
