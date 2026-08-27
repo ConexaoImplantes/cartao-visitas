@@ -233,7 +233,7 @@ export async function buildPrintCardsPdf(
     fetchBytes(fontBoldAsset.url),
     fetchBytes(fontItalicAsset.url),
     fetchBytes(fontRegularAsset.url),
-    fetchBytes(fontFrutigerAsset.url),
+    isAntigo ? fetchBytes(fontFrutigerAsset.url) : Promise.resolve(null),
     fetchBytes(
       isAntigo
         ? backgrounds.antigoFrenteUrl || bgAntigoFrontAsset.url
@@ -250,7 +250,11 @@ export async function buildPrintCardsPdf(
   const fontBold = await pdf.embedFont(bold, { subset: true });
   const fontItalic = await pdf.embedFont(italic, { subset: true });
   const fontRegular = await pdf.embedFont(regular, { subset: true });
-  const fontFrutiger = await pdf.embedFont(frutiger, { subset: true });
+  // CFF (OTF) subsetting crashes fontkit in the browser — embed the full font,
+  // and only when the "antigo" model actually needs it.
+  const fontFrutiger = frutiger
+    ? await pdf.embedFont(frutiger, { subset: false })
+    : fontRegular;
 
 
   const embedImage = async (b: Uint8Array) =>
