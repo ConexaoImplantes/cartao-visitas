@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Package, ArrowRight, CircleDashed, Link2 } from "lucide-react";
+import { Check, Loader2, Package, ArrowRight, CircleDashed, Link2, MinusCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -263,7 +263,7 @@ function FluxoPage() {
                           {c.cargo}
                         </div>
                       </div>
-                      <ProgressDots completed={s.completed} />
+                      <ProgressDots completed={s.completed} total={s.total} />
                     </button>
                   </li>
                 );
@@ -288,13 +288,13 @@ function FluxoPage() {
                     <p className="text-sm text-[color:var(--text-muted)]">{selected.cargo}</p>
                   </div>
                   <span className="rounded-full bg-[color:var(--surface-hover)] px-3 py-1 text-xs font-medium text-[color:var(--text-muted)]">
-                    {status.completed} de {KIT_STEPS.length} etapas concluídas
+                    {status.completed} de {status.total} etapas concluídas
                   </span>
                 </div>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-[color:var(--surface-hover)]">
                   <div
                     className="h-full rounded-full bg-[color:var(--accent)] transition-all"
-                    style={{ width: `${(status.completed / KIT_STEPS.length) * 100}%` }}
+                    style={{ width: `${(status.completed / Math.max(1, status.total)) * 100}%` }}
                   />
                 </div>
               </div>
@@ -310,27 +310,59 @@ function FluxoPage() {
                       <div
                         className="grid size-9 shrink-0 place-items-center rounded-full text-sm font-semibold"
                         style={{
-                          background: st.done ? "var(--success)20" : "var(--surface-hover)",
-                          color: st.done ? "var(--success)" : "var(--text-muted)",
+                          background: st.skipped
+                            ? "var(--surface-hover)"
+                            : st.done
+                              ? "var(--success)20"
+                              : "var(--surface-hover)",
+                          color: st.skipped
+                            ? "var(--text-muted)"
+                            : st.done
+                              ? "var(--success)"
+                              : "var(--text-muted)",
                         }}
                       >
-                        {st.done ? <Check className="size-4" /> : step.order}
+                        {st.skipped ? (
+                          <MinusCircle className="size-4" />
+                        ) : st.done ? (
+                          <Check className="size-4" />
+                        ) : (
+                          step.order
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-[color:var(--text-main)]">{step.label}</div>
                         <div className="text-xs text-[color:var(--text-muted)]">
-                          {st.done ? step.description : st.reason}
+                          {st.skipped
+                            ? "Dispensada: não entra no kit do colaborador."
+                            : st.done
+                              ? step.description
+                              : st.reason}
                         </div>
                       </div>
-                      {can("fluxo.marcar_etapas") && (
-                        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[color:var(--text-muted)]">
-                          <Checkbox
-                            checked={!!st.manual}
-                            onCheckedChange={(v) => toggleManual(selected, step.key, v === true)}
-                          />
-                          Já incluso
-                        </label>
-                      )}
+                      {can("fluxo.marcar_etapas") &&
+                        (step.key === "foto" ? (
+                          <Button
+                            type="button"
+                            variant={st.skipped ? "secondary" : "outline"}
+                            size="sm"
+                            className="shrink-0"
+                            onClick={() =>
+                              toggleManual(selected, "foto", st.skipped ? false : "dispensada")
+                            }
+                          >
+                            {st.skipped ? "Reativar foto" : "Dispensar foto"}
+                          </Button>
+                        ) : (
+                          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[color:var(--text-muted)]">
+                            <Checkbox
+                              checked={!!st.manual}
+                              onCheckedChange={(v) => toggleManual(selected, step.key, v === true)}
+                            />
+                            Já incluso
+                          </label>
+                        ))}
+
                       <Button asChild variant="ghost" size="sm">
                         {step.key === "linktree" ? (
                           <Link to="/cartao/dashboard">
@@ -401,8 +433,9 @@ function FluxoPage() {
             Marcar etapas em lote
           </div>
           <p className="mt-1 text-xs text-[color:var(--text-muted)]">
-            Use quando o material já existe mas o sistema não reconhece (ex.: todos já possuem foto
-            de perfil). A ação vale para os {rows?.length ?? 0} colaboradores da lista.
+            Use quando o material já existe mas o sistema não reconhece. A etapa Foto de perfil não
+            pode ser marcada como concluída: selecioná-la aqui dispensa a foto do kit. A ação vale
+            para os {rows?.length ?? 0} colaboradores da lista.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             {KIT_STEPS.map((step) => (
@@ -439,10 +472,10 @@ function FluxoPage() {
   );
 }
 
-function ProgressDots({ completed }: { completed: number }) {
+function ProgressDots({ completed, total }: { completed: number; total: number }) {
   return (
     <span className="flex shrink-0 items-center gap-1">
-      {KIT_STEPS.map((s, i) =>
+      {KIT_STEPS.slice(0, total).map((s, i) =>
         i < completed ? (
           <Check key={s.key} className="size-3 text-[color:var(--success)]" />
         ) : (

@@ -26,7 +26,7 @@ import { profilePhotoBlob, normalizeFrame } from "@/lib/profile-photo";
 import { renderSignaturePng } from "@/lib/email-signature";
 import { buildPrintCardsPdf } from "@/lib/print-card";
 import { buildGuidePdf } from "@/lib/kit-guide";
-import { downloadKitZip, kitBaseName, kitStatus, type KitOptions } from "@/lib/kit";
+import { downloadKitZip, kitBaseName, kitStatus, skippedSteps, type KitOptions } from "@/lib/kit";
 import logoUrl from "@/assets/logo-conexao.png";
 
 export const Route = createFileRoute("/$slug/kit")({
@@ -221,6 +221,7 @@ function KitPage() {
       slug: c.slug,
       modelo: opts.print.modelo,
       kitUrl,
+      semFoto: skippedSteps(c).foto,
     });
     return new Blob([bytes as unknown as BlobPart], { type: "application/pdf" });
   }
@@ -368,42 +369,44 @@ function KitPage() {
         </Card>
 
         {/* Foto de perfil */}
-        <Card
-          icon={<UserRound className="size-5" />}
-          title="Foto de perfil (1080x1080)"
-          description="Use no WhatsApp Business, LinkedIn, Teams e Google Workspace."
-          ready={status.steps.foto.done}
-          pending="Sua foto ainda está em preparação pelo time de Marketing."
-        >
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={busy === "foto-view"}
-              onClick={() =>
-                view(
-                  "foto-view",
-                  "Foto de perfil",
-                  "Arte 1080x1080 px.",
-                  "image",
-                  `foto-perfil-${base}.png`,
-                  photoBlob,
-                )
-              }
-            >
-              {busy === "foto-view" ? <Loader2 className="size-4 animate-spin" /> : <Eye className="size-4" />}
-              Visualizar
-            </Button>
-            <Button
-              size="sm"
-              disabled={busy === "foto-dl"}
-              onClick={() => download("foto-dl", `foto-perfil-${base}.png`, photoBlob)}
-            >
-              {busy === "foto-dl" ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-              Baixar PNG
-            </Button>
-          </div>
-        </Card>
+        {!status.steps.foto.skipped && (
+          <Card
+            icon={<UserRound className="size-5" />}
+            title="Foto de perfil (1080x1080)"
+            description="Use no WhatsApp Business, LinkedIn, Teams e Google Workspace."
+            ready={status.steps.foto.deliverable}
+            pending="Sua foto ainda está em preparação pelo time de Marketing."
+          >
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={busy === "foto-view"}
+                onClick={() =>
+                  view(
+                    "foto-view",
+                    "Foto de perfil",
+                    "Arte 1080x1080 px.",
+                    "image",
+                    `foto-perfil-${base}.png`,
+                    photoBlob,
+                  )
+                }
+              >
+                {busy === "foto-view" ? <Loader2 className="size-4 animate-spin" /> : <Eye className="size-4" />}
+                Visualizar
+              </Button>
+              <Button
+                size="sm"
+                disabled={busy === "foto-dl"}
+                onClick={() => download("foto-dl", `foto-perfil-${base}.png`, photoBlob)}
+              >
+                {busy === "foto-dl" ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+                Baixar PNG
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Assinatura */}
         <Card
