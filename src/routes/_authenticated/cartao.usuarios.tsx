@@ -490,7 +490,11 @@ function ResetPasswordDialog({ user, onClose }: { user: ManagedUser | null; onCl
     }
     setSaving(true);
     try {
-      await resetUserPassword({ data: { user_id: user.id, password } });
+      const res = await resetUserPassword({ data: { user_id: user.id, password } });
+      if (!res.ok) {
+        toast.error("Não foi possível atualizar", { description: res.error ?? undefined });
+        return;
+      }
       toast.success("Senha atualizada");
       onClose();
     } catch (e: any) {
