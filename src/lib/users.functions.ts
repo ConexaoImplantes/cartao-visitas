@@ -130,8 +130,13 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
       password: data.password,
     });
-    if (error) throw new Error(error.message);
-    return { ok: true };
+    if (error) {
+      const msg = /weak|easy to guess|pwned/i.test(error.message)
+        ? "Senha muito fraca ou vazada. Use uma senha mais forte (misture letras maiúsculas, minúsculas, números e símbolos)."
+        : error.message;
+      return { ok: false as const, error: msg };
+    }
+    return { ok: true as const, error: null };
   });
 
 const deleteSchema = z.object({ user_id: z.string().uuid() });
