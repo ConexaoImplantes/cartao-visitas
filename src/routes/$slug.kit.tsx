@@ -26,7 +26,7 @@ import { profilePhotoBlob, normalizeFrame } from "@/lib/profile-photo";
 import { renderSignaturePng } from "@/lib/email-signature";
 import { buildPrintCardsPdf } from "@/lib/print-card";
 import { buildGuidePdf } from "@/lib/kit-guide";
-import { downloadKitZip, kitBaseName, kitStatus, type KitOptions } from "@/lib/kit";
+import { downloadKitZip, kitBaseName, kitStatus, skippedSteps, type KitOptions } from "@/lib/kit";
 import logoUrl from "@/assets/logo-conexao.png";
 
 export const Route = createFileRoute("/$slug/kit")({
@@ -221,6 +221,7 @@ function KitPage() {
       slug: c.slug,
       modelo: opts.print.modelo,
       kitUrl,
+      semFoto: skippedSteps(c).foto,
     });
     return new Blob([bytes as unknown as BlobPart], { type: "application/pdf" });
   }
