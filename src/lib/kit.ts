@@ -128,9 +128,11 @@ export async function loadKitOptions(): Promise<KitOptions> {
 export function kitStatus(c: Collaborator, opts?: Partial<KitOptions>): KitStatus {
   const has = (v: unknown) => typeof v === "string" && v.trim().length > 0;
 
-  const foto = has(c.foto_recortada_url)
-    ? { done: true }
-    : { done: false, reason: "Envie a foto e ajuste o enquadramento." };
+  const foto =
+    has(c.foto_recortada_url) || has(c.foto_url)
+      ? { done: true }
+      : { done: false, reason: "Envie a foto e ajuste o enquadramento." };
+
 
   const linktreeMissing: string[] = [];
   if (!has(c.nome)) linktreeMissing.push("nome");
