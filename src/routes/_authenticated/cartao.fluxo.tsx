@@ -263,7 +263,7 @@ function FluxoPage() {
                           {c.cargo}
                         </div>
                       </div>
-                      <ProgressDots completed={s.completed} />
+                      <ProgressDots completed={s.completed} total={s.total} />
                     </button>
                   </li>
                 );
@@ -433,8 +433,9 @@ function FluxoPage() {
             Marcar etapas em lote
           </div>
           <p className="mt-1 text-xs text-[color:var(--text-muted)]">
-            Use quando o material já existe mas o sistema não reconhece (ex.: todos já possuem foto
-            de perfil). A ação vale para os {rows?.length ?? 0} colaboradores da lista.
+            Use quando o material já existe mas o sistema não reconhece. A etapa Foto de perfil não
+            pode ser marcada como concluída: selecioná-la aqui dispensa a foto do kit. A ação vale
+            para os {rows?.length ?? 0} colaboradores da lista.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             {KIT_STEPS.map((step) => (
@@ -471,10 +472,10 @@ function FluxoPage() {
   );
 }
 
-function ProgressDots({ completed }: { completed: number }) {
+function ProgressDots({ completed, total }: { completed: number; total: number }) {
   return (
     <span className="flex shrink-0 items-center gap-1">
-      {KIT_STEPS.map((s, i) =>
+      {KIT_STEPS.slice(0, total).map((s, i) =>
         i < completed ? (
           <Check key={s.key} className="size-3 text-[color:var(--success)]" />
         ) : (
