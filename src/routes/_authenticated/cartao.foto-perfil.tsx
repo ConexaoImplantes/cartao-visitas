@@ -262,11 +262,11 @@ function FotoPerfilPage() {
       const avatarUrl = person
         ? await profilePhotoDataUrl({ personUrl: person, bgUrl, frame }, 480)
         : null;
-      const patch: Record<string, unknown> = {
+      const patch = {
         foto_recortada_url: person,
         foto_perfil_ajuste: frame as any,
+        ...(avatarUrl ? { foto_url: avatarUrl } : {}),
       };
-      if (avatarUrl) patch.foto_url = avatarUrl;
 
       const { error } = await supabase.from("collaborators").update(patch).eq("id", active.id);
       if (error) throw error;
