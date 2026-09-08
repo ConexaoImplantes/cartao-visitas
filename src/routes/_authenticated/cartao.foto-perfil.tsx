@@ -257,25 +257,40 @@ function FotoPerfilPage() {
   async function handleSave() {
     if (!active) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("collaborators")
-      .update({
+    try {
+      // A arte final também vira a foto exibida no Link Tree.
+      const avatarUrl = person
+        ? await profilePhotoDataUrl({ personUrl: person, bgUrl, frame }, 480)
+        : null;
+      const patch = {
         foto_recortada_url: person,
         foto_perfil_ajuste: frame as any,
-      })
-      .eq("id", active.id);
-    setSaving(false);
-    if (error) {
-      toast.error("Não foi possível salvar", { description: error.message });
-      return;
+        ...(avatarUrl ? { foto_url: avatarUrl } : {}),
+      };
+
+      const { error } = await supabase.from("collaborators").update(patch).eq("id", active.id);
+      if (error) throw error;
+
+      setRows((prev) =>
+        (prev ?? []).map((r) =>
+          r.id === active.id
+            ? {
+                ...r,
+                foto_recortada_url: person,
+                foto_perfil_ajuste: frame,
+                ...(avatarUrl ? { foto_url: avatarUrl } : {}),
+              }
+            : r,
+        ),
+      );
+      toast.success("Foto salva e aplicada no Link Tree");
+    } catch (e: any) {
+      toast.error("Não foi possível salvar", { description: e?.message });
+    } finally {
+      setSaving(false);
     }
-    setRows((prev) =>
-      (prev ?? []).map((r) =>
-        r.id === active.id ? { ...r, foto_recortada_url: person, foto_perfil_ajuste: frame } : r,
-      ),
-    );
-    toast.success("Foto de perfil salva");
   }
+
 
   async function handleView() {
     if (!active) return;
